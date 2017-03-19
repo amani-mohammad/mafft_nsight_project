@@ -1,1 +1,1 @@
-# mafft_nsight_project
+MAFFT NSight project that runs from the NSight IDE - original code without any modification -.
