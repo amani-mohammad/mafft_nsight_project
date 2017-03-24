@@ -1,3 +1,5 @@
+#include "defs.c"
+
 #define DEFAULTGOP_B -1530
 #define DEFAULTGEP_B   -00 
 #define DEFAULTOFS_B  -123   /* +10 -- -50  teido ka ? */
