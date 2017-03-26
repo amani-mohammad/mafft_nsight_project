@@ -1,8 +1,9 @@
-#include "defs.c"
+#include "blosum.h"
+#include "defs.h"
 
-#define DEFAULTGOP_B -1530
-#define DEFAULTGEP_B   -00 
-#define DEFAULTOFS_B  -123   /* +10 -- -50  teido ka ? */
+//#define DEFAULTGOP_B -1530
+//#define DEFAULTGEP_B   -00
+//#define DEFAULTOFS_B  -123   /* +10 -- -50  teido ka ? */
 
 
 void BLOSUMmtx( int n, double **matrix, double *freq, unsigned char *amino, char *amino_grp )

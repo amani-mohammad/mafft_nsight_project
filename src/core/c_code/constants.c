@@ -3,8 +3,10 @@
 #include "miyata5.h"
 #include "DNA.h"
 
-#include "JTT.c"
-#include "blosum.c"
+//#include "JTT.c"
+#include "JTT.h"
+//#include "blosum.c"
+#include "blosum.h"
 
 #define DEBUG 0
 #define TEST 0
@@ -741,7 +743,6 @@ void constants( int nseq, char **seq )
 		}
 #endif
 #if 0
-/* 注意 ！！！！！！！！！！ */
 			penalty -= offset;
 #endif
 
@@ -952,7 +953,6 @@ void constants( int nseq, char **seq )
 		}
 #endif
 #if 0
-/* 注意 ！！！！！！！！！！ */
 			penalty -= offset;
 #endif
 
@@ -1263,7 +1263,6 @@ void constants( int nseq, char **seq )
 		}
 #endif
 #if 0
-/* 注意 ！！！！！！！！！！ */
 			penalty -= offset;
 #endif
 
