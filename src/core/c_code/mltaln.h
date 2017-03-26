@@ -1,5 +1,8 @@
 //this file contains declarations and definitions of most variables and functions used all over the app
 
+#ifndef MLTALN_H //add these Include guards to prevent redefinition of the file when included multiple times
+#define MLTALN_H
+
 #define USE_XCED 0
 
 #if USE_XCED
@@ -339,3 +342,5 @@ extern int gmsg;
 extern double sueff_global;
 extern double lenfaca, lenfacb, lenfacc, lenfacd;
 int maxl, tsize;
+
+#endif
