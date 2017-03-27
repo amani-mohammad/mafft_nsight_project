@@ -164,7 +164,7 @@ void setmark( int nlen, int nseq, char **seq, char *mark )
 	mark[nlen] = 0;
 }
 
-void arguments( int argc, char *argv[] )
+void f2clArguments( int argc, char *argv[] )
 {
     int c;
 	namelen = -1;
@@ -246,7 +246,7 @@ int main( int argc, char *argv[] )
 	char gett[B];
 	int nlenmin;
 
-	arguments( argc, argv );
+	f2clArguments( argc, argv );
 
 
 	if( inputfile )

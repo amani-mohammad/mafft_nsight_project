@@ -191,7 +191,7 @@ void *athread( void *arg )
 
 #endif
 
-void arguments( int argc, char *argv[] )
+void dndpreArguments( int argc, char *argv[] )
 {
     int c;
 
@@ -324,7 +324,7 @@ int main( int argc, char **argv )
 	char c;
 
 
-	arguments( argc, argv );
+	dndpreArguments( argc, argv );
 #ifndef enablemultithread
 	nthread = 0;
 #endif

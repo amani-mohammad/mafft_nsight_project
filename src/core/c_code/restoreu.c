@@ -34,7 +34,7 @@ static void fillorichar( int nseq, int *oripos, char **a, char **s )
 	}
 }
 
-void arguments( int argc, char *argv[] )
+void restoreu_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
 //	int *ndel;
 	char *gett;
 
-	arguments( argc, argv );
+	restoreu_arguments( argc, argv );
 
 	if( inputfile )
 	{

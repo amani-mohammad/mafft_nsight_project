@@ -140,7 +140,7 @@ static void partshuffle( int size, int outsize, int *ary )
 }
 #endif
 
-void arguments( int argc, char *argv[] )
+void make_direction_list_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -672,7 +672,7 @@ int main( int argc, char *argv[] )
 	static char **mseq1f, **mseq1r, **mseq2;
 	int *contrastorder;
 
-	arguments( argc, argv );
+	make_direction_list_arguments( argc, argv );
 #ifndef enablemultithread
 	nthread = 0;
 #endif

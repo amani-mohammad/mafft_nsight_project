@@ -26,7 +26,7 @@ int intcmp( int *str1, int *str2 )
 	return( 0 );
 }
 
-char **arguments( int argc, char *argv[] )
+char **mafft_profile_arguments( int argc, char *argv[] )
 {
     int c = 0;
 	
@@ -323,7 +323,7 @@ int main( int argc, char *argv[] )
 	int nlenmax1, nlenmax2, nseq1, nseq2;
 	int alloclen;
 
-	argv2 = arguments( argc, argv );
+	argv2 = mafft_profile_arguments( argc, argv );
 
 	fprintf( stderr, "####### in galn\n" );
 

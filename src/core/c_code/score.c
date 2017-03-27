@@ -3,7 +3,7 @@
 
 #define DEBUG 0
 
-void arguments( int argc, char *argv[] )
+void score_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -70,7 +70,7 @@ int main( int ac, char **av )
 	double score;
 	extern double score_calc_for_score( int, char ** );
 
-	arguments( ac, av );
+	score_arguments( ac, av );
 
 	getnumlen( stdin );
 	rewind( stdin );

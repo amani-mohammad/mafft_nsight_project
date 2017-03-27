@@ -789,7 +789,7 @@ static void makenewgaplist( int *l, char *a )
 }
 
 
-void arguments( int argc, char *argv[] ) //parse arguments passed to this file
+void addSingleArguments( int argc, char *argv[] ) //parse arguments passed to this file
 {
     int c;
 
@@ -2893,7 +2893,7 @@ int main( int argc, char *argv[] ) //main function of this file
 	Addtree *addtree;
 
 
-	arguments( argc, argv );
+	addSingleArguments( argc, argv );
 #ifndef enablemultithread
 	nthread = 0;
 #endif

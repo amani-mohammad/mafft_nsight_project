@@ -18,7 +18,7 @@ void strip( char *s )
 }
 
 
-void arguments( int argc, char *argv[] )
+void multi2hat3s_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -307,7 +307,7 @@ int main( int argc, char *argv[] )
 	int alloclen;
 	FILE *infp;
 
-	arguments( argc, argv );
+	multi2hat3s_arguments( argc, argv );
 
 	if( inputfile )
 	{

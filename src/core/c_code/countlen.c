@@ -2,7 +2,7 @@
 
 #define DEBUG 0
 
-void arguments( int argc, char *argv[] )
+void countlen_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
 	int nlenmin;
 	double nfreq;
 
-	arguments( argc, argv );
+	countlen_arguments( argc, argv );
 
 	if( inputfile )
 	{

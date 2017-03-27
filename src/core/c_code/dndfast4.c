@@ -26,7 +26,7 @@ int howmanyx( char *s )
 	return( val );
 }
 
-void arguments( int argc, char *argv[] )
+void dndblast4Arguments( int argc, char *argv[] )
 {
 	int c;
 
@@ -90,7 +90,7 @@ int main( int argc, char *argv[] )
 	sprintf( fastafile, "%s/tmp/fasta-%d\0", home, pid );
 	sprintf( hat2file, "hat2-%d\0", pid );
 
-	arguments( argc, argv );
+	dndblast4Arguments( argc, argv );
 #if 0
 	PreRead( stdin, &njob, &nlenmax );
 #else

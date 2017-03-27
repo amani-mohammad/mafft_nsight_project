@@ -33,7 +33,7 @@ static void calcmaxdistclass( void )
 	return;
 }
 
-void arguments( int argc, char *argv[] )
+void dvtditrArguments( int argc, char *argv[] )
 {
 	int c;
 	char *argkey;
@@ -450,7 +450,7 @@ int main( int argc, char *argv[] )
 	int ntarget, *targetmap, *targetmapr;
 	int ilim;
 
-	arguments( argc, argv );
+	dvtditrArguments( argc, argv );
 #ifndef enablemultithread
 	nthread = 0;
 #endif

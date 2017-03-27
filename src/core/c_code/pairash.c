@@ -740,7 +740,7 @@ static void prepareash( FILE *fp, char *inputfile, char ***strfiles, char ***cha
 	}
 }
 
-void arguments( int argc, char *argv[] )
+void pairash_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -1328,7 +1328,7 @@ int main( int argc, char *argv[] )
 	char c;
 	int alloclen;
 
-	arguments( argc, argv );
+	pairash_arguments( argc, argv );
 
 	if( equivthreshold < 1 || 9 < equivthreshold )
 	{

@@ -159,7 +159,7 @@ static void *athread( void *arg )
 }
 #endif
 
-void arguments( int argc, char *argv[] )
+void kill_wrap_arguments( int argc, char *argv[] )
 {
     int c;
 	nthread = 1;
@@ -233,7 +233,7 @@ int main( int argc, char *argv[] )
 	double prob;
 	int adpos;
 
-	arguments( argc, argv );
+	kill_wrap_arguments( argc, argv );
 #ifndef enablemultithread
 	nthread = 0;
 #endif

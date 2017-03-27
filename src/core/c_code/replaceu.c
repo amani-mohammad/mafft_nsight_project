@@ -21,7 +21,7 @@ static void replace_unusual( int n, char **seq, char *usual, char unknown, int (
 }
 
 
-void arguments( int argc, char *argv[] )
+void replaceu_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -79,7 +79,7 @@ int main( int argc, char *argv[] )
 	int i;
 	char *usual;
 
-	arguments( argc, argv );
+	replaceu_arguments( argc, argv );
 
 	if( inputfile )
 	{

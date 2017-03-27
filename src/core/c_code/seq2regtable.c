@@ -5,7 +5,7 @@
 char *weboutfile = NULL;
 
 //is this the method called to parse the run command ?
-void arguments( int argc, char *argv[] )
+void seq2reg_table_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
 	int nlenmin;
 	int isaligned = 0;
 
-	arguments( argc, argv );
+	seq2reg_table_arguments( argc, argv );
 
 	if( inputfile )
 	{

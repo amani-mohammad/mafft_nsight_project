@@ -8,7 +8,7 @@
 double corethr;
 int coreext;
 
-void arguments( int argc, char *argv[] )
+void set_score_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -301,7 +301,7 @@ int main( int argc, char *argv[] )
 	char *pt, *ot;
 	double gapmin;
 
-	arguments( argc, argv );
+	set_score_arguments( argc, argv );
 
 	getnumlen( stdin );
 	rewind( stdin );

@@ -1571,7 +1571,7 @@ static void preparebpp( int nseq, char ***bpp )
 	fclose( fp );
 }
 
-static void arguments( int argc, char *argv[] )
+static void pair_local_align_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -3077,7 +3077,7 @@ int pairlocalalign( int ngui, int lgui, char **namegui, char **seqgui, double **
 
 //	reporterr( "argc=%d, argv[0]=%s\n", argc, argv[0] );
 
-	arguments( argc, argv );
+	pair_local_align_arguments( argc, argv );
 
 
 	if( !ngui )

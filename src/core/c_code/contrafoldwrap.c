@@ -97,7 +97,7 @@ static void readcontrafold( FILE *fp, RNApair **pairprob, int length )
 }
 #endif
 
-void arguments( int argc, char *argv[] ) //parse arguments
+void contraArguments( int argc, char *argv[] ) //parse arguments
 {
     int c;
 	inputfile = NULL;
@@ -158,7 +158,7 @@ int main( int argc, char *argv[] ) //main of the file
 	double prob;
 	int adpos;
 
-	arguments( argc, argv );
+	contraArguments( argc, argv );
 
 	if( inputfile )
 	{

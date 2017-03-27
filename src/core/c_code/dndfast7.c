@@ -26,7 +26,7 @@ int howmanyx( char *s )
 	return( val );
 }
 
-void arguments( int argc, char *argv[] )
+void dndblast7Arguments( int argc, char *argv[] )
 {
 	int c;
 
@@ -115,7 +115,7 @@ int main( int argc, char *argv[] )
 	sprintf( hat2file, "hat2-%d", pid );
 
 
-	arguments( argc, argv );
+	dndblast7Arguments( argc, argv );
 
 	if( inputfile )
 	{

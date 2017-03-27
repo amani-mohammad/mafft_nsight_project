@@ -139,7 +139,7 @@ typedef struct _distancematrixthread_arg
 #endif
 
 
-void arguments( int argc, char *argv[] )
+void dist_tb_fast_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -2282,7 +2282,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	else
 		gmsg = 0; // iranai
 
-	arguments( argc, argv );
+	dist_tb_fast_arguments( argc, argv );
 	algbackup = alg; // tbfast wo disttbfast ni ketsugou shitatame.
 #ifndef enablemultithread
 	nthread = 0;

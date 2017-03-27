@@ -6,7 +6,7 @@
 char *regfile;
 char *eregfile;
 
-void arguments( int argc, char *argv[] )
+void reg_table2seq_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -147,7 +147,7 @@ int main( int argc, char *argv[] )
 	char **outseq;
 	char **name;
 
-	arguments( argc, argv );
+	reg_table2seq_arguments( argc, argv );
 
 	if( inputfile )
 	{

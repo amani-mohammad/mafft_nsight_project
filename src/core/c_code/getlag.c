@@ -4,7 +4,7 @@
 #define DEBUG 0
 #define IODEBUG 0
 
-void arguments( int argc, char *argv[] )
+void getlagArguments( int argc, char *argv[] )
 {
     int c;
 
@@ -341,7 +341,7 @@ int main( int argc, char *argv[] )
 	char c;
 	int alloclen;
 
-	arguments( argc, argv );
+	getlagArguments( argc, argv );
 	getnumlen( stdin );
 	rewind( stdin );
 

@@ -5,13 +5,13 @@
 #include "dp.h"
 //#include "mltaln.h"
 
-//int TLS commonAlloc1 = 0; // what is TLS ?
-//int TLS commonAlloc2 = 0;
-//int TLS **commonIP = NULL;
-//int TLS **commonJP = NULL;
-//int nthread = 1;
-//int randomseed = 0;
-//int parallelizationstrategy = BAATARI1;
+int TLS commonAlloc1 = 0; // what is TLS ?
+int TLS commonAlloc2 = 0;
+int TLS **commonIP = NULL;
+int TLS **commonJP = NULL;
+int nthread = 1;
+int randomseed = 0;
+int parallelizationstrategy = BAATARI1;
 //
 //
 //char modelname[500];

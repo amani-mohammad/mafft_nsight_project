@@ -8,7 +8,7 @@
 #define END_OF_VEC -1
 
 
-void arguments( int argc, char *argv[] )
+void sextet5_arguments( int argc, char *argv[] )
 {
 	int c;
 
@@ -189,7 +189,7 @@ int main( int argc, char **argv )
 	static short *table1;
 	char b[B];
 
-	arguments( argc, argv );
+	sextet5_arguments( argc, argv );
 
 	if( inputfile )
 	{

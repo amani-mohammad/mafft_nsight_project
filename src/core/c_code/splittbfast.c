@@ -529,7 +529,7 @@ static void selhead( int *ar, int n )
 }
 #endif
 
-void arguments( int argc, char *argv[] )
+void split_tb_fast_arguments( int argc, char *argv[] )
 {
     int c;
 
@@ -2687,7 +2687,7 @@ int main( int argc, char *argv[] )
 
 
 
-	arguments( argc, argv );
+	split_tb_fast_arguments( argc, argv );
 
 	if( inputfile )
 	{

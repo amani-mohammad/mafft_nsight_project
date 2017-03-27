@@ -10,14 +10,20 @@
 
 #include "mltaln.h"
 
-int TLS commonAlloc1 = 0; // what is TLS ?
-int TLS commonAlloc2 = 0;
-int TLS **commonIP = NULL;
-int TLS **commonJP = NULL;
-int nthread = 1;
-int randomseed = 0;
-int parallelizationstrategy = BAATARI1;
-
+//int TLS commonAlloc1 = 0; // what is TLS ?
+//int TLS commonAlloc2 = 0;
+//int TLS **commonIP = NULL;
+//int TLS **commonJP = NULL;
+//int nthread = 1;
+//int randomseed = 0;
+//int parallelizationstrategy = BAATARI1;
+extern int TLS commonAlloc1; // what is TLS ?
+extern int TLS commonAlloc2;
+extern int TLS **commonIP;
+extern int TLS **commonJP;
+extern int nthread;
+extern int randomseed;
+extern int parallelizationstrategy;
 
 char modelname[500];
 int njob, nlenmax;

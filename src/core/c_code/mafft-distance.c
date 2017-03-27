@@ -18,7 +18,7 @@ static int nadd;
 #define DLENFACC 2500
 #define DLENFACD 0.1
 
-void arguments( int argc, char *argv[] )
+void mafft_distanceArguments( int argc, char *argv[] )
 {
 	int c;
 
@@ -247,7 +247,7 @@ int main( int argc, char **argv )
 	double bunbo;
 	int norg;
 
-	arguments( argc, argv );
+	mafft_distanceArguments( argc, argv );
 
 
 	if( inputfile )
