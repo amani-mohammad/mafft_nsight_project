@@ -30,13 +30,13 @@ int njob, nlenmax;
 int amino_n[0x100];
 char amino_grp[0x100];
 //int amino_dis[0x100][0x100];
-int **amino_dis = NULL;
-double **n_disLN = NULL;
+extern int **amino_dis;
+extern double **n_disLN;
 //double amino_dis_consweight_multi[0x100][0x100];
-double **amino_dis_consweight_multi = NULL;
-int **n_dis = NULL;
-int **n_disFFT = NULL;
-double **n_dis_consweight_multi = NULL;
+extern double **amino_dis_consweight_multi;
+extern int **n_dis;
+extern int **n_disFFT;
+extern double **n_dis_consweight_multi;
 unsigned char amino[0x100];
 double polarity[0x100];
 double volume[0x100];
@@ -52,7 +52,7 @@ int fmodel; // 1-> fmodel 0->default -1->raw
 int nblosum; // 45, 50, 62, 80
 int kobetsubunkatsu;
 int bunkatsu;
-int dorp = NOTSPECIFIED; // arguments de shitei suruto, tbfast -> pairlocalalign no yobidashi de futsugou
+extern int dorp; // arguments de shitei suruto, tbfast -> pairlocalalign no yobidashi de futsugou
 int niter;
 int contin;
 int calledByXced;
@@ -65,7 +65,7 @@ int refine;
 int check;
 double cut;
 int cooling;
-int trywarp = 0;
+extern int trywarp;
 int penalty, ppenalty, penaltyLN;
 int penalty_dist, ppenalty_dist;
 int RNApenalty, RNAppenalty;
@@ -74,7 +74,7 @@ int penalty_ex, ppenalty_ex, penalty_exLN;
 int penalty_EX, ppenalty_EX;
 int penalty_OP, ppenalty_OP;
 int penalty_shift, ppenalty_shift;
-double penalty_shift_factor = 100.0;
+extern double penalty_shift_factor;
 int RNAthr, RNApthr;
 int offset, poffset, offsetLN, offsetFFT;
 int scoremtx;
@@ -90,7 +90,7 @@ int fftNoAnchStop;
 int divWinSize;
 int divThreshold;
 int disp;
-int outgap = 1;
+extern int outgap;
 char alg;
 int cnst;
 int mix;
@@ -109,15 +109,15 @@ int score_check;
 int makedistmtx;
 char *inputfile;
 char *addfile;
-int addprofile = 1;
+extern int addprofile;
 int rnakozo;
 char rnaprediction;
-int scoreout = 0;
-int spscoreout = 0;
-int outnumber = 0;
-int legacygapcost = 0;
-double minimumweight = 0.0005;
-int nwildcard = 0;
+extern int scoreout;
+extern int spscoreout;
+extern int outnumber;
+extern int legacygapcost;
+extern double minimumweight;
+extern int nwildcard;
 
 char *signalSM;
 FILE *prep_g;
@@ -125,22 +125,22 @@ FILE *trap_g;
 char **seq_g;
 char **res_g;
 
-double consweight_multi = 1.0;
-double consweight_rna = 0.0;
-char RNAscoremtx = 'n';
+extern double consweight_multi;
+extern double consweight_rna;
+extern char RNAscoremtx;
 
-char TLS *newgapstr = "-";
+extern char TLS *newgapstr;
 
-int nalphabets = 26;
-int nscoredalphabets = 20;
+extern int nalphabets;
+extern int nscoredalphabets;
 
-double specificityconsideration = 0.0;
-int ndistclass = 10;
-int maxdistclass = -1;
+extern double specificityconsideration;
+extern int ndistclass;
+extern int maxdistclass;
 
-int gmsg = 0;
+extern int gmsg;
 
-double sueff_global = SUEFF;
+extern double sueff_global;
 
 double lenfaca, lenfacb, lenfacc, lenfacd;
 int maxl, tsize;
