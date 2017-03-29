@@ -79,7 +79,7 @@ void restoreu_arguments( int argc, char *argv[] )
 
 
 
-int main( int argc, char *argv[] )
+int restoreu_main( int argc, char *argv[] )
 {
 	FILE *infp;
 	FILE *alfp;

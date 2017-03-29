@@ -63,7 +63,7 @@ void score_arguments( int argc, char *argv[] )
 }
 
 
-int main( int ac, char **av )
+int score_main( int ac, char **av )
 {
 	int *nlen;
 	static char **name, **seq;

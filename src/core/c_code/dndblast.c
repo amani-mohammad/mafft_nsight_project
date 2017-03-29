@@ -6,7 +6,7 @@
 #define TEST 0
 
 
-int howmanyx( char *s )
+int dndblast_howmanyx( char *s )
 {
 	int val = 0;
 	if( scoremtx == -1 )
@@ -65,7 +65,7 @@ void dndblastArguments( int argc, char *argv[] )
     }
 }
 
-int main( int argc, char *argv[] )
+int dndblast_main( int argc, char *argv[] )
 {
 	int ktuple;
 	int i, j;
@@ -361,14 +361,14 @@ int main( int argc, char *argv[] )
 	if( disopt )
 	{
 		strcpy( b, name[0] );
-		sprintf( name[0], "=query====lgth=%04d-%04d %.*s", nlen[0], howmanyx( seq[0] ), B-30, b );
+		sprintf( name[0], "=query====lgth=%04d-%04d %.*s", nlen[0], dndblast_howmanyx( seq[0] ), B-30, b );
 #if 0
 		strins(  b, name[0] );
 #endif
 		for( i=1; i<njob; i++ ) 
 		{	
 			strcpy( b, name[i] );
-			sprintf( name[i], "=opt=%04d=lgth=%04d-%04d %.*s", opt[i], nlen[i], howmanyx( seq[i] ), B-30, b );
+			sprintf( name[i], "=opt=%04d=lgth=%04d-%04d %.*s", opt[i], nlen[i], dndblast_howmanyx( seq[i] ), B-30, b );
 #if 0
 			strins( b, name[i] );
 #endif

@@ -126,7 +126,7 @@ void multi2hat3s_arguments( int argc, char *argv[] )
 	}
 }
 
-int countamino( char *s, int end )
+int multi2hat3s_countamino( char *s, int end )
 {
 	int val = 0;
 	while( end-- )
@@ -296,7 +296,7 @@ static void WriteOptions( FILE *fp )
 }
 	 
 
-int main( int argc, char *argv[] )
+int multi2hat3s_main( int argc, char *argv[] )
 {
 	static int  nlen[M];	
 	static char **name, **seq;

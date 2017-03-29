@@ -135,7 +135,7 @@ void readreg( FILE *regfp, int **regtable, char **revtable, int *outtable )
 	}
 }
 
-int main( int argc, char *argv[] )
+int regtable2seq_main( int argc, char *argv[] )
 {
 	FILE *infp;
 	FILE *regfp;

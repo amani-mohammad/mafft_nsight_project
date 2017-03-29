@@ -308,7 +308,7 @@ void dndpreArguments( int argc, char *argv[] )
 	}
 }
 
-int main( int argc, char **argv )
+int dndpre_main( int argc, char **argv )
 {
 	int i, j, ilim;
 	char **seq;

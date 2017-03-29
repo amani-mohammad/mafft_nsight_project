@@ -155,7 +155,7 @@ void getlagArguments( int argc, char *argv[] )
 }
 
 
-void treebase( char **name, int nlen[M], char **seq, char **aseq, char **mseq1, char **mseq2, double **mtx, int ***topol, double **len, double **eff, int alloclen )
+void getlag_treebase( char **name, int nlen[M], char **seq, char **aseq, char **mseq1, char **mseq2, double **mtx, int ***topol, double **len, double **eff, int alloclen )
 {
 	int i, j, l;
 	int clus1, clus2;
@@ -324,7 +324,7 @@ static void WriteOptions( FILE *fp )
 }
 	 
 
-int main( int argc, char *argv[] )
+int getlag_main( int argc, char *argv[] )
 {
 	static int  nlen[M];	
 	static char **name, **seq;
@@ -447,7 +447,7 @@ int main( int argc, char *argv[] )
 
 	for( i=0; i<njob; i++ ) gappick0( bseq[i], seq[i] );
 
-	treebase( name, nlen, bseq, aseq, mseq1, mseq2, pscore, topol, len, eff, alloclen );
+	getlag_treebase( name, nlen, bseq, aseq, mseq1, mseq2, pscore, topol, len, eff, alloclen );
 
 	fprintf( trap_g, "done\n" );
 	fclose( trap_g );

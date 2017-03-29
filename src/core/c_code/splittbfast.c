@@ -802,7 +802,7 @@ void split_tb_fast_arguments( int argc, char *argv[] )
 
 static int nunknown = 0;
 
-int seq_grp_nuc( int *grp, char *seq )
+int splittbfast_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -818,7 +818,7 @@ int seq_grp_nuc( int *grp, char *seq )
 	return( grp-grpbk );
 }
 
-int seq_grp( int *grp, char *seq )
+int splittbfast_seq_grp( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -834,7 +834,7 @@ int seq_grp( int *grp, char *seq )
 	return( grp-grpbk );
 }
 
-void makecompositiontable_p( short *table, int *pointt )
+void splittbfast_makecompositiontable_p( short *table, int *pointt )
 {
 	int point;
 
@@ -876,7 +876,7 @@ static int localcommonsextet_p( short *table, int *pointt )
 	return( value );
 }
 
-void makepointtable_nuc( int *pointt, int *n )
+void splittbfast_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -900,7 +900,7 @@ void makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable( int *pointt, int *n )
+void splittbfast_makepointtable( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -1063,7 +1063,7 @@ static void pairalign( int nseq, int *nlen, char **seq, int *mem1, int *mem2, do
 #endif
 
 #if 0
-static void treebase( int nseq, int *nlen, char **aseq, double *eff, int nalign, int ***topol, int *alloclen ) // topol
+static void splittbfast_treebase( int nseq, int *nlen, char **aseq, double *eff, int nalign, int ***topol, int *alloclen ) // topol
 {
 	int i, l;
 	int nlim;
@@ -1072,7 +1072,7 @@ static void treebase( int nseq, int *nlen, char **aseq, double *eff, int nalign,
 	nlim = nalign-1;
 	for( l=0; l<nlim; l++ )
 	{
-		fprintf( stderr, "in treebase, l = %d\n", l );
+		fprintf( stderr, "in splittbfast_treebase, l = %d\n", l );
 		fprintf( stderr, "aseq[0] = %s\n", aseq[0] );
 		fprintf( stderr, "aseq[topol[l][0][0]] = %s\n", aseq[topol[l][0][0]] );
 		pairalign( nseq, nlen, aseq, topol[l][0], topol[l][1], eff, alloclen );
@@ -1367,7 +1367,7 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 		{
 			table1 = (short *)calloc( tsize, sizeof( short ) );
 			if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-			makecompositiontable_p( table1, scores[0].pointt );
+			splittbfast_makecompositiontable_p( table1, scores[0].pointt );
 		}
 	
 		selfscore0 = scores[0].selfscore;
@@ -1631,7 +1631,7 @@ exit( 1 );
 		{
 			table1 = (short *)calloc( tsize, sizeof( short ) );
 			if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-			makecompositiontable_p( table1, scores[picks[j]].pointt );
+			splittbfast_makecompositiontable_p( table1, scores[picks[j]].pointt );
 		}
 	
 		selfscore0 = scores[picks[j]].selfscore;
@@ -2127,7 +2127,7 @@ exit( 1 );
 			{
 				table1 = (short *)calloc( tsize, sizeof( short ) );
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-				makecompositiontable_p( table1, scores[yukos[i]].pointt );
+				splittbfast_makecompositiontable_p( table1, scores[yukos[i]].pointt );
 			}
 		
 			selfscore0 = scores[yukos[i]].selfscore;
@@ -2650,7 +2650,7 @@ static void alignparaphiles( int nseq, int *nlen, double *weight, char **seq, in
 
 
 
-int main( int argc, char *argv[] )
+int splittbfast_main( int argc, char *argv[] )
 {
 	static char **name, **seq, **orialn;
 	static int *grpseq;
@@ -2818,7 +2818,7 @@ int main( int argc, char *argv[] )
 		if( nlen[i] > maxl ) maxl = nlen[i];
 		if( dorp == 'd' ) /* nuc */
 		{
-			if( seq_grp_nuc( grpseq, tmpseq ) < 6 )
+			if( splittbfast_seq_grp_nuc( grpseq, tmpseq ) < 6 )
 			{
 				fprintf( stderr, "Seq %d, too short.\n", i+1 );
 				fprintf( stderr, "name = %s\n", name[i] );
@@ -2826,11 +2826,11 @@ int main( int argc, char *argv[] )
 				exit( 1 );
 //				continue;
 			}
-			makepointtable_nuc( pointt[i], grpseq );
+			splittbfast_makepointtable_nuc( pointt[i], grpseq );
 		}
 		else                 /* amino */
 		{
-			if( seq_grp( grpseq, tmpseq ) < 6 )
+			if( splittbfast_seq_grp( grpseq, tmpseq ) < 6 )
 			{
 				fprintf( stderr, "Seq %d, too short.\n", i+1 );
 				fprintf( stderr, "name = %s\n", name[i] );
@@ -2838,7 +2838,7 @@ int main( int argc, char *argv[] )
 				exit( 1 );
 //				continue;
 			}
-			makepointtable( pointt[i], grpseq );
+			splittbfast_makepointtable( pointt[i], grpseq );
 		}
 //		fprintf( stdout, ">%s\n", name[i] );
 //		fprintf( stdout, "%s\n", seq[i] );
@@ -2990,7 +2990,7 @@ int main( int argc, char *argv[] )
 		{
 			table1 = (short *)calloc( tsize, sizeof( short ) );
 			if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-			makecompositiontable_p( table1, pointt[i] );
+			splittbfast_makecompositiontable_p( table1, pointt[i] );
 			scores[i].selfscore = localcommonsextet_p( table1, pointt[i] );
 			free( table1 );
 		}

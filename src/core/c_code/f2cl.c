@@ -235,7 +235,7 @@ void f2clArguments( int argc, char *argv[] )
 }
 
 
-int main( int argc, char *argv[] )
+int f2cl_main( int argc, char *argv[] )
 {
 	static int  *nlen;	
 	static char **name, **seq, *mark;

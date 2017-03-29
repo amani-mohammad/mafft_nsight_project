@@ -69,7 +69,7 @@ void replaceu_arguments( int argc, char *argv[] )
 
 
 //finallyyyyyyy, the main method :D
-int main( int argc, char *argv[] )
+int replaceu_main( int argc, char *argv[] )
 {
 	FILE *infp;
 	int nlenmin;

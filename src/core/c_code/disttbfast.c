@@ -641,7 +641,7 @@ static void pickup( int n, int *seqlen, int ***topol, char **name, char **seq ) 
 
 static int nunknown = 0;
 
-void seq_grp_nuc( int *grp, char *seq )
+void disttbfast_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -662,7 +662,7 @@ void seq_grp_nuc( int *grp, char *seq )
 	}
 }
 
-void seq_grp( int *grp, char *seq )
+void disttbfast_seq_grp( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -683,7 +683,7 @@ void seq_grp( int *grp, char *seq )
 	}
 }
 
-void makecompositiontable_p( int *table, int *pointt )
+void disttbfast_makecompositiontable_p( int *table, int *pointt )
 {
 	int point;
 
@@ -692,7 +692,7 @@ void makecompositiontable_p( int *table, int *pointt )
 }
 
 
-void makepointtable_nuc_dectet( int *pointt, int *n )
+void disttbfast_makepointtable_nuc_dectet( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -727,7 +727,7 @@ void makepointtable_nuc_dectet( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable_nuc_octet( int *pointt, int *n )
+void disttbfast_makepointtable_nuc_octet( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -759,7 +759,7 @@ void makepointtable_nuc_octet( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable_nuc( int *pointt, int *n )
+void disttbfast_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -789,7 +789,7 @@ void makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable( int *pointt, int *n )
+void disttbfast_makepointtable( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -879,7 +879,7 @@ static void *compactdisthalfmtxthread( void *arg ) // enablemultithread == 0 dem
 			else
 				reporterr(       "\r% 5d / %d", i+1, njob );
 		}
-		makecompositiontable_p( table1, pointt[i] );
+		disttbfast_makecompositiontable_p( table1, pointt[i] );
 
 		for( j=i+1; j<njob; j++ ) 
 		{
@@ -1154,7 +1154,7 @@ static void *distancematrixthread( void *arg )
 		{
 			reporterr(       "\r% 5d / %d (thread %4d)", i+1, njob, thread_no );
 		}
-		makecompositiontable_p( table1, pointt[i] );
+		disttbfast_makecompositiontable_p( table1, pointt[i] );
 
 		for( j=i; j<njob; j++ ) 
 		{
@@ -1596,7 +1596,7 @@ static void *treebasethread( void *arg )
 }
 #endif
 
-static int treebase( int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, Treedep *dep, double *effarr, double **newdistmtx, int *selfscore, int *alloclen, int (*callback)(int, int, char*) )
+static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, Treedep *dep, double *effarr, double **newdistmtx, int *selfscore, int *alloclen, int (*callback)(int, int, char*) )
 {
 	int l, len1, len2, i, m, immin, immax;
 	int len1nocommongap, len2nocommongap;
@@ -2536,13 +2536,13 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			if( nogaplen[i] > maxl ) maxl = nogaplen[i];
 			if( dorp == 'd' ) /* nuc */
 			{
-				seq_grp_nuc( grpseq, tmpseq );
+				disttbfast_seq_grp_nuc( grpseq, tmpseq );
 //				makepointtable_nuc( pointt[i], grpseq );
 //				makepointtable_nuc_octet( pointt[i], grpseq );
 				if( tuplesize == 10 )
-					makepointtable_nuc_dectet( pointt[i], grpseq );
+					disttbfast_makepointtable_nuc_dectet( pointt[i], grpseq );
 				else if( tuplesize == 6 )
-					makepointtable_nuc( pointt[i], grpseq );
+					disttbfast_makepointtable_nuc( pointt[i], grpseq );
 				else
 				{
 					reporterr(       "tuplesize=%d: not supported\n", tuplesize );
@@ -2551,8 +2551,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			}
 			else                 /* amino */
 			{
-				seq_grp( grpseq, tmpseq );
-				makepointtable( pointt[i], grpseq );
+				disttbfast_seq_grp( grpseq, tmpseq );
+				disttbfast_makepointtable( pointt[i], grpseq );
 			}
 		}
 		if( nunknown ) reporterr(       "\nThere are %d ambiguous characters.\n", nunknown );
@@ -2572,7 +2572,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				table1 = (int *)calloc( tsize, sizeof( int ) );
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-				makecompositiontable_p( table1, pointt[i] );
+				disttbfast_makecompositiontable_p( table1, pointt[i] );
 				selfscore[i] = commonsextet_p( table1, pointt[i] );
 				free( table1 );
 				table1 = NULL;
@@ -2736,7 +2736,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 						reporterr(       "\r% 5d / %d", i+1, njob );
 						if( callback && callback( 0, i*25/njob, "Distance matrix" ) ) goto chudan;
 					}
-					makecompositiontable_p( table1, pointt[i] );
+					disttbfast_makecompositiontable_p( table1, pointt[i] );
 			
 					for( j=i; j<njob; j++ ) 
 					{
@@ -3450,13 +3450,13 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 #if 0
 			if( calcpairdists ) // except for last
 			{
-				if( treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, mtx, selfscore, &alloclen, callback ) ) goto chudan;
+				if( disttbfast_treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, mtx, selfscore, &alloclen, callback ) ) goto chudan;
 			}
 			else
 #endif
 			{
-//				if( treebase( keeplength && (iguidetree==nguidetree-1), nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, NULL, NULL, deletemap, deletelag, &alloclen, callback ) ) goto chudan;
-				if( treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, NULL, NULL, &alloclen, callback ) ) goto chudan;
+//				if( disttbfast_treebase( keeplength && (iguidetree==nguidetree-1), nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, NULL, NULL, deletemap, deletelag, &alloclen, callback ) ) goto chudan;
+				if( disttbfast_treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, NULL, NULL, &alloclen, callback ) ) goto chudan;
 			}
 		}
 //		reporterr( "after treebase, " );
@@ -3878,7 +3878,7 @@ chudan:
 	return( GUI_CANCEL );
 }
 
-int main( int argc, char **argv )
+int disttbfast_main( int argc, char **argv )
 {
 	int res = disttbfast( 0, 0, NULL, NULL, argc, argv, NULL );
 	if( res == GUI_CANCEL ) res = 0; // treeout de goto chudan wo riyousuru

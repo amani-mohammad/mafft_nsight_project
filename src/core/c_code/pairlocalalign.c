@@ -1922,7 +1922,7 @@ static void pair_local_align_arguments( int argc, char *argv[] )
 	}
 }
 
-int countamino( char *s, int end ) //count the number of amino acids in the sequence
+int pair_local_align_countamino( char *s, int end ) //count the number of amino acids in the sequence
 {
 	int val = 0;
 	while( end-- )

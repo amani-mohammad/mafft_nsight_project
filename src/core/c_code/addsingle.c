@@ -1150,7 +1150,7 @@ void addSingleArguments( int argc, char *argv[] ) //parse arguments passed to th
 }
 
 
-static double treebase( int nseq, int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, double *effarr, int *alloclen, LocalHom **localhomtable, RNApair ***singlerna, double *effarr_kozo )
+static double add_single_treebase( int nseq, int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, double *effarr, int *alloclen, LocalHom **localhomtable, RNApair ***singlerna, double *effarr_kozo )
 {
 
 	int i, l, m;
@@ -1489,7 +1489,7 @@ static double treebase( int nseq, int *nlen, char **aseq, int nadd, char *mergeo
 	}
 
 //for( i=0; i<nseq; nseq++ )
-//reporterr( "In treebase() before deletenewinsertions, %s\n", aseq[i] );
+//reporterr( "In add_single_treebase() before deletenewinsertions, %s\n", aseq[i] );
 //	if( keeplength ) ndeleted += deletenewinsertions_withoutusingequal( nseq-1, 1, 0, aseq, aseq+nseq-1, NULL, deletemapiadd, deletelagiadd, deletelistiadd );
 
 #if SCOREOUT
@@ -1894,7 +1894,7 @@ static void	*addsinglethread( void *arg )
 #endif
 
 			singlerna = NULL;
-			pscore = treebase( njobc, nlenc, bseq, 1, mergeoralign, mseq1, mseq2, topolc, effc, &alloclen, localhomtablec, singlerna, eff_kozo_mapped );
+			pscore = add_single_treebase( njobc, nlenc, bseq, 1, mergeoralign, mseq1, mseq2, topolc, effc, &alloclen, localhomtablec, singlerna, eff_kozo_mapped );
 #if 0
 			pthread_mutex_lock( targ->mutex_counter );
 //			fprintf( stdout, "res (iadd=%d) = %s, pscore=%f\n", iadd, bseq[norg], pscore );
@@ -1987,7 +1987,7 @@ static void	*addsinglethread( void *arg )
 
 static int nunknown = 0;
 
-void seq_grp_nuc( int *grp, char *seq )
+void addsingle_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -2008,7 +2008,7 @@ void seq_grp_nuc( int *grp, char *seq )
 	}
 }
 
-void seq_grp( int *grp, char *seq )
+void add_single_seq_grp( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -2029,7 +2029,7 @@ void seq_grp( int *grp, char *seq )
 	}
 }
 
-void makecompositiontable_p( int *table, int *pointt )
+void add_single_makecompositiontable_p( int *table, int *pointt )
 {
 	int point;
 
@@ -2038,7 +2038,7 @@ void makecompositiontable_p( int *table, int *pointt )
 }
 
 
-void makepointtable_nuc_dectet( int *pointt, int *n )
+void add_single_makepointtable_nuc_dectet( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -2073,7 +2073,7 @@ void makepointtable_nuc_dectet( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable_nuc_octet( int *pointt, int *n )
+void add_single_makepointtable_nuc_octet( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -2105,7 +2105,7 @@ void makepointtable_nuc_octet( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable_nuc( int *pointt, int *n )
+void add_single_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -2135,7 +2135,7 @@ void makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable( int *pointt, int *n )
+void add_single_makepointtable( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -2315,7 +2315,7 @@ static void *distancematrixthread( void *arg )
 		{
 			fprintf( stderr, "\r% 5d / %d (thread %4d)", i+1, norg, thread_no );
 		}
-		makecompositiontable_p( table1, pointt[i] );
+		add_single_makecompositiontable_p( table1, pointt[i] );
 	
 		for( j=i+1; j<njob; j++ ) 
 		{
@@ -2420,13 +2420,13 @@ void ktupledistancematrix( int nseq, int norg, int nlenmax, char **seq, char **n
 		if( nogaplen[i] > maxl ) maxl = nogaplen[i];
 		if( dorp == 'd' ) /* nuc */
 		{
-			seq_grp_nuc( grpseq, tmpseq );
+			addsingle_seq_grp_nuc( grpseq, tmpseq );
 //			makepointtable_nuc( pointt[i], grpseq );
 //			makepointtable_nuc_octet( pointt[i], grpseq );
 			if( tuplesize == 10 )
-				makepointtable_nuc_dectet( pointt[i], grpseq );
+				add_single_makepointtable_nuc_dectet( pointt[i], grpseq );
 			else if( tuplesize == 6 )
-				makepointtable_nuc( pointt[i], grpseq );
+				add_single_makepointtable_nuc( pointt[i], grpseq );
 			else
 			{
 				fprintf( stderr, "tuplesize=%d: not supported\n", tuplesize );
@@ -2435,8 +2435,8 @@ void ktupledistancematrix( int nseq, int norg, int nlenmax, char **seq, char **n
 		}
 		else                 /* amino */
 		{
-			seq_grp( grpseq, tmpseq );
-			makepointtable( pointt[i], grpseq );
+			add_single_seq_grp( grpseq, tmpseq );
+			add_single_makepointtable( pointt[i], grpseq );
 		}
 
 	}
@@ -2446,7 +2446,7 @@ void ktupledistancematrix( int nseq, int norg, int nlenmax, char **seq, char **n
 	{
 		table1 = (int *)calloc( tsize, sizeof( int ) );
 		if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-		makecompositiontable_p( table1, pointt[i] );
+		add_single_makecompositiontable_p( table1, pointt[i] );
 
 		selfscore[i] = (double)commonsextet_p( table1, pointt[i] );
 		free( table1 );
@@ -2502,7 +2502,7 @@ void ktupledistancematrix( int nseq, int norg, int nlenmax, char **seq, char **n
 				fprintf( stderr, "\r% 5d / %d", i+1, norg );
 				fflush( stderr );
 			}
-			makecompositiontable_p( table1, pointt[i] );
+			add_single_makecompositiontable_p( table1, pointt[i] );
 	
 			for( j=i+1; j<nseq; j++ ) 
 			{
@@ -2847,7 +2847,7 @@ static void smoothing1( int njob, int nadd, int lenfull, char **seq, Blocktoreal
 //	for( i=0; i<lenfull+1; i++ ) fprintf( stderr, "i=%d, nnewres=%d, start=%d, end=%d\n", i, realign[i].nnewres, realign[i].start, realign[i].end );
 }
 	
-int main( int argc, char *argv[] ) //main function of this file
+int add_single_main( int argc, char *argv[] ) //main function of this file
 {
 	static int  *nlen;	
 	static char **name, **seq;

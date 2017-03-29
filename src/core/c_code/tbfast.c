@@ -1154,7 +1154,7 @@ static void *treebasethread( void *arg )
 }
 #endif
 
-void treebase( int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, Treedep *dep, double *effarr, int *alloclen, LocalHom **localhomtable, RNApair ***singlerna, double *effarr_kozo, int *targetmap, int *targetmapr, int ntarget )
+void tbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, Treedep *dep, double *effarr, int *alloclen, LocalHom **localhomtable, RNApair ***singlerna, double *effarr_kozo, int *targetmap, int *targetmapr, int ntarget )
 {
 	int i, l, m;
 	int len1nocommongap, len2nocommongap;
@@ -1676,7 +1676,7 @@ static double **preparepartmtx( int nseq )
 }
 
 
-int main( int argc, char *argv[] )
+int tbfast_main( int argc, char *argv[] )
 {
 	static int  *nlen = NULL;	
 	static int *selfscore = NULL;
@@ -2891,7 +2891,7 @@ int main( int argc, char *argv[] )
 	else
 #endif
 
-		treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, &alloclen, localhomtable, singlerna, eff_kozo_mapped, targetmap, targetmapr, ntarget );
+		tbfast_treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, &alloclen, localhomtable, singlerna, eff_kozo_mapped, targetmap, targetmapr, ntarget );
 	fprintf( stderr, "\ndone.\n" );
 
 	
@@ -2936,7 +2936,7 @@ int main( int argc, char *argv[] )
 	if( scoreout )
 	{
 		unweightedspscore = plainscore( njob, bseq );
-		fprintf( stderr, "\nSCORE %s = %.0f, ", "(treebase)", unweightedspscore );
+		fprintf( stderr, "\nSCORE %s = %.0f, ", "(tbfast_treebase)", unweightedspscore );
 		fprintf( stderr, "SCORE / residue = %f", unweightedspscore / ( njob * strlen( bseq[0] ) ) );
 		fprintf( stderr, "\n\n" );
 	}

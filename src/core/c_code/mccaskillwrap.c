@@ -214,7 +214,7 @@ void kill_wrap_arguments( int argc, char *argv[] )
 }
 
 
-int main( int argc, char *argv[] )
+int mccaskillwrap_main( int argc, char *argv[] )
 {
 	static char com[10000];
 	static int  *nlen;	

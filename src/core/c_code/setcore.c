@@ -279,7 +279,7 @@ static void WriteOptions( FILE *fp )
 }
 	 
 
-int main( int argc, char *argv[] )
+int set_score_main( int argc, char *argv[] )
 {
 	static int  nlen[M];	
 	static char **name, **seq;

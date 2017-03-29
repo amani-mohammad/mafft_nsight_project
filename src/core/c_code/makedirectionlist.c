@@ -289,7 +289,7 @@ void make_direction_list_arguments( int argc, char *argv[] )
 
 
 
-void seq_grp_nuc( int *grp, char *seq )
+void make_direction_list_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -311,7 +311,7 @@ void seq_grp_nuc( int *grp, char *seq )
 	}
 }
 
-void seq_grp( int *grp, char *seq )
+void make_direction_list_seq_grp( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -333,7 +333,7 @@ void seq_grp( int *grp, char *seq )
 	}
 }
 
-void makecompositiontable_p( short *table, int *pointt )
+void make_direction_list_makecompositiontable_p( short *table, int *pointt )
 {
 	int point;
 
@@ -342,7 +342,7 @@ void makecompositiontable_p( short *table, int *pointt )
 }
 
 
-void makepointtable_nuc( int *pointt, int *n )
+void make_direction_list_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -372,7 +372,7 @@ void makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable( int *pointt, int *n )
+void make_direction_list_makepointtable( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -460,13 +460,13 @@ static void makecontrastorder6mer( int *order, int **pointt, int **pointt_rev, c
 		if( i % 100 == 1 ) reporterr( "%d   \r", i );
 		table1 = (short *)calloc( tsize, sizeof( short ) );
 		if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-		makecompositiontable_p( table1, pointt[i] );
+		make_distance_makecompositiontable_p( table1, pointt[i] );
 		res[i] = localcommonsextet_p2( table1, pointt[i] );
 		free( table1 );
 
 		table1_rev = (short *)calloc( tsize, sizeof( short ) );
 		if( !table1_rev ) ErrorExit( "Cannot allocate table1\n" );
-		makecompositiontable_p( table1_rev, pointt_rev[i] );
+		make_distance_makecompositiontable_p( table1_rev, pointt_rev[i] );
 		res[i] -= localcommonsextet_p2( table1_rev, pointt[i] );
 		free( table1_rev );
 
@@ -651,7 +651,7 @@ static void	*directionthread( void *arg )
 	return( NULL );
 }
 
-int main( int argc, char *argv[] )
+int make_direction_list_main( int argc, char *argv[] )
 {
 	static int  *nlen;	
 	static int  *nogaplen;	
@@ -869,8 +869,8 @@ int main( int argc, char *argv[] )
 			{
 				gappick0( tmpseq, seq[i] );
 				strcpy( seq[i], tmpseq );
-				seq_grp_nuc( grpseq, tmpseq );
-				makepointtable_nuc( pointt[i], grpseq );
+				make_direction_list_seq_grp_nuc( grpseq, tmpseq );
+				make_direction_list_makepointtable_nuc( pointt[i], grpseq );
 				spointt[i] = pointt[i];
 			}
 	
@@ -885,11 +885,11 @@ int main( int argc, char *argv[] )
 				strcpy( seq[i], tmpseq );
 				sreverse( revseq, tmpseq );
 
-				seq_grp_nuc( grpseq, tmpseq );
-				makepointtable_nuc( pointt[i], grpseq );
+				make_direction_list_seq_grp_nuc( grpseq, tmpseq );
+				make_direction_list_makepointtable_nuc( pointt[i], grpseq );
 //				makecompositiontable_p( table1, pointt[i] ); -> moto no basho ni modosu
-				seq_grp_nuc( grpseq, revseq );
-				makepointtable_nuc( pointt_rev[i], grpseq );
+				make_direction_list_seq_grp_nuc( grpseq, revseq );
+				make_direction_list_makepointtable_nuc( pointt_rev[i], grpseq );
 //				makecompositiontable_p( table1_rev, pointt_rev[i] ); -> moto no basho ni modosu
 				spointt[i] = pointt[i];
 
@@ -951,8 +951,8 @@ int main( int argc, char *argv[] )
 #if 0 // -> makecontrastorder() no mae ni idou
 			if( !dodp )
 			{
-				seq_grp_nuc( grpseq, tmpseq );
-				makepointtable_nuc( pointt[ic], grpseq );
+				make_direction_list_seq_grp_nuc( grpseq, tmpseq );
+				make_direction_list_makepointtable_nuc( pointt[ic], grpseq );
 				spointt[ic] = pointt[ic];
 			}
 #endif
@@ -984,12 +984,12 @@ int main( int argc, char *argv[] )
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
 				table1_rev = (short *)calloc( tsize, sizeof( short ) );
 				if( !table1_rev ) ErrorExit( "Cannot allocate table1_rev\n" );
-				seq_grp_nuc( grpseq, tmpseq );
-				makepointtable_nuc( pointt[ic], grpseq );
-				makecompositiontable_p( table1, pointt[ic] );
-				seq_grp_nuc( grpseq, revseq );
-				makepointtable_nuc( pointt_rev[ic], grpseq );
-				makecompositiontable_p( table1_rev, pointt_rev[ic] );
+				make_direction_list_seq_grp_nuc( grpseq, tmpseq );
+				make_direction_list_makepointtable_nuc( pointt[ic], grpseq );
+				make_distance_makecompositiontable_p( table1, pointt[ic] );
+				make_direction_list_seq_grp_nuc( grpseq, revseq );
+				make_direction_list_makepointtable_nuc( pointt_rev[ic], grpseq );
+				make_distance_makecompositiontable_p( table1_rev, pointt_rev[ic] );
 			}
 #else
 			if( !dodp )
@@ -998,8 +998,8 @@ int main( int argc, char *argv[] )
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
 				table1_rev = (short *)calloc( tsize, sizeof( short ) );
 				if( !table1_rev ) ErrorExit( "Cannot allocate table1_rev\n" );
-				makecompositiontable_p( table1, pointt[ic] );
-				makecompositiontable_p( table1_rev, pointt_rev[ic] );
+				make_distance_makecompositiontable_p( table1, pointt[ic] );
+				make_distance_makecompositiontable_p( table1_rev, pointt_rev[ic] );
 			}
 #endif
 

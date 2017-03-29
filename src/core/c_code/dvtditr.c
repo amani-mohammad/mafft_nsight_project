@@ -413,7 +413,7 @@ void dvtditrArguments( int argc, char *argv[] )
 }
 
 
-int main( int argc, char *argv[] )
+int dvtditr_main( int argc, char *argv[] )
 {
     int identity;
 	static int nlen[M];

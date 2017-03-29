@@ -139,7 +139,7 @@ void contraArguments( int argc, char *argv[] ) //parse arguments
 }
 
 
-int main( int argc, char *argv[] ) //main of the file
+int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 {
 	static char com[10000];
 	static int  *nlen;	

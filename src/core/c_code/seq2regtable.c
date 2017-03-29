@@ -42,7 +42,7 @@ void seq2reg_table_arguments( int argc, char *argv[] )
 }
 
 
-int main( int argc, char *argv[] )
+int seq2regtable_main( int argc, char *argv[] )
 {
 	FILE *infp;
 	FILE *weboutfp;

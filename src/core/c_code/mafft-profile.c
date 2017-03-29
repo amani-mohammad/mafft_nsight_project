@@ -304,7 +304,7 @@ static void WriteOptions( FILE *fp )
 }
 	 
 
-int main( int argc, char *argv[] )
+int mafft_profile_main( int argc, char *argv[] )
 {
 	char **argv2;
 	static int  *nlen;	

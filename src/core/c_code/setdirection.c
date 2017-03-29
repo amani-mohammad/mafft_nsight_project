@@ -61,7 +61,7 @@ void arguments( int argc, char *argv[] )
 
 
 
-int main( int argc, char *argv[] )
+int set_direction_main( int argc, char *argv[] )
 {
 	FILE *infp;
 	FILE *difp;

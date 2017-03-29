@@ -54,7 +54,7 @@ void sextet5_arguments( int argc, char *argv[] )
     }
 }
 
-void seq_grp_nuc( int *grp, char *seq )
+void sextet5_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	while( *seq )
@@ -68,7 +68,7 @@ void seq_grp_nuc( int *grp, char *seq )
 	*grp = END_OF_VEC;
 }
 
-void seq_grp( int *grp, char *seq )
+void sextet5_seq_grp( int *grp, char *seq )
 {
 	int tmp;
 	while( *seq )
@@ -82,7 +82,7 @@ void seq_grp( int *grp, char *seq )
 	*grp = END_OF_VEC;
 }
 
-void makecompositiontable_p( short *table, int *pointt )
+void sextet5_makecompositiontable_p( short *table, int *pointt )
 {
 	int point;
 
@@ -125,7 +125,7 @@ static int localcommonsextet_p( short *table, int *pointt )
 	return( value );
 }
 
-void makepointtable_nuc( int *pointt, int *n )
+void sextet5_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -149,7 +149,7 @@ void makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable( int *pointt, int *n )
+void sextet5_makepointtable( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -173,7 +173,7 @@ void makepointtable( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-int main( int argc, char **argv )
+int sextet5_main( int argc, char **argv )
 {
 	int i, j;
 	FILE *fp, *infp;
@@ -251,13 +251,13 @@ int main( int argc, char **argv )
 		if( nlen[i] > maxl ) maxl = nlen[i];
 		if( dorp == 'd' ) /* nuc */
 		{
-			seq_grp_nuc( grpseq, tmpseq );
-			makepointtable_nuc( pointt[i], grpseq );
+			sextet5_seq_grp_nuc( grpseq, tmpseq );
+			sextet5_makepointtable_nuc( pointt[i], grpseq );
 		}
 		else                 /* amino */
 		{
-			seq_grp( grpseq, tmpseq );
-			makepointtable( pointt[i], grpseq );
+			sextet5_seq_grp( grpseq, tmpseq );
+			sextet5_makepointtable( pointt[i], grpseq );
 		}
 	}
 	for( i=0; i<njob; i++ )
@@ -268,7 +268,7 @@ int main( int argc, char **argv )
 		{
 			fprintf( stderr, "%4d / %4d\r", i+1, njob );
 		}
-		makecompositiontable_p( table1, pointt[i] );
+		sextet5_makecompositiontable_p( table1, pointt[i] );
 
 		for( j=i; j<njob; j++ ) 
 		{

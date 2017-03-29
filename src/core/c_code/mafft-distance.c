@@ -81,7 +81,7 @@ void mafft_distanceArguments( int argc, char *argv[] )
     }
 }
 
-void seq_grp_nuc( int *grp, char *seq )
+void mafft_distance_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -102,7 +102,7 @@ void seq_grp_nuc( int *grp, char *seq )
 	}
 }
 
-void seq_grp( int *grp, char *seq )
+void mafft_distance_seq_grp( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
@@ -123,7 +123,7 @@ void seq_grp( int *grp, char *seq )
 	}
 }
 
-void makecompositiontable_p( short *table, int *pointt )
+void make_distance_makecompositiontable_p( short *table, int *pointt )
 {
 	int point;
 
@@ -169,7 +169,7 @@ static int localcommonsextet_p( short *table, int *pointt )
 	return( value );
 }
 
-void makepointtable_nuc( int *pointt, int *n )
+void mafft_distance_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -199,7 +199,7 @@ void makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-void makepointtable( int *pointt, int *n )
+void mafft_distance_makepointtable( int *pointt, int *n )
 {
 	int point;
 	register int *p;
@@ -229,7 +229,7 @@ void makepointtable( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
-int main( int argc, char **argv )
+int mafft_distance_main( int argc, char **argv )
 {
 	int i, j, initj;
 	FILE *infp;
@@ -329,13 +329,13 @@ int main( int argc, char **argv )
 		if( nlen[i] > maxl ) maxl = nlen[i];
 		if( dorp == 'd' ) /* nuc */
 		{
-			seq_grp_nuc( grpseq, tmpseq );
-			makepointtable_nuc( pointt[i], grpseq );
+			mafft_distance_seq_grp_nuc( grpseq, tmpseq );
+			mafft_distance_makepointtable_nuc( pointt[i], grpseq );
 		}
 		else                 /* amino */
 		{
-			seq_grp( grpseq, tmpseq );
-			makepointtable( pointt[i], grpseq );
+			mafft_distance_seq_grp( grpseq, tmpseq );
+			mafft_distance_makepointtable( pointt[i], grpseq );
 		}
 	}
 	fprintf( stderr, "\nCalculating i-i scores ... " );
@@ -343,7 +343,7 @@ int main( int argc, char **argv )
 	{
 		table1 = (short *)calloc( tsize, sizeof( short ) );
 		if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-		makecompositiontable_p( table1, pointt[i] );
+		make_distance_makecompositiontable_p( table1, pointt[i] );
 
 		score = localcommonsextet_p( table1, pointt[i] );
 		mtxself[i] = score;
@@ -362,7 +362,7 @@ int main( int argc, char **argv )
 		{
 			fprintf( stderr, "%4d / %4d\r", i+1, njob );
 		}
-		makecompositiontable_p( table1, pointt[i] );
+		make_distance_makecompositiontable_p( table1, pointt[i] );
 
 
 		if( nadd == 0 )
