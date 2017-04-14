@@ -13,6 +13,8 @@
 #
 #####################################################################
 
+#moni: PDB -> Protein Data Bank, PDBIDs -> Protein Data Bank IDs. I think this file performs some operations on server and returns back with results.
+
 use strict;
 use Getopt::Long;
 use File::Path qw(make_path remove_tree);

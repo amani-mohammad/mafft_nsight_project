@@ -36,7 +36,7 @@ void replaceu_arguments( int argc, char *argv[] )
             switch( c )
             {
 				case 'o':
-					seedoffset = myatoi( *++argv ); //what is myatoi? and where is it defined?
+					seedoffset = myatoi( *++argv ); //myatoi is defined in io.c and it calls 'atoi' to convert string to integer
 					fprintf( stderr, "seedoffset = %d\n", seedoffset );
 					--argc;
 					goto nextoption;
@@ -45,10 +45,10 @@ void replaceu_arguments( int argc, char *argv[] )
 					fprintf( stderr, "inputfile = %s\n", inputfile );
 					--argc;
 					goto nextoption;
-				case 'D':
+				case 'D': //DNA
 					dorp = 'd';
 					break;
-				case 'P':
+				case 'P': //Protein
 					dorp = 'p';
 					break;
                 default:
@@ -91,19 +91,21 @@ int replaceu_main( int argc, char *argv[] )
 		}
 	}
 	else
-		infp = stdin; //what is stdin?
+		infp = stdin;
 
 
 //	dorp = NOTSPECIFIED;
-	getnumlen_casepreserve( infp, &nlenmin );
-    //what are njob, nlenmax and dorp? and where are they defined?
+	getnumlen_casepreserve( infp, &nlenmin ); //this method in io.c. read sequences in input file and get cgta freq.
+	//njob = number of sequences, nlenmax = max length of sequences, nlenmin = min length of sequences, dorp = dna or protein
 	fprintf( stderr, "%d x %d - %d %c\n", njob, nlenmax, nlenmin, dorp );
 
-	seq = AllocateCharMtx( njob, nlenmax+1 ); //where are those methods and what they do ?
-	name = AllocateCharMtx( njob, B+1 );
-	nlen = AllocateIntVec( njob );
+	//these methods are in mtxutl.c
+	seq = AllocateCharMtx( njob, nlenmax+1 ); //allocate 2d char matrix for sequences
+	name = AllocateCharMtx( njob, B+1 ); //B is defined in mltaln.h and = 256
+	nlen = AllocateIntVec( njob ); //allocate int vector with num of sequences cells
 
-	readData_pointer_casepreserve( infp, name, nlen, seq );
+	//this method is defined in io.c
+	readData_pointer_casepreserve( infp, name, nlen, seq ); //fill matrices of sequences, sequences names and lengths
 
 //	for( i=0; i<njob; i++ ) gappick_samestring( seq[i] );
 
@@ -125,14 +127,15 @@ int replaceu_main( int argc, char *argv[] )
 	fclose( origfp );
 #endif
 
-	if( dorp == 'p' )
+	//replace unusual chars in sequences with unknown char (X for proteins and n for DNA)
+	if( dorp == 'p' ) //if sequences are proteins
 	{
-		usual = "ARNDCQEGHILKMFPSTWYVarndcqeghilkmfpstwyv-.";
+		usual = "ARNDCQEGHILKMFPSTWYVarndcqeghilkmfpstwyv-."; //usual chars in proteins
 		replace_unusual( njob, seq, usual, 'X', toupper );
 	}
-	else
+	else //if sequences are DNA
 	{
-		usual = "ATGCUatgcuBDHKMNRSVWYXbdhkmnrsvwyx-";
+		usual = "ATGCUatgcuBDHKMNRSVWYXbdhkmnrsvwyx-"; //usual chars in dna
 		replace_unusual( njob, seq, usual, 'n', tolower );
 	}
 	

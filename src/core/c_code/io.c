@@ -429,7 +429,7 @@ void putlocalhom3( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 				start1 = pos1; start2 = pos2;
 				st = 1;
 			}
-			score += (double)n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset はいらないかも
+			score += (double)n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 //			fprintf( stderr, "%c-%c, score(0) = %f\n", *pt1, *pt2, score );
 		}
 		if( *pt1++ != '-' ) pos1++;
@@ -565,7 +565,7 @@ void putlocalhom_ext( char *al1, char *al2, LocalHom *localhompt, int off1, int 
 				start1 = pos1; start2 = pos2;
 				st = 1;
 			}
-			iscore += n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset はいらないかも
+			iscore += n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 //			fprintf( stderr, "%c-%c, iscore(0) = %d\n", *pt1, *pt2, iscore );
 		}
 		if( *pt1++ != '-' ) pos1++;
@@ -751,7 +751,7 @@ void putlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 				start1 = pos1; start2 = pos2;
 				st = 1;
 			}
-			iscore += n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset はいらないかも
+			iscore += n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 //			fprintf( stderr, "%c-%c, iscore(0) = %d\n", *pt1, *pt2, iscore );
 		}
 		if( *pt1++ != '-' ) pos1++;
@@ -886,7 +886,7 @@ void putlocalhom( char *al1, char *al2, LocalHom *localhompt, int off1, int off2
 				start1 = pos1; start2 = pos2;
 				st = 1;
 			}
-			score += (double)n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset はいらないかも
+			score += (double)n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 //			fprintf( stderr, "%c-%c, score(0) = %f\n", *pt1, *pt2, score );
 		}
 		if( *pt1++ != '-' ) pos1++;
@@ -1024,12 +1024,13 @@ char    s[] ; int l ; FILE *fp ;
 		return( !noteofflag );
 }
 
-int myfgets(s, l, fp)  /* l以上は、行末まで読み飛ばす */
+//what i understand till now is that this reads first line of each sequence(seq. name) into char sequence
+int myfgets(s, l, fp)
 char    s[] ; int l ; FILE *fp ;
 {
         int     c = 0, i = 0 ;
 
-		if( feof( fp ) ) return( 1 );
+		if( feof( fp ) ) return( 1 ); //test end of file
 
 		for( i=0; i<l && ( c=getc( fp ) ) != '\n'; i++ ) 
         	*s++ = c;
@@ -1211,7 +1212,7 @@ void FRead( FILE *fp, char name[][B], int nlen[], char **seq )
 }
 
 
-static int countKUorWA( FILE *fp )
+static int countKUorWA( FILE *fp ) //this method counts the number of sequences in FASTA formatted input file
 {
 	int value;
 	int c, b;
@@ -1220,11 +1221,11 @@ static int countKUorWA( FILE *fp )
 	b = '\n';
 	while( ( c = getc( fp ) ) != EOF )
 	{
-		if( b == '\n' && ( c == '>' ) )
+		if( b == '\n' && ( c == '>' ) ) //if new sequence, then count up
 			value++;
 		b = c;
 	}
-	rewind( fp );
+	rewind( fp ); //reset the file position to the beginning of the input stream
 	return( value );
 }
 
@@ -1232,9 +1233,10 @@ void searchKUorWA( FILE *fp )
 {
 	int c, b;
 	b = '\n';
+	//reads characters till reach first sequence, then stop
 	while( !( ( ( c = getc( fp ) ) == '>' || c == EOF ) && b == '\n' ) )
 		b = c;
-	ungetc( c, fp );
+	ungetc( c, fp ); //pushes current character again to input stream to be available for next 'getc'
 }
 
 #if 0
@@ -1343,7 +1345,7 @@ char *load1SeqWithoutName_realloc_casepreserve( FILE *fpp )
 	while( ( c = getc( fpp ) ) != EOF &&           
           !( ( c == '>' || c == EOF ) && b == '\n' ) )
 	{
-		*cbuf++ = (char)c;  /* 長すぎてもしらない */
+		*cbuf++ = (char)c;
 		if( cbuf - val == size )
 		{
 			size += N;
@@ -1375,14 +1377,14 @@ char *load1SeqWithoutName_realloc( FILE *fpp )
 	char *val;
 
 	val = malloc( (size+1) * sizeof( char ) );
-	cbuf = val;
+	cbuf = val; //point to start of buffer
 
 	b = '\n';
 	while( ( c = getc( fpp ) ) != EOF &&           
           !( ( c == '>' || c == EOF ) && b == '\n' ) )
 	{
-		*cbuf++ = (char)c;  /* 長すぎてもしらない */
-		if( cbuf - val == size )
+		*cbuf++ = (char)c;
+		if( cbuf - val == size ) //if buffer exceeds size, double size
 		{
 			size += N;
 			fprintf( stderr, "reallocating...\n" );
@@ -1402,7 +1404,7 @@ char *load1SeqWithoutName_realloc( FILE *fpp )
 
 	if( nblosum == -2 )
 	{
-		charfilter( (unsigned char *) val );
+		charfilter( (unsigned char *) val ); //filter characters in sequence
 	}
 	else
 	{
@@ -1424,7 +1426,7 @@ int load1SeqWithoutName_new( FILE *fpp, char *cbuf )
 	while( ( c = getc( fpp ) ) != EOF &&                    /* by T. Nishiyama */
           !( ( c == '>' || c == EOF ) && b == '\n' ) )
 	{
-		*cbuf++ = (char)c;  /* 長すぎてもしらない */
+		*cbuf++ = (char)c;  /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 		b = c;
 	}
 	ungetc( c, fpp );
@@ -1589,7 +1591,7 @@ void readData_pointer_casepreserve( FILE *fp, char **name, int *nlen, char **seq
 #endif
 
 	rewind( fp );
-	searchKUorWA( fp );
+	searchKUorWA( fp ); //point to first sequence name
 
 	for( i=0; i<njob; i++ )
 	{
@@ -1601,15 +1603,15 @@ void readData_pointer_casepreserve( FILE *fp, char **name, int *nlen, char **seq
 			ErrorExit( "Too long name\n" );
 		name[i][j-1] = 0;
 #else
-		myfgets( name[i]+1, B-2, fp ); 
+		myfgets( name[i]+1, B-2, fp ); //read sequence name into name[i][...]
 #endif
 #if 0
 		fprintf( stderr, "name[%d] = %s\n", i, name[i] );
 #endif
-		tmpseq = load1SeqWithoutName_realloc_casepreserve( fp );
-		strcpy( seq[i], tmpseq );
+		tmpseq = load1SeqWithoutName_realloc_casepreserve( fp ); //read sequence in tmpseq
+		strcpy( seq[i], tmpseq ); //then copy to seq[i]
 		free( tmpseq );
-		nlen[i] = strlen( seq[i] );
+		nlen[i] = strlen( seq[i] ); //set length of sequence to nlen[i]
 	}
 }
 
@@ -1987,10 +1989,10 @@ int countATGCandN( char *s, int *countN, int *total )
 
 	do
 	{
-		c = tolower( *s );
-		if( isalpha( c ) )
+		c = tolower( *s ); //convert character to lower case
+		if( isalpha( c ) ) //is this character is alphabetic
 		{
-			nChar++;
+			nChar++; //increase number of characters by 1
 			if( c == 'a' || c == 't' || c == 'g' || c == 'c' || c == 'u' || c == 'n' )
 				nATGC++;
 			if( c == 'n' )
@@ -2081,35 +2083,35 @@ void getnumlen_casepreserve( FILE *fp, int *nlenminpt )
 	int i, tmp;
 	char *tmpseq, *tmpname;
 	double atgcfreq;
-	tmpname = AllocateCharVec( N );
-	njob = countKUorWA( fp );
-	searchKUorWA( fp );
+	tmpname = AllocateCharVec( N ); //allocate memory for sequences names
+	njob = countKUorWA( fp ); //get number of sequences in input file
+	searchKUorWA( fp ); //point to first sequence name
 	nlenmax = 0;
 	*nlenminpt = 99999999;
 	atgcnum = 0;
 	total = 0;
 	for( i=0; i<njob; i++ )
 	{
-		myfgets( tmpname, N-1, fp );
-		tmpseq = load1SeqWithoutName_realloc_casepreserve( fp );
-		tmp = strlen( tmpseq );
+		myfgets( tmpname, N-1, fp ); //read sequence name
+		tmpseq = load1SeqWithoutName_realloc_casepreserve( fp ); //read sequence chars without changing case
+		tmp = strlen( tmpseq ); //length of sequence
 		if( tmp > nlenmax ) nlenmax  = tmp;
 		if( tmp < *nlenminpt ) *nlenminpt  = tmp;
-		atgcnum += countATGC( tmpseq, &nsite );
-		total += nsite;
+		atgcnum += countATGC( tmpseq, &nsite ); //count acgt chars in sequence
+		total += nsite; //count total chars in all sequences
 		free( tmpseq );
 	}
 	free( tmpname );
-	atgcfreq = (double)atgcnum / total;
+	atgcfreq = (double)atgcnum / total; //get acgt chars frequency in total chars count
 //	fprintf( stderr, "##### atgcfreq = %f\n", atgcfreq );
-	if( dorp == NOTSPECIFIED )
+	if( dorp == NOTSPECIFIED ) //dna or protein
 	{
-		if( atgcfreq > 0.75 ) 	
+		if( atgcfreq > 0.75 ) //dna
 		{
 			dorp = 'd';
 			upperCase = -1;
 		}
-		else                  
+		else                  //protein
 		{
 			dorp = 'p';
 			upperCase = 0;
@@ -2125,39 +2127,39 @@ void getnumlen_nogap_countn( FILE *fp, int *nlenminpt, double *nfreq )
 	int i, tmp;
 	char *tmpseq, *tmpname;
 	double atgcfreq;
-	tmpname = AllocateCharVec( N );
-	njob = countKUorWA( fp );
-	searchKUorWA( fp );
-	nlenmax = 0;
+	tmpname = AllocateCharVec( N ); //N = 5,000,000
+	njob = countKUorWA( fp ); //njob = number of sequences in the input file - this var is defined in defs.h
+	searchKUorWA( fp ); //this method locates the stream pointer to start of first sequence
+	nlenmax = 0; //this var is defined in defs.h
 	*nlenminpt = 99999999;
 	atgcnum = 0;
 	total = 0;
 	nnum = 0;
 	for( i=0; i<njob; i++ )
 	{
-		myfgets( tmpname, N-1, fp );
-		tmpseq = load1SeqWithoutName_realloc( fp );
-		tmp = countnogaplen( tmpseq );
-		if( tmp > nlenmax ) nlenmax  = tmp;
-		if( tmp < *nlenminpt ) *nlenminpt  = tmp;
-		atgcnum += countATGCandN( tmpseq, &nN, &nsite );
-		total += nsite;
-		nnum += nN;
-		free( tmpseq );
+		myfgets( tmpname, N-1, fp ); //read sequence name in tmpname
+		tmpseq = load1SeqWithoutName_realloc( fp ); //load sequence characters in tmpseq
+		tmp = countnogaplen( tmpseq ); //get count of characters in sequence - without gaps
+		if( tmp > nlenmax ) nlenmax  = tmp; //set max sequence length
+		if( tmp < *nlenminpt ) *nlenminpt  = tmp; //set min sequence length
+		atgcnum += countATGCandN( tmpseq, &nN, &nsite ); //finds number of cgtanu chars, n chars and total chars in sequence
+		total += nsite; //total = total num of chars in all sequences
+		nnum += nN; //nnum = number of n chars in all sequences
+		free( tmpseq ); //free sequence memory
 	}
-	free( tmpname );
-	atgcfreq = (double)atgcnum / total;
-	*nfreq = (double)nnum / atgcnum;
+	free( tmpname ); //free sequence name memory
+	atgcfreq = (double)atgcnum / total; //get atgc freq in all sequences
+	*nfreq = (double)nnum / atgcnum; //get n freq in all sequences
 //	fprintf( stderr, "##### nnum = %d\n", nnum );
 //	fprintf( stderr, "##### atgcfreq = %f, *nfreq = %f\n", atgcfreq, *nfreq );
 	if( dorp == NOTSPECIFIED )
 	{
-		if( atgcfreq > 0.75 ) 	
+		if( atgcfreq > 0.75 ) //if atgc freq is > 0.75, then dorp is d (dna)
 		{
 			dorp = 'd';
 			upperCase = -1;
 		}
-		else                  
+		else                  //else, dorp is p (protein)
 		{
 			dorp = 'p';
 			upperCase = 0;
@@ -4089,7 +4091,7 @@ int writePre( int nseq, char **name, int nlen[M], char **aseq, int force )
 #endif
 		if( signalSM[SEMAPHORE]-- > 0 )
 		{
-#if 0 /* /tmp/pre の関係ではずした */
+#if 0 /* /tmp/pre 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 			if( ferror( prep_g ) ) prep_g = fopen( "pre", "w" );
 			if( !prep_g ) ErrorExit( "Cannot re-open pre." ); 
 #endif
@@ -5246,12 +5248,12 @@ void clustalout_pointer( FILE *fp, int nseq, int maxlen, char **seq, char **name
 		for( j=0; j<nseq; j++ )
 		{
 			fprintf( fp, "%-*.*s ", namelen, namelen, extractfirstword( name[order[j]]+1 ) );
-			fprintf( fp, "%.60s\n", seq[order[j]]+pos ); // 長さが違うとだめ。
+			fprintf( fp, "%.60s\n", seq[order[j]]+pos ); // 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 		}
 		if( mark )
 		{
 			fprintf( fp, "%-*.*s ", namelen, namelen, "" );
-			fprintf( fp, "%.60s\n", mark + pos ); // 長さが違うとだめ。
+			fprintf( fp, "%.60s\n", mark + pos ); // 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 		}
 		pos += 60;
 	}
@@ -5807,7 +5809,7 @@ int myatoi( char *in )
 		fprintf( stderr, "Error in myatoi()\n" );
 		exit( 1 );
 	}
-	return( atoi( in ) );
+	return( atoi( in ) ); //'atoi' converts the string argument to integer
 }
 
 double myatof( char *in )
