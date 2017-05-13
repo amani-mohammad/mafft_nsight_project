@@ -217,7 +217,7 @@ void JTTmtx( double **rsr, double *freq, unsigned char locamino[26], char locgrp
 
 
 
-	for (i = 0; i < 20; i++) r[i][i] = 0.0;
+	for (i = 0; i < 20; i++) r[i][i] = 0.0; //diagonal items = 0
 	if( isTM )
 	{
 		for (i = 1; i < 20; i++) for (j = 0; j < i; j++)

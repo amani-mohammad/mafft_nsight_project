@@ -70,6 +70,7 @@ void replaceu_arguments( int argc, char *argv[] )
 
 //finallyyyyyyy, the main method :D
 int replaceu_main( int argc, char *argv[] )
+//int main( int argc, char *argv[] )
 {
 	FILE *infp;
 	int nlenmin;
@@ -141,9 +142,9 @@ int replaceu_main( int argc, char *argv[] )
 	
 
 
-	for( i=0; i<njob; i++ )
+	for( i=0; i<njob; i++ ) //print sequences read from input file
 	{
-		fprintf( stdout, ">_os_%d_oe_%s\n", i+seedoffset, name[i]+1 );
+		fprintf( stdout, ">_os_%d_oe_%s\n", i+seedoffset, name[i]+1 ); //i need to know what is seedoffset? and os_, _oe?
 		fprintf( stdout, "%s\n", seq[i] );
 	}
 

@@ -10,7 +10,7 @@
 
 static TLS int localstop; // 060910 //what is TLS? and what does it mean?
 
-#if 1
+#if 1 //i think this method fills match array with values from mtx based on chars from s2, but first char is from s1
 static void match_calc_mtx( double **mtx, double *match, char **s1, char **s2, int i1, int lgth2 ) 
 {
 	char *seq2 = s2[0];
@@ -62,7 +62,7 @@ static void match_calc_bk( double *match, double **cpmx1, double **cpmx2, int i1
 		for( k=0; k<nalphabets; k++ )
 			scarr[l] += n_dis[k][l] * cpmx1[k][i1];
 	}
-#if 0 /* これを使うときはdoubleworkのアロケートを逆にする */
+#if 0 /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申doublework鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 	{
 		double *fpt, **fptpt, *fpt2;
 		int *ipt, **iptpt;
@@ -746,7 +746,7 @@ fprintf( stderr, "\n" );
 }
 
 
-double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 )
+double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 ) //n_dynamicmtx is weight matrix
 // warp mitaiou
 {
 //	int k;
@@ -780,16 +780,16 @@ double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 )
 	double maxwm;
 //	int endali = 0, endalj = 0; // by D.Mathog, a guess
 //	int endali, endalj;
-	double localthr = -offset;
+	double localthr = -offset; //offset value is set in constants.c
 	double localthr2 = -offset;
 //	double localthr = 100;
 //	double localthr2 = 100;
-	double fpenalty = (double)penalty;
-	double fpenalty_ex = (double)penalty_ex;
+	double fpenalty = (double)penalty; //penalty value is set in constants.c
+	double fpenalty_ex = (double)penalty_ex; //penalty_ex value is set in constants.c
 
-	if( seq1 == NULL )
+	if( seq1 == NULL ) //if first sequence is null, free allocated memory and return 0
 	{
-		if( orlgth1 > 0 && orlgth2 > 0 )
+		if( orlgth1 > 0 && orlgth2 > 0 ) //how we check their value > 0 and it is set to 0 and not changed between setting and checking ?!!
 		{
 			orlgth1 = 0;
 			orlgth2 = 0;
@@ -872,7 +872,7 @@ double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 )
 #if DEBUG
 		fprintf( stderr, "succeeded\n" );
 #endif
-		amino_dynamicmtx = AllocateDoubleMtx( 0x80, 0x80 );
+		amino_dynamicmtx = AllocateDoubleMtx( 0x80, 0x80 ); //128 decimal
 		orlgth1 = ll1 - 100;
 		orlgth2 = ll2 - 100;
 	}
@@ -922,9 +922,10 @@ double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 )
 	currentw = w1;
 	previousw = w2;
 
-	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 );
-
-	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 );
+	//fill initverticalw array
+	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //first char from seq2 and others from seq1
+	//fill currentw array
+	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 ); //first char from seq1 and others from seq2
 
 
 	lasti = lgth2+1;
@@ -976,7 +977,7 @@ fprintf( stderr, "\n" );
 
 	for( i=1; i<lasti; i++ )
 	{
-		wtmp = previousw; 
+		wtmp = previousw; //swap previousw and currentw
 		previousw = currentw;
 		currentw = wtmp;
 

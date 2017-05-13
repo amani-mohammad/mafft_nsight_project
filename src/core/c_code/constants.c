@@ -13,7 +13,7 @@
 
 #define NORMALIZE1 1
 
-
+//shishagonyuu (Japanese) = rounding off
 static int shishagonyuu( double in ) //this method returns the integer value of a double value
 {
 	int out;
@@ -46,7 +46,7 @@ static void nscore( int *amino_n, int **n_dis )
 #endif
 }
 
-
+//fill n_dis matrix with distances between amino acids in amino_n
 static void ambiguousscore( int *amino_n, int **n_dis )
 {
 	int i;
@@ -93,15 +93,15 @@ static void calcfreq_nuc( int nseq, char **seq, double *datafreq )
 	int i, j, l;
 	int aan;
 	double total;
-	for( i=0; i<4; i++ )
+	for( i=0; i<4; i++ ) //initialize datafreq vector
 		datafreq[i] = 0.0;
 	total = 0.0;
-	for( i=0; i<nseq; i++ )
+	for( i=0; i<nseq; i++ ) //loop on sequences
 	{
-		l = strlen( seq[i] );
-		for( j=0; j<l; j++ )
+		l = strlen( seq[i] ); //sequence length
+		for( j=0; j<l; j++ ) //loop on sequence chars
 		{
-			aan = amino_n[(int)seq[i][j]]; //is amino_n defined as global ?
+			aan = amino_n[(int)seq[i][j]]; //is amino_n defined as global? - read value saved before calling this method
 			if( aan == 4 ) aan = 3;
 			if( aan >= 0 && aan < 4 )
 			{
@@ -197,12 +197,12 @@ static void calcfreq_extended( int nseq, char **seq, double *datafreq )
 //	reporterr(       "total = %f\n", total );
 	for( i=0; i<nscoredalphabets; i++ ) datafreq[i] /= (double)total;
 }
-
+//this method makes some calculations to fill pam1 matrix
 static void generatenuc1pam( double **pam1, int kimuraR, double *freq )
 {
 	int i, j;
 	double R[4][4], mut[4], total, tmp;
-//what is kimuraR ?
+
 	R[0][0] = 0.0;     R[0][1] = kimuraR; R[0][2] = 1.0;     R[0][3] = 1.0;
 	R[1][0] = kimuraR; R[1][1] = 0.0;     R[1][2] = 1.0;     R[1][3] = 1.0;
 	R[2][0] = 1.0;     R[2][1] = 1.0;     R[2][2] = 0.0;     R[2][3] = kimuraR;
@@ -232,37 +232,37 @@ void constants( int nseq, char **seq )
 	char shiftmodel[100];
 	int charsize;
 
-	if( nblosum < 0 ) dorp = 'p';
+	if( nblosum < 0 ) dorp = 'p'; //nblosum defined in defs.h. if it is < 0, then set dorp = p (protein)
 
-	if( penalty_shift_factor >= 10 ) trywarp = 0;
-	else trywarp = 1;
+	if( penalty_shift_factor >= 10 ) trywarp = 0; //penalty_shift_factor is defined in defs.c. default = 100
+	else trywarp = 1; //trywarp also defined in defs.c, default = 0
 
 	if( dorp == 'd' )  /* DNA */
 	{
 		int k, m;
 		double average;
-		double **pamx = AllocateDoubleMtx( 11,11 );
-		double **pam1 = AllocateDoubleMtx( 4, 4 );
-		double *freq = AllocateDoubleVec( 4 );
+		double **pamx = AllocateDoubleMtx( 11,11 ); //in mtxutl.c
+		double **pam1 = AllocateDoubleMtx( 4, 4 ); //in mtxutl.c
+		double *freq = AllocateDoubleVec( 4 ); //in mtxutl.c
 
-		nalphabets = 26;
-		nscoredalphabets = 10;
-		charsize = 0x80;
+		nalphabets = 26; //defined in defs.c. default = 26.
+		nscoredalphabets = 10; //defined in defs.c. default = 20.
+		charsize = 0x80; //128 decimal
 
-		n_dis = AllocateIntMtx( nalphabets, nalphabets );
-		n_disLN = AllocateDoubleMtx( nalphabets, nalphabets );
+		n_dis = AllocateIntMtx( nalphabets, nalphabets ); //defined in defs.c
+		n_disLN = AllocateDoubleMtx( nalphabets, nalphabets ); //defined in defs.c
 
-		scoremtx = -1;
-		if( RNAppenalty == NOTSPECIFIED ) RNAppenalty = DEFAULTRNAGOP_N;
-		if( RNAppenalty_ex == NOTSPECIFIED ) RNAppenalty_ex = DEFAULTRNAGEP_N;
-		if( ppenalty == NOTSPECIFIED ) ppenalty = DEFAULTGOP_N;
+		scoremtx = -1; //all these variables are defined in defs.h
+		if( RNAppenalty == NOTSPECIFIED ) RNAppenalty = DEFAULTRNAGOP_N; //constant defined in DNA.h
+		if( RNAppenalty_ex == NOTSPECIFIED ) RNAppenalty_ex = DEFAULTRNAGEP_N; //constant defined in DNA.h
+		if( ppenalty == NOTSPECIFIED ) ppenalty = DEFAULTGOP_N; //constant defined in DNA.h
 		if( ppenalty_dist == NOTSPECIFIED ) ppenalty_dist = ppenalty;
 		if( ppenalty_OP == NOTSPECIFIED ) ppenalty_OP = DEFAULTGOP_N;
-		if( ppenalty_ex == NOTSPECIFIED ) ppenalty_ex = DEFAULTGEP_N;
+		if( ppenalty_ex == NOTSPECIFIED ) ppenalty_ex = DEFAULTGEP_N; //constant defined in DNA.h
 		if( ppenalty_EX == NOTSPECIFIED ) ppenalty_EX = DEFAULTGEP_N;
-		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_N;
-		if( RNApthr == NOTSPECIFIED ) RNApthr = DEFAULTRNATHR_N;
-		if( pamN == NOTSPECIFIED ) pamN = DEFAULTPAMN;
+		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_N; //constant defined in DNA.h
+		if( RNApthr == NOTSPECIFIED ) RNApthr = DEFAULTRNATHR_N; //constant defined in DNA.h
+		if( pamN == NOTSPECIFIED ) pamN = DEFAULTPAMN; //constant defined in DNA.h. PAM number
 		if( kimuraR == NOTSPECIFIED ) kimuraR = 2;
 
 		RNApenalty = (int)( 3 * 600.0 / 1000.0 * RNAppenalty + 0.5 );
@@ -284,18 +284,19 @@ void constants( int nseq, char **seq )
 		offsetLN = (int)( 1 * 600.0 / 1000.0 * 100 + 0.5);
 		penaltyLN = (int)( 3 * 600.0 / 1000.0 * -2000 + 0.5);
 		penalty_exLN = (int)( 3 * 600.0 / 1000.0 * -100 + 0.5);
+		//all these variables are defined in defs.h
 
 		if( trywarp ) sprintf( shiftmodel, "%4.2f (%4.2f)", -(double)penalty_shift/1800, -(double)penalty_shift/600 );
 		else sprintf( shiftmodel, "noshift" );
 
 		sprintf( modelname, "%s%d (%d), %4.2f (%4.2f), %4.2f (%4.2f), %s", rnakozo?"RNA":"DNA", pamN, kimuraR, -(double)ppenalty*0.001, -(double)ppenalty*0.003, -(double)poffset*0.001, -(double)poffset*0.003, shiftmodel );
 
-		for( i=0; i<26; i++ ) amino[i] = locaminon[i];
-		for( i=0; i<0x80; i++ ) amino_n[i] = -1;
-		for( i=0; i<26; i++ ) amino_n[(int)amino[i]] = i;
-		if( fmodel == 1 )
+		for( i=0; i<26; i++ ) amino[i] = locaminon[i]; //amino in defs.h and locaminon in DNA.h
+		for( i=0; i<0x80; i++ ) amino_n[i] = -1; //128 chars. amino_n defined in defs.h
+		for( i=0; i<26; i++ ) amino_n[(int)amino[i]] = i; //fill amino_n array based on chars in amino array
+		if( fmodel == 1 ) //fmodel defined in defs.h
 		{
-			calcfreq_nuc( nseq, seq, freq );
+			calcfreq_nuc( nseq, seq, freq ); //defined here in constants.c. finds frequency of chars in freq
 			reporterr(       "a, freq[0] = %f\n", freq[0] );
 			reporterr(       "g, freq[1] = %f\n", freq[1] );
 			reporterr(       "c, freq[2] = %f\n", freq[2] );
@@ -310,19 +311,19 @@ void constants( int nseq, char **seq )
 		}
 
 
-		if( kimuraR == 9999 ) 
+		if( kimuraR == 9999 ) //why 9999 ?!!
 		{
 			for( i=0; i<4; i++ ) for( j=0; j<4; j++ ) 
-				pamx[i][j] = (double)locn_disn[i][j];
-#if NORMALIZE1
+				pamx[i][j] = (double)locn_disn[i][j]; //locn_disn is defined in DNA.h with constant numbers
+#if NORMALIZE1 // = 1
 			average = 0.0;
 			for( i=0; i<4; i++ ) for( j=0; j<4; j++ ) 
 				average += pamx[i][j];
-			average /= 16.0;
+			average /= 16.0; //find average of pamx array
 	
    	     if( disp )
 				reporterr(       "average = %f\n", average );
-	
+   	     // I need to understand these calculations on pamx
 			for( i=0; i<4; i++ ) for( j=0; j<4; j++ ) 
 				pamx[i][j] -= average;
 	
@@ -344,7 +345,7 @@ void constants( int nseq, char **seq )
 				pam1[2][0] = v; pam1[2][1] = v; pam1[2][2] = f; pam1[2][3] = s;
 				pam1[3][0] = v; pam1[3][1] = v; pam1[3][2] = s; pam1[3][3] = f;
 #else
-				generatenuc1pam( pam1, kimuraR, freq );
+				generatenuc1pam( pam1, kimuraR, freq ); //fill in pam1 matrix with some calculations
 #endif
 	
 				reporterr(       "generating a scoring matrix for nucleotide (dist=%d) ... ", pamN );
@@ -362,8 +363,8 @@ void constants( int nseq, char **seq )
    		     	}
 	
 	
-				MtxuntDouble( pamx, 4 );
-				for( x=0; x < pamN; x++ ) MtxmltDouble( pamx, pam1, 4 );
+				MtxuntDouble( pamx, 4 ); //defined in mtxutl.c. initializes pamx with 0 and first 3 items with 1.0
+				for( x=0; x < pamN; x++ ) MtxmltDouble( pamx, pam1, 4 ); //defined in mtxutl.c. performs some operations to fill pamx matrix
 
 		       	if( disp )
    		    	{
@@ -424,7 +425,7 @@ void constants( int nseq, char **seq )
 				pamx[i][j] -= offset;
 
 			for( i=0; i<4; i++ ) for( j=0; j<4; j++ )
-				pamx[i][j] = shishagonyuu( pamx[i][j] );
+				pamx[i][j] = shishagonyuu( pamx[i][j] ); //defined here in constants.c. returns integer values of double values in matrix
 
        		if( disp )
        		{
@@ -477,11 +478,12 @@ void constants( int nseq, char **seq )
         }
 
 		for( i=0; i<26; i++ ) amino[i] = locaminon[i];
-		for( i=0; i<26; i++ ) amino_grp[(int)amino[i]] = locgrpn[i];
+		for( i=0; i<26; i++ ) amino_grp[(int)amino[i]] = locgrpn[i]; //locgrpn defined in DNA.h
 		for( i=0; i<26; i++ ) for( j=0; j<26; j++ ) n_dis[i][j] = 0;
-		for( i=0; i<10; i++ ) for( j=0; j<10; j++ ) n_dis[i][j] = shishagonyuu( pamx[i][j] );
+		for( i=0; i<10; i++ ) for( j=0; j<10; j++ ) n_dis[i][j] = shishagonyuu( pamx[i][j] ); //fill first 10*10 with integers from pamx
 
-		ambiguousscore( amino_n, n_dis );
+		ambiguousscore( amino_n, n_dis ); //defined here. fill n_dis matrix with distances between amino_n acids
+		 //nwildcard defined in defs.c and = 0. nscore defined here and finds score of character n in amino_n matrix and set it in n_dis matrix
 		if( nwildcard ) nscore( amino_n, n_dis );
 
         if( disp )
@@ -502,7 +504,7 @@ void constants( int nseq, char **seq )
 #if 1
 		average = 0.0;
 		for( i=0; i<4; i++ ) for( j=0; j<4; j++ )
-			average += ribosum4[i][j] * freq[i] * freq[j];
+			average += ribosum4[i][j] * freq[i] * freq[j]; //ribosum4 is constants array defined in DNA.h
 		for( i=0; i<4; i++ ) for( j=0; j<4; j++ )
 			ribosum4[i][j] -= average;
 
@@ -514,7 +516,7 @@ void constants( int nseq, char **seq )
 				average += ribosum16[i*4+j][k*4+m] * freq[i] * freq[j] * freq[k] * freq[m];
 		}
 		for( i=0; i<16; i++ ) for( j=0; j<16; j++ )
-			ribosum16[i][j] -= average;
+			ribosum16[i][j] -= average; //ribosum16 is constants array defined in DNA.h
 
 		average = 0.0;
 		for( i=0; i<4; i++ )
@@ -567,7 +569,7 @@ void constants( int nseq, char **seq )
 //		reporterr(       "done\n" );
 
 #if 1
-		for( i=0; i<37; i++ ) for( j=0; j<37; j++ ) ribosumdis[i][j] = 0.0; //iru
+		for( i=0; i<37; i++ ) for( j=0; j<37; j++ ) ribosumdis[i][j] = 0.0; //iru //defined in defs.h
 		for( m=0; m<9; m++ ) for( i=0; i<4; i++ ) // loop
 			for( k=0; k<9; k++ ) for( j=0; j<4; j++ ) ribosumdis[m*4+i][k*4+j] = ribosum4[i][j]; // loop-loop
 //			for( k=0; k<9; k++ ) for( j=0; j<4; j++ ) ribosumdis[m*4+i][k*4+j] = n_dis[i][j]; // loop-loop
@@ -608,24 +610,25 @@ void constants( int nseq, char **seq )
 //		double tmp;
 		double **n_distmp;
 
-		nalphabets = 0x100;
-		nscoredalphabets = 0x100;
-		charsize = 0x100;
+		nalphabets = 0x100; //defined in defs.c. default = 26. //256 in decimal
+		nscoredalphabets = 0x100; //defined in defs.c. default = 20. //256 in decimal
+		charsize = 0x100; //256 in decimal
 
 		reporterr(       "nalphabets = %d\n", nalphabets );
 
-		n_dis = AllocateIntMtx( nalphabets, nalphabets );
-		n_disLN = AllocateDoubleMtx( nalphabets, nalphabets );
+		n_dis = AllocateIntMtx( nalphabets, nalphabets ); //defined in defs.c
+		n_disLN = AllocateDoubleMtx( nalphabets, nalphabets ); //defined in defs.c
 		n_distmp = AllocateDoubleMtx( nalphabets, nalphabets );
 		datafreq = AllocateDoubleVec( nalphabets );
 		freq = AllocateDoubleVec( nalphabets );
 
-		if( ppenalty == NOTSPECIFIED ) ppenalty = DEFAULTGOP_B;
+		//all these variables are defined in defs.h
+		if( ppenalty == NOTSPECIFIED ) ppenalty = DEFAULTGOP_B; //constant defined in blosum.h
 		if( ppenalty_dist == NOTSPECIFIED ) ppenalty_dist = ppenalty;
 		if( ppenalty_OP == NOTSPECIFIED ) ppenalty_OP = DEFAULTGOP_B;
-		if( ppenalty_ex == NOTSPECIFIED ) ppenalty_ex = DEFAULTGEP_B;
+		if( ppenalty_ex == NOTSPECIFIED ) ppenalty_ex = DEFAULTGEP_B; //constant defined in blosum.h
 		if( ppenalty_EX == NOTSPECIFIED ) ppenalty_EX = DEFAULTGEP_B;
-		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_B;
+		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_B; //constant defined in blosum.h
 		if( pamN == NOTSPECIFIED ) pamN = 0;
 		if( kimuraR == NOTSPECIFIED ) kimuraR = 1;
 		penalty = (int)( 600.0 / 1000.0 * ppenalty + 0.5 );
@@ -639,8 +642,9 @@ void constants( int nseq, char **seq )
 		offsetLN = (int)( 600.0 / 1000.0 * 100 + 0.5);
 		penaltyLN = (int)( 600.0 / 1000.0 * -2000 + 0.5);
 		penalty_exLN = (int)( 600.0 / 1000.0 * -100 + 0.5);
+		//all these variables are defined in defs.h
 
-		extendedmtx( n_distmp, freq, amino, amino_grp );
+		extendedmtx( n_distmp, freq, amino, amino_grp ); //defined in blosum.c. fill in n_distmp, freq, amino, amino_grp arrays.
 
 		if( trywarp ) sprintf( shiftmodel, "%4.2f", -(double)penalty_shift/600 );
 		else sprintf( shiftmodel, "noshift" );
@@ -652,15 +656,16 @@ void constants( int nseq, char **seq )
 		for( i=0; i<0x80; i++ ) amino_n[i] = 0;
 		for( i=0; i<26; i++ ) amino_n[(int)amino[i]] = i;
 #endif
-		for( i=0; i<0x100; i++ )amino_n[i] = -1;
+		for( i=0; i<0x100; i++ )amino_n[i] = -1; //amino_n defined in defs.h.
 		for( i=0; i<nalphabets; i++) 
 		{
 			amino_n[(unsigned char)amino[i]] = i;
 //			reporterr(       "i=%d, amino = %c, amino_n = %d\n", i, amino[i], amino_n[amino[i]] );
 		}
-		if( fmodel == 1 )
+		if( fmodel == 1 ) //fmodel defined in defs.h
 		{
-			calcfreq_extended( nseq, seq, datafreq );
+			//nseq & seq are parameters passed to constants method. nseq = num of seqs and seq are sequences
+			calcfreq_extended( nseq, seq, datafreq ); //defined here in constants.c. finds frequency of chars in freq
 			freq1 = datafreq;
 		}
 		else
@@ -821,7 +826,7 @@ void constants( int nseq, char **seq )
 
 		nalphabets = 26;
 		nscoredalphabets = 20;
-		charsize = 0x80;
+		charsize = 0x80; //128 decimal
 
 		n_dis = AllocateIntMtx( nalphabets, nalphabets );
 		n_disLN = AllocateDoubleMtx( nalphabets, nalphabets );
@@ -849,7 +854,7 @@ void constants( int nseq, char **seq )
 		penaltyLN = (int)( 600.0 / 1000.0 * -2000 + 0.5);
 		penalty_exLN = (int)( 600.0 / 1000.0 * -100 + 0.5);
 
-		BLOSUMmtx( nblosum, n_distmp, freq, amino, amino_grp );
+		BLOSUMmtx( nblosum, n_distmp, freq, amino, amino_grp ); //defined in blosum.c. fill in n_distmp, freq, amino, amino_grp
 
 		if( trywarp ) sprintf( shiftmodel, "%4.2f", -(double)penalty_shift/600 );
 		else sprintf( shiftmodel, "noshift" );
@@ -868,7 +873,7 @@ void constants( int nseq, char **seq )
 		for( i=0; i<26; i++) amino_n[(int)amino[i]] = i;
 		if( fmodel == 1 )
 		{
-			calcfreq( nseq, seq, datafreq );
+			calcfreq( nseq, seq, datafreq ); //finds chars frequency in datafreq vector
 			freq1 = datafreq;
 		}
 		else
@@ -1021,7 +1026,7 @@ void constants( int nseq, char **seq )
 
 		nalphabets = 26;
 		nscoredalphabets = 20;
-		charsize = 0x80;
+		charsize = 0x80; //128 decimal
 
 		n_dis = AllocateIntMtx( nalphabets, nalphabets );
 		n_disLN = AllocateDoubleMtx( nalphabets, nalphabets );
@@ -1032,13 +1037,13 @@ void constants( int nseq, char **seq )
 		mutab = AllocateDoubleVec( 20 );
 		datafreq = AllocateDoubleVec( 20 );
 
-		if( ppenalty == NOTSPECIFIED ) ppenalty = DEFAULTGOP_J;
+		if( ppenalty == NOTSPECIFIED ) ppenalty = DEFAULTGOP_J; //defined in JTT.h
 		if( ppenalty_dist == NOTSPECIFIED ) ppenalty_dist = ppenalty;
 		if( ppenalty_OP == NOTSPECIFIED ) ppenalty_OP = DEFAULTGOP_J;
 		if( ppenalty_ex == NOTSPECIFIED ) ppenalty_ex = DEFAULTGEP_J;
 		if( ppenalty_EX == NOTSPECIFIED ) ppenalty_EX = DEFAULTGEP_J;
 		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_J;
-		if( pamN == NOTSPECIFIED )    pamN    = DEFAULTPAMN;
+		if( pamN == NOTSPECIFIED )    pamN    = DEFAULTPAMN; //defined in JTT.h and = 200
 		if( kimuraR == NOTSPECIFIED ) kimuraR = 1;
 
 		if( pamN == 0 )
@@ -1073,7 +1078,8 @@ void constants( int nseq, char **seq )
 
 		sprintf( modelname, "%s %dPAM, %4.2f, %4.2f, %s", (TMorJTT==TM)?"Transmembrane":"JTT", pamN, -(double)ppenalty/1000, -(double)poffset/1000, shiftmodel );
 
-		JTTmtx( rsr, freq, amino, amino_grp, (int)(TMorJTT==TM) );
+		//fill in freq, amino, amino_grp matrices
+		JTTmtx( rsr, freq, amino, amino_grp, (int)(TMorJTT==TM) ); //JTTmtx is defined in JTT.c. TMorJTT in defs.h. TM in mltaln.h
 
 		for( i=0; i<0x80; i++ ) amino_n[i] = -1;
 		for( i=0; i<26; i++ ) amino_n[(int)amino[i]] = i;
@@ -1141,8 +1147,8 @@ void constants( int nseq, char **seq )
 			}
 		}
 
-		MtxuntDouble( pamx, 20 );
-		for( x=0; x < pamN; x++ ) MtxmltDouble( pamx, pam1, 20 );
+		MtxuntDouble( pamx, 20 ); //defined in mtxutl.c. initializes with 0.0 except diagonal with 1.0
+		for( x=0; x < pamN; x++ ) MtxmltDouble( pamx, pam1, 20 ); //defined in mtxutl.c. fill pamx.
 
 		for( i=0; i<20; i++ ) for( j=0; j<20; j++ ) 
 			pamx[i][j] /= freq1[j];
@@ -1324,28 +1330,31 @@ void constants( int nseq, char **seq )
 		FreeDoubleVec( datafreq );
 	}
 
+	//what I understand till now is that all if conditions above fills n_dis and ribosumdis matrices
+	//to be used for distance calculations. n_dis for all cases, except dna case it fills both n_dis and ribosumdis
+
 #if DEBUG
 	reporterr(       "scoremtx = %d\n", scoremtx );
 	reporterr(       "amino[] = %s\n", amino );
 #endif
 
-	amino_dis = AllocateIntMtx( charsize, charsize );
-	amino_dis_consweight_multi = AllocateDoubleMtx( charsize, charsize );
+	amino_dis = AllocateIntMtx( charsize, charsize ); //amino_dis is defined in defs.c. charsize defined and initialized here
+	amino_dis_consweight_multi = AllocateDoubleMtx( charsize, charsize ); //amino_dis_consweight_multi is defined in defs.c
 
 //	reporterr( "charsize=%d\n", charsize );
 
-	for( i=0; i<charsize; i++ )amino_n[i] = -1;
+	for( i=0; i<charsize; i++ )amino_n[i] = -1; //amino_n is defined in defs.h and initialized in if conditions above
 	for( i=0; i<nalphabets; i++) amino_n[(int)amino[i]] = i;
     for( i=0; i<charsize; i++ ) for( j=0; j<charsize; j++ ) amino_dis[i][j] = 0;
-    for( i=0; i<nalphabets; i++ ) for( j=0; j<nalphabets; j++ ) n_disLN[i][j] = 0;
+    for( i=0; i<nalphabets; i++ ) for( j=0; j<nalphabets; j++ ) n_disLN[i][j] = 0; //n_disLN defined in defs.c and allocated in ifs above
     for( i=0; i<charsize; i++ ) for( j=0; j<charsize; j++ ) amino_dis_consweight_multi[i][j] = 0.0;
 
-	n_dis_consweight_multi = AllocateDoubleMtx( nalphabets, nalphabets );
-	n_disFFT = AllocateIntMtx( nalphabets, nalphabets );
+	n_dis_consweight_multi = AllocateDoubleMtx( nalphabets, nalphabets ); //n_dis_consweight_multi defined in defs.c
+	n_disFFT = AllocateIntMtx( nalphabets, nalphabets ); //n_disFFT defined in defs.c
     for( i=0; i<nalphabets; i++) for( j=0; j<nalphabets; j++ )
 	{
         amino_dis[(int)amino[i]][(int)amino[j]] = n_dis[i][j];
-		n_dis_consweight_multi[i][j] = (double)n_dis[i][j] * consweight_multi;
+		n_dis_consweight_multi[i][j] = (double)n_dis[i][j] * consweight_multi; //consweight_multi defined in defs.c
 		amino_dis_consweight_multi[(int)amino[i]][(int)amino[j]] = (double)n_dis[i][j] * consweight_multi;
 	}
 
@@ -1419,27 +1428,27 @@ exit( 1 );
 #endif
 
 
-	ppid = 0;
+	ppid = 0; //defined in defs.h
 
 
-	if( fftThreshold == NOTSPECIFIED )
+	if( fftThreshold == NOTSPECIFIED ) //fftThreshold defined in defs.h
 	{
-		fftThreshold = FFT_THRESHOLD;
+		fftThreshold = FFT_THRESHOLD; //fftThreshold defined in mltaln.h and = 80
 	}
-	if( fftWinSize == NOTSPECIFIED )
+	if( fftWinSize == NOTSPECIFIED ) //fftWinSize defined in defs.h
 	{
 		if( dorp == 'd' ) 
-			fftWinSize = FFT_WINSIZE_D;
+			fftWinSize = FFT_WINSIZE_D; //defined in mltaln.h
 		else    
-			fftWinSize = FFT_WINSIZE_P;
+			fftWinSize = FFT_WINSIZE_P; //defined in mltaln.h
 	}
 
 
-	if( fftscore )
+	if( fftscore ) //defined in defs.h
 	{
 		double av, sd;
 
-		for( i=0; i<20; i++ ) polarity[i] = polarity_[i];
+		for( i=0; i<20; i++ ) polarity[i] = polarity_[i]; //polarity defined in defs.h, polarity_ is defined in miyata.h and contains constants
 		for( av=0.0, i=0; i<20; i++ ) av += polarity[i];
 		av /= 20.0;
 		for( sd=0.0, i=0; i<20; i++ ) sd += ( polarity[i]-av ) * ( polarity[i]-av );
@@ -1447,7 +1456,7 @@ exit( 1 );
 		for( i=0; i<20; i++ ) polarity[i] -= av;
 		for( i=0; i<20; i++ ) polarity[i] /= sd;
 	
-		for( i=0; i<20; i++ ) volume[i] = volume_[i];
+		for( i=0; i<20; i++ ) volume[i] = volume_[i]; //volume defined in defs.h, volume_ is defined in miyata.h and contains constants
 		for( av=0.0, i=0; i<20; i++ ) av += volume[i];
 		av /= 20.0;
 		for( sd=0.0, i=0; i<20; i++ ) sd += ( volume[i]-av ) * ( volume[i]-av );
@@ -1460,6 +1469,9 @@ exit( 1 );
 		for( i=0; i<20; i++ ) fprintf( stdout, "%c %+5.3f %+5.3f\n", amino[i], volume[i], polarity[i] );
 #endif
 	}
+
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 }
 
 void freeconstants()

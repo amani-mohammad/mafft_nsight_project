@@ -112,9 +112,9 @@ int set_direction_main( int argc, char *argv[] )
 
 
 	dorp = NOTSPECIFIED;
-	getnumlen_casepreserve( infp, &nlenmin );
+	getnumlen_casepreserve( infp, &nlenmin ); //defined in io.c. reads sequences file and set min length in nlenmin
 
-	fprintf( stderr, "%d x %d - %d %c\n", njob, nlenmax, nlenmin, dorp );
+	fprintf( stderr, "%d x %d - %d %c\n", njob, nlenmax, nlenmin, dorp ); //these values are set in 'getnumlen_casepreserve'
 
 	seq = AllocateCharMtx( njob, nlenmax+1 );
 	tmpseq = AllocateCharVec( MAX( B, nlenmax )+1 );
@@ -122,15 +122,12 @@ int set_direction_main( int argc, char *argv[] )
 	nlen = AllocateIntVec( njob );
 	directions = calloc( njob, sizeof( int ) );
 
-	readData_pointer_casepreserve( infp, name, nlen, seq );
-
-
-
+	readData_pointer_casepreserve( infp, name, nlen, seq ); //defined in io.c. fill name, seq and nlen arrays with names, sequences and their lengths
 
 
 	for( i=0; i<njob; i++ )
 	{
-		fgets( line, 99, difp );
+		fgets( line, 99, difp ); //read line from 'difp' file to 'line' string with max 99 chars
 		if( line[0] != '_' )
 		{
 			fprintf( stderr, "Format error!\n" );
@@ -139,8 +136,8 @@ int set_direction_main( int argc, char *argv[] )
 		if( line[1] == 'R' )
 		{
 			directions[i] = 'R';
-			sreverse( tmpseq, seq[i] );
-			strcpy( seq[i], tmpseq );
+			sreverse( tmpseq, seq[i] ); //defined in io.c. fills tmpseq with reversed chars from seq[i]
+			strcpy( seq[i], tmpseq ); //copy reversed seq from tmpseq to seq[i]
 
 			strncpy( tmpseq, name[i]+1, B-3 );
 			tmpseq[B-3] = 0;
@@ -167,14 +164,16 @@ int set_direction_main( int argc, char *argv[] )
 
 	if( subalignment )
 	{
-		readsubalignmentstable( njob, NULL, NULL, &nsubalignments, &maxmem );
+		//Set max spaces count to maxmem and number of subalignments in nsubalignments
+		readsubalignmentstable( njob, NULL, NULL, &nsubalignments, &maxmem ); //defined in io.c.
 		reporterr(       "nsubalignments = %d\n", nsubalignments );
 		reporterr(       "maxmem = %d\n", maxmem );
 		subtable = AllocateIntMtx( nsubalignments, maxmem+1 );
 		preservegaps = AllocateIntVec( njob );
+		//checks for sequences existence in multiple groups or sequence number doesn't exist in input file
 		readsubalignmentstable( njob, subtable, preservegaps, NULL, NULL );
 
-		for( j=0; j<nsubalignments; j++ ) 
+		for( j=0; j<nsubalignments; j++ ) //check sequences directions and its consistency
 		{
 			reporterr( "Checking directions of sequences in subalignment%d\n", j );
 			firstdir = directions[subtable[j][0]];
@@ -200,8 +199,8 @@ int set_direction_main( int argc, char *argv[] )
 
 	for( i=0; i<njob; i++ )
 	{
-		fprintf( stdout, ">%s\n", name[i]+1 );
-		fprintf( stdout, "%s\n", seq[i] );
+		fprintf( stdout, ">%s\n", name[i]+1 ); // > in makefile after the command redirects stdout to the output file
+		fprintf( stdout, "%s\n", seq[i] ); //so, this stdout is saved in output file mentioned in makefile
 	}
 
 	free( nlen );

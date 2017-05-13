@@ -27,8 +27,8 @@ extern int parallelizationstrategy;
 
 char modelname[500];
 int njob, nlenmax;
-int amino_n[0x100];
-char amino_grp[0x100];
+int amino_n[0x100]; //256 chars
+char amino_grp[0x100]; //256 chars
 //int amino_dis[0x100][0x100];
 extern int **amino_dis;
 extern double **n_disLN;
@@ -37,9 +37,9 @@ extern double **amino_dis_consweight_multi;
 extern int **n_dis;
 extern int **n_disFFT;
 extern double **n_dis_consweight_multi;
-unsigned char amino[0x100];
-double polarity[0x100];
-double volume[0x100];
+unsigned char amino[0x100]; //256 chars
+double polarity[0x100]; //256 chars
+double volume[0x100]; //256 chars
 int ribosumdis[37][37];
 
 int ppid;

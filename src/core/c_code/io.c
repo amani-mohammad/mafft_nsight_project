@@ -60,7 +60,7 @@ char creverse( char f )
 	}
 	return( table[(int)f] );
 }
-
+//fills r with reversed chars from s
 void sreverse( char *r, char *s )
 {
 	r += strlen( s );
@@ -1698,11 +1698,11 @@ void readData_pointer( FILE *fp, char **name, int *nlen, char **seq )
 		free( tmpseq );
 		nlen[i] = strlen( seq[i] );
 	}
-	if( dorp == 'd' && upperCase != -1 ) seqLower( njob, seq );
+	if( dorp == 'd' && upperCase != -1 ) seqLower( njob, seq ); //set all chars to lower case
 #if 0
 	free( tmpseq );
 #endif
-	if( outnumber )
+	if( outnumber ) //outnumber is defined in defs.c, and = 0
 	{
 		char *namebuf;
 		char *cptr;
@@ -2440,19 +2440,19 @@ void getnumlen( FILE *fp )
 	char *tmpname;
 	double atgcfreq;
 	tmpname = AllocateCharVec( N );
-	njob = countKUorWA( fp );
-	searchKUorWA( fp );
+	njob = countKUorWA( fp ); //number of sequences
+	searchKUorWA( fp ); //stop at first sequence
 	nlenmax = 0;
 	atgcnum = 0;
 	total = 0;
 	for( i=0; i<njob; i++ )
 	{
-		myfgets( tmpname, N-1, fp );
-		tmpseq = load1SeqWithoutName_realloc( fp );
+		myfgets( tmpname, N-1, fp ); //read sequence name into tmpname
+		tmpseq = load1SeqWithoutName_realloc( fp ); //read sequence itself
 		tmp = strlen( tmpseq );
-		if( tmp > nlenmax ) nlenmax  = tmp;
-		atgcnum += countATGC( tmpseq, &nsite );
-		total += nsite;
+		if( tmp > nlenmax ) nlenmax  = tmp; //save max length of sequences
+		atgcnum += countATGC( tmpseq, &nsite ); //count atgc chars in all sequences
+		total += nsite; //count total number of chars in all sequences
 //		fprintf( stderr, "##### total = %d\n", total );
 		free( tmpseq );
 	}
@@ -4181,9 +4181,9 @@ void initSignalSM( void )
 #if IODEBUG
 	if( ppid ) fprintf( stderr, "PID of xced = %d\n", ppid );
 #endif
-	if( !ppid )
+	if( !ppid ) //ppid is int defined in defs.h
 	{
-		signalSM = NULL;
+		signalSM = NULL; //signalSM is char* defined in defs.h
 		return;
 	}
 
@@ -4197,19 +4197,19 @@ void initSignalSM( void )
 #endif
 }
 
-void initFiles( void )
+void initFiles( void ) //init prep_g and trap_g files. I think these files are for tracing
 {
 	char pname[100];
 	if( ppid )
 		sprintf( pname, "/tmp/pre.%d", ppid );
 	else
 		sprintf( pname, "pre" );
-	prep_g = fopen( pname, "w" );
+	prep_g = fopen( pname, "w" ); //prep_g is FILE* defined in defs.h
 	if( !prep_g ) ErrorExit( "Cannot open pre" );
 
-	trap_g = fopen( "trace", "w" );
+	trap_g = fopen( "trace", "w" ); //trap_g is FILE* defined in defs.h
 	if( !trap_g ) ErrorExit( "cannot open trace" );
-	fprintf( trap_g, "PID = %d\n", getpid() );
+	fprintf( trap_g, "PID = %d\n", getpid() ); //getpid -> get process ID
 	fflush( trap_g );
 }
 
@@ -5325,7 +5325,7 @@ static void showaamtxexample()
 	exit( 1 );
 }
 
-double *loadaamtx( void )
+double *loadaamtx( void ) //called when Blosum number = -1 ---- read user defined matrix and return it
 {
 	int i, j, k, ii, jj;
 	double *val;
@@ -5383,7 +5383,7 @@ double *loadaamtx( void )
 		if( ptr2 == NULL )
 		{
 			fprintf( stderr, "%c: not found in the first 20 letters.\n", aaorder[i] );
-			showaamtxexample();
+			showaamtxexample(); //defined here in io.c. Shows error and example for aamtx then exit
 		}
 		else
 		{
@@ -5461,7 +5461,7 @@ double *loadaamtx( void )
 	return( val );
 }
 
-static void tab2space( char *s ) // nen no tame
+static void tab2space( char *s ) // nen no tame  //converts tap to space
 {
 	while( *s )
 	{
@@ -5512,7 +5512,7 @@ static int countspace( char *s )
 	int v = 0;
 	char status = 's';
 	char *pt = s;
-	tab2space( s );
+	tab2space( s ); //converts all taps in s to spaces
 	while( *pt )
 	{
 		if( *pt == ' ' )
@@ -5550,7 +5550,7 @@ void readsubalignmentstable( int nseq, int **table, int *preservegaps, int *nsub
 	int *tab01;
 
 	line = calloc( linelen, sizeof( char ) );
-	fp = fopen( "_subalignmentstable", "r" );
+	fp = fopen( "_subalignmentstable", "r" ); //I need to know where this file exists and what is its content?
 	if( !fp )
 	{
 		fprintf( stderr, "Cannot open _subalignmentstable\n" );
@@ -5571,7 +5571,7 @@ void readsubalignmentstable( int nseq, int **table, int *preservegaps, int *nsub
 			}
 			if( line[0] == '#' ) continue;
 			if( atoi( line ) == 0 ) continue;
-			nmem = countspace( line );
+			nmem = countspace( line ); //count number of spaces in line
 			if( nmem > *maxmempt ) *maxmempt = nmem;
 			(*nsubpt)++;
 		}

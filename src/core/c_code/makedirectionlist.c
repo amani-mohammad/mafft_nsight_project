@@ -144,22 +144,23 @@ void make_direction_list_arguments( int argc, char *argv[] )
 {
     int c;
 
-	nthread = 1;
-	inputfile = NULL;
+    //set default values before parsing input arguments
+	nthread = 1; //defined in defs.c
+	inputfile = NULL; //defined in defs.c
 	nadd = 0;
 	dodp = 0;
-	alg = 'a';
-	alg = 'm';
-	dorp = NOTSPECIFIED;
-	fmodel = 0;
+	alg = 'a'; //defined in defs.h
+	alg = 'm'; //why set to 'a' then 'm'
+	dorp = NOTSPECIFIED; //dna or protein
+	fmodel = 0; //defined in defs.h
 //	ppenalty = (int)( -2.0 * 1000 - 0.5 );
 //	ppenalty_ex = (int)( -0.1 * 1000 - 0.5 );
 //	poffset = (int)( 0.1 * 1000 - 0.5 ); 
-	ppenalty = NOTSPECIFIED;
-	ppenalty_ex = NOTSPECIFIED;
-	poffset = NOTSPECIFIED;
-	kimuraR = 2;
-	pamN = 200;
+	ppenalty = NOTSPECIFIED; //in defs.h
+	ppenalty_ex = NOTSPECIFIED; //in defs.h
+	poffset = NOTSPECIFIED; //in defs.h
+	kimuraR = 2; //in defs.h
+	pamN = 200; //in defs.h
 	thresholdtorev = 0.0;
 	addfragment = 0;
 
@@ -208,7 +209,7 @@ void make_direction_list_arguments( int argc, char *argv[] )
 				case 'j':
 					pamN = myatoi( *++argv );
 					scoremtx = 0;
-					TMorJTT = JTT;
+					TMorJTT = JTT; //defined in mltaln.h and = 201
 					fprintf( stderr, "jtt/kimura %d\n", pamN );
 					--argc;
 					goto nextoption;
@@ -288,14 +289,14 @@ void make_direction_list_arguments( int argc, char *argv[] )
 
 
 
-
+//set values from amino_grp array to 'grp' based on 'seq' chars
 void make_direction_list_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
 	int *grpbk = grp;
 	while( *seq )
 	{
-		tmp = amino_grp[(int)*seq++];
+		tmp = amino_grp[(int)*seq++]; //amino_grp is defined in defs.h and set in constants.c
 		if( tmp < 4 )
 			*grp++ = tmp;
 		else
@@ -460,7 +461,7 @@ static void makecontrastorder6mer( int *order, int **pointt, int **pointt_rev, c
 		if( i % 100 == 1 ) reporterr( "%d   \r", i );
 		table1 = (short *)calloc( tsize, sizeof( short ) );
 		if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-		make_distance_makecompositiontable_p( table1, pointt[i] );
+		make_distance_makecompositiontable_p( table1, pointt[i] ); //defined in mafft-distance.c
 		res[i] = localcommonsextet_p2( table1, pointt[i] );
 		free( table1 );
 
@@ -478,7 +479,8 @@ static void makecontrastorder6mer( int *order, int **pointt, int **pointt_rev, c
 		arr[i].dif = res[i];
 	}
 
-	qsort( arr, iend, sizeof( contrastarr ), compfunc );
+	//compfunc compares arr elements based on 'diff' attribute
+	qsort( arr, iend, sizeof( contrastarr ), compfunc ); //qsort sorts array. it sorts 'arr' with compfunc comparing function
 
 	for( i=0; i<iend; i++ )
 		order[i] = arr[i].pos + shift;
@@ -549,7 +551,8 @@ static void makecontrastorder( int *order, char **seq, int iend, int shift )
 		arr[i].dif = res[i];
 	}
 
-	qsort( arr, iend, sizeof( contrastarr ), compfunc );
+	//compfunc compares arr elements based on 'diff' attribute
+	qsort( arr, iend, sizeof( contrastarr ), compfunc ); //qsort sorts array. it sorts 'arr' with compfunc comparing function
 
 	for( i=0; i<iend; i++ )
 		order[i] = arr[i].pos + shift;
@@ -651,7 +654,8 @@ static void	*directionthread( void *arg )
 	return( NULL );
 }
 
-int make_direction_list_main( int argc, char *argv[] )
+//int make_direction_list_main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
 	static int  *nlen;	
 	static int  *nogaplen;	
@@ -689,10 +693,10 @@ int make_direction_list_main( int argc, char *argv[] )
 	else
 		infp = stdin;
 
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. finds sequences count, max length and dna or protein
 	rewind( infp );
 
-	if( alg == 'a' )
+	if( alg == 'a' ) //I need to know what a, G, S stands for ??
 	{
 		if( nlenmax < 10000 )
 			alg = 'G';
@@ -700,19 +704,19 @@ int make_direction_list_main( int argc, char *argv[] )
 			alg = 'S';
 	}
 
-	seq = AllocateCharMtx( njob, nlenmax*1+1 );
+	seq = AllocateCharMtx( njob, nlenmax*1+1 ); //allocate 2d char matrix for sequences
 
 #if 0
 	Read( name, nlen, seq );
 	readData( infp, name, nlen, seq );
 #else
-    name = AllocateCharMtx( njob, B+1 );
-    nlen = AllocateIntVec( njob ); 
+    name = AllocateCharMtx( njob, B+1 ); //B is defined in mltaln.h and = 256
+    nlen = AllocateIntVec( njob ); //allocate int vector with num of sequences cells
     nogaplen = AllocateIntVec( njob ); 
-	readData_pointer( infp, name, nlen, seq );
-	fclose( infp );
+	readData_pointer( infp, name, nlen, seq ); //defined in io.c. fill matrices of sequences, sequences names and lengths
+	fclose( infp ); //close input stream
 
-	if( dorp != 'd' )
+	if( dorp != 'd' ) //if input sequences are not DNA, i. e. proteins
 	{
 		fprintf( stderr, "Not necessary!\n" );
 		for( i=0; i<njob; i++ ) 
@@ -721,18 +725,19 @@ int make_direction_list_main( int argc, char *argv[] )
 	}
 #endif
 
-	constants( njob, seq );
-
+	constants( njob, seq ); //this method is defined in constants.c
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
 #if 0
 	fprintf( stderr, "params = %d, %d, %d\n", penalty, penalty_ex, offset );
 #endif
 
-	initSignalSM();
+	initSignalSM(); //defined in io.c - inits signalSM value
 
-	initFiles();
+	initFiles(); //defined in io.c - inits prep_g and trap_g files. I think these files are for tracing
 
-	c = seqcheck( seq );
+	c = seqcheck( seq ); //seqcheck is defined in mltaln9.c. It checks 'seq' characters for unusual characters
 	if( c )
 	{
 		fprintf( stderr, "Illegal character %c\n", c );
@@ -740,16 +745,17 @@ int make_direction_list_main( int argc, char *argv[] )
 	}
 
 	fprintf( stderr, "\n" );
+	//I need to know what is 'G' ?
 	if( alg == 'G' ) // dp to the first sequence
 	{
 		mseq1f = AllocateCharMtx( 1, nlenmax+nlenmax );
 		mseq1r = AllocateCharMtx( 1, nlenmax+nlenmax );
 		mseq2 = AllocateCharMtx( 1, nlenmax+nlenmax );
-	    tmpseq = AllocateCharVec( MAX( nlenmax, B ) +1 );
+	    tmpseq = AllocateCharVec( MAX( nlenmax, B ) +1 ); //B is defined in mltaln.h and = 256
 
-		gappick0( mseq1f[0], seq[0] );
-		sreverse( mseq1r[0], mseq1f[0] );
-		strcpy( seq[0], mseq1f[0] );
+		gappick0( mseq1f[0], seq[0] ); //defined in mltaln9.c. copies seq[0] chars to mseq1f[0] without gaps
+		sreverse( mseq1r[0], mseq1f[0] ); //defined in io.c. fills mseq1r[0] with reversed chars from mseq1f[0]
+		strcpy( seq[0], mseq1f[0] ); //copy seq[0] without gaps to seq[0]. i.e. remove gaps from seq[0]
 
 		if( nadd )
 			istart = njob - nadd;
@@ -760,23 +766,27 @@ int make_direction_list_main( int argc, char *argv[] )
 
 		for( i=0; i<istart; i++ )
 		{
-			gappick0( tmpseq, seq[i] );
-			strcpy( seq[i], tmpseq );
-			strcpy( tmpseq, name[i] );
-			strcpy( name[i], "_F_" );
-			strncpy( name[i]+3, tmpseq+1, 10 );
-			name[i][13] = 0;
+			gappick0( tmpseq, seq[i] ); //copies seq[i] chars to tmpseq without gaps
+			strcpy( seq[i], tmpseq ); //copy tmpseq to seq[i]
+			strcpy( tmpseq, name[i] ); //copy seq name to tmpseq
+			strcpy( name[i], "_F_" ); //fill name[i] with "_F_"
+			strncpy( name[i]+3, tmpseq+1, 10 ); //then copy first 10 characters from tmpseq to name
+			name[i][13] = 0; //and end 14-chars name with 0 character
 		}
+		//by end of for loop above, 'seq' are replaced by 'seq' without gaps and 'name' are replaced by short names
+
 		for( i=istart; i<njob; i++ ) 
 		{
-			gappick0( mseq2[0], seq[i] );
+			gappick0( mseq2[0], seq[i] ); //copy seq[i] to mseq2[0]
 
 #if GLOBAL
 			res_forward = G__align11_noalign( n_dis_consweight_multi, penalty, penalty_ex, mseq1f, mseq2, 0 );
 			res_reverse = G__align11_noalign( n_dis_consweight_multi, penalty, penalty_ex, mseq1r, mseq2, 0 );
 #else
-			res_forward = L__align11_noalign( n_dis_consweight_multi, mseq1f, mseq2 );
-			res_reverse = L__align11_noalign( n_dis_consweight_multi, mseq1r, mseq2 );
+			//this method returns max weight between mseq1f[0] and mseq2[0]
+			res_forward = L__align11_noalign( n_dis_consweight_multi, mseq1f, mseq2 ); //defined in Lalign11.c
+			//this method returns max weight between mseq1r[0] and mseq2[0]
+			res_reverse = L__align11_noalign( n_dis_consweight_multi, mseq1r, mseq2 ); //n_dis_consweight_multi defined in defs.c. it is filled in in constants.c
 #endif
 #if 0
 
@@ -795,12 +805,12 @@ int make_direction_list_main( int argc, char *argv[] )
 
 //			fprintf( stdout, "\nscore_for(%d,%d) = %f\n", 0, i, res_forward );
 //			fprintf( stdout, "score_rev(%d,%d) = %f\n", 0, i, res_reverse );
-			res_max = MAX(res_reverse,res_forward);
+			res_max = MAX(res_reverse,res_forward); //MAX defined in fft.h
 			if( (res_reverse-res_forward)/res_max > thresholdtorev ) // tekitou
 			{
 //				fprintf( stderr, "REVERSE!!!\n" );
-				sreverse( seq[i], mseq2[0] );
-
+				sreverse( seq[i], mseq2[0] ); //fill seq[i] with reversed chars from mseq2[0]
+				//and set name to _R_shortname
 				strcpy( tmpseq, name[i] );
 				strcpy( name[i], "_R_" );
 				strncpy( name[i]+3, tmpseq+1, 10 );
@@ -808,7 +818,7 @@ int make_direction_list_main( int argc, char *argv[] )
 			}
 			else
 			{
-				strcpy( seq[i], mseq2[0] );
+				strcpy( seq[i], mseq2[0] ); //fill seq[i] with chars from mseq2[0]
 
 				strcpy( tmpseq, name[i] );
 				strcpy( name[i], "_F_" );
@@ -820,11 +830,13 @@ int make_direction_list_main( int argc, char *argv[] )
 		FreeCharMtx( mseq1r );
 		FreeCharMtx( mseq2 );
 		free( tmpseq );
+		//by end of this 'G' algorithm, first sequence of all sequences read from input file is matched with all other sequences.
+		//each sequence is replaced either by the original sequence or the reversed one - based on best weight -.
 	}
-	else if( alg == 'm' )
+	else if( alg == 'm' ) //what is 'm' algorithm ?
 	{
 
-		if( dodp ) // nakuserukamo
+		if( dodp ) // nakuserukamo  //moni: dodp defined here and default val = 0, else = 1
 		{
 			mseq1f = AllocateCharMtx( 1, nlenmax+1);
 			mseq1r = AllocateCharMtx( 1, nlenmax+1 );
@@ -845,20 +857,20 @@ int make_direction_list_main( int argc, char *argv[] )
 		resf = AllocateIntVec( njob );
 		map = AllocateIntVec( njob );
 		contrastorder = AllocateIntVec( njob );
-		if( dorp == 'd' ) tsize = (int)pow( 4, 6 );
+		if( dorp == 'd' ) tsize = (int)pow( 4, 6 ); //tsize defined in both defs.h and mltaln.h
 		else              tsize = (int)pow( 6, 6 ); // iranai
 
-		maxl = 0;
+		maxl = 0; //maxl defined in both defs.h and mltaln.h
 		for( i=0; i<njob; i++ )
 		{
-			gappick0( tmpseq, seq[i] );
-			nogaplen[i] = strlen( tmpseq );
-			if( nogaplen[i] > maxl ) maxl = nogaplen[i];
+			gappick0( tmpseq, seq[i] ); //copy seq[i] chars to tmpseq without gaps
+			nogaplen[i] = strlen( tmpseq ); //get length of tmpseq, i.e. seq[i] without gaps
+			if( nogaplen[i] > maxl ) maxl = nogaplen[i]; //set maxl to max seq length without gaps
 		}
 
 		reporterr( "Step 1/2\n" );
 
-		if( !dodp )
+		if( !dodp ) //if dodp is not set
 		{
 			if( nadd )
 				iend = njob - nadd;
@@ -867,10 +879,10 @@ int make_direction_list_main( int argc, char *argv[] )
 	
 			for( i=0; i<iend; i++ )
 			{
-				gappick0( tmpseq, seq[i] );
-				strcpy( seq[i], tmpseq );
+				gappick0( tmpseq, seq[i] ); //copy seq[i] chars to tmpseq without gaps
+				strcpy( seq[i], tmpseq ); //copy tmpseq to seq[i]
 				make_direction_list_seq_grp_nuc( grpseq, tmpseq );
-				make_direction_list_makepointtable_nuc( pointt[i], grpseq );
+				make_direction_list_makepointtable_nuc( pointt[i], grpseq ); //set pointt[i] to some value based on calculations for values in grpseq
 				spointt[i] = pointt[i];
 			}
 	
@@ -881,9 +893,9 @@ int make_direction_list_main( int argc, char *argv[] )
 			for( i=istart; i<njob; i++ ) 
 			{
 
-				gappick0( tmpseq, seq[i] );
-				strcpy( seq[i], tmpseq );
-				sreverse( revseq, tmpseq );
+				gappick0( tmpseq, seq[i] ); //copy seq[i] chars to tmpseq without gaps
+				strcpy( seq[i], tmpseq ); //copy tmpseq to seq[i]
+				sreverse( revseq, tmpseq ); //fill revseq with reversed chars from tmpseq
 
 				make_direction_list_seq_grp_nuc( grpseq, tmpseq );
 				make_direction_list_makepointtable_nuc( pointt[i], grpseq );
@@ -901,7 +913,7 @@ int make_direction_list_main( int argc, char *argv[] )
 		}
 
 
-		if( contrastsort ) // sukoshi chuui
+		if( contrastsort ) // sukoshi chuui //default = 1, and if set from parameters = 0
 		{
 
 
@@ -919,9 +931,9 @@ int make_direction_list_main( int argc, char *argv[] )
 			}
 
 			if( dodp )
-				makecontrastorder( contrastorder+istart, seq+istart, iend, istart );
+				makecontrastorder( contrastorder+istart, seq+istart, iend, istart ); //orders something and save in contrastorder
 			else
-				makecontrastorder6mer( contrastorder+istart, pointt+istart, pointt_rev+istart, seq+istart, iend, istart );
+				makecontrastorder6mer( contrastorder+istart, pointt+istart, pointt_rev+istart, seq+istart, iend, istart ); //orders something and save in contrastorder
 		}
 		else
 		{
@@ -944,8 +956,8 @@ int make_direction_list_main( int argc, char *argv[] )
 		{
 			ic = contrastorder[i];
 //			fprintf( stdout, "%d, SKIP\n", i );
-			gappick0( tmpseq, seq[ic] );
-			strcpy( seq[ic], tmpseq );
+			gappick0( tmpseq, seq[ic] ); //copy seq[ic] chars to tmpseq without gaps
+			strcpy( seq[ic], tmpseq ); //copy tmpseq to seq[ic]
 //			if( !nadd ) strcpy( seq[i], tmpseq ); // seq ha tsukawanaikara ii.
 
 #if 0 // -> makecontrastorder() no mae ni idou
@@ -957,7 +969,7 @@ int make_direction_list_main( int argc, char *argv[] )
 			}
 #endif
 
-			strcpy( tmpseq, name[ic] );
+			strcpy( tmpseq, name[ic] ); //copy also seq name and trim it to 14 chars
 			strcpy( name[ic], "_F_" );
 			strncpy( name[ic]+3, tmpseq+1, 10 );
 			name[ic][13] = 0;
@@ -973,9 +985,9 @@ int make_direction_list_main( int argc, char *argv[] )
 		{
 //			fprintf( stderr, "\r %d / %d ", i, njob );
 			ic = contrastorder[i];
-			gappick0( tmpseq, seq[ic] );
-			strcpy( seq[ic], tmpseq );
-			sreverse( revseq, tmpseq );
+			gappick0( tmpseq, seq[ic] ); //copy seq[ic] chars to tmpseq without gaps
+			strcpy( seq[ic], tmpseq ); //copy tmpseq to seq[ic]
+			sreverse( revseq, tmpseq ); //fill revseq with reversed chars from tmpseq
 
 #if 0 // -> makecontrastorder() no mae ni idou
 			if( !dodp )
@@ -998,8 +1010,8 @@ int make_direction_list_main( int argc, char *argv[] )
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
 				table1_rev = (short *)calloc( tsize, sizeof( short ) );
 				if( !table1_rev ) ErrorExit( "Cannot allocate table1_rev\n" );
-				make_distance_makecompositiontable_p( table1, pointt[ic] );
-				make_distance_makecompositiontable_p( table1_rev, pointt_rev[ic] );
+				make_distance_makecompositiontable_p( table1, pointt[ic] ); //increment table1 values in pointt[ic] values
+				make_distance_makecompositiontable_p( table1_rev, pointt_rev[ic] ); //increment table1_rev values in pointt_rev[ic] values
 			}
 #endif
 
@@ -1252,7 +1264,7 @@ int make_direction_list_main( int argc, char *argv[] )
 			}
 		}
 
-		creverse( 0 );
+		creverse( 0 ); //free table in io.c
 		free( tmpseq );
 		free( revseq );
 		free( grpseq );
@@ -1291,11 +1303,11 @@ int make_direction_list_main( int argc, char *argv[] )
 
 	FreeCharMtx( seq );
 	FreeCharMtx( name );
-	freeconstants();
-	closeFiles();
+	freeconstants(); //free memory allocated in constants.c
+	closeFiles(); //close prep_g and trap_g files in io.c
 
 	fprintf( stderr, "\n" );
-	SHOWVERSION;
+	SHOWVERSION; //i think this file finds score of sequences and make them forward or reverse
 	return( 0 );
 }
 

@@ -35,8 +35,8 @@ void countlen_arguments( int argc, char *argv[] )
 }
 
 
-//int countlen_main( int argc, char *argv[] )
-int main( int argc, char *argv[] )
+int countlen_main( int argc, char *argv[] )
+//int main( int argc, char *argv[] )
 {
 	FILE *infp;
 	int nlenmin;

@@ -244,7 +244,7 @@ void BLOSUMmtx( int n, double **matrix, double *freq, unsigned char *amino, char
 	else if( n == 90 ) tmpmtx = tmpmtx90;
 	else if( n == 100 ) tmpmtx = tmpmtx100;
 	else if( n == 0 ) tmpmtx = tmpmtx0;
-	else if( n == -1 ) tmpmtx = loadaamtx(); //in which file and what is this matrix? // this method declared in functions.h file
+	else if( n == -1 ) tmpmtx = loadaamtx(); // loadaamtx is declared in io.c. It reads user defined matrix from input file and returns it
 	else //if n is not BLOSUM correct number, show error and exit
 	{
 		fprintf( stderr, "blosum %d ?\n", n );
@@ -269,7 +269,7 @@ void BLOSUMmtx( int n, double **matrix, double *freq, unsigned char *amino, char
 		for( i=0; i<20; i++ ) freq[i] /= av;
 	}
 	else
-		for( i=0; i<20; i++ ) freq[i] = freqd[i];
+		for( i=0; i<20; i++ ) freq[i] = freqd[i]; //i think freqd means default frequency
 
 #if 0
 	av = 0.0;
@@ -321,13 +321,14 @@ void BLOSUMmtx( int n, double **matrix, double *freq, unsigned char *amino, char
     for( i=0; i<26; i++ ) amino[i] = locaminod[i];
     for( i=0; i<26; i++ ) amino_grp[(int)amino[i]] = locgrpd[i];
 }
-//I need to know when this method is called
+//this method fills the 'matrix' with -1.0 for all cells except diagonal cells - filled with 1.0 -.
+//it also fills 'freq' vector with 1.0/alphabets value. fills amino & amino_grp vectors.
 void extendedmtx( double **matrix, double *freq, unsigned char *amino, char *amino_grp )
 {
 	int i;
 	int j;
 
-	for( i=0; i<nalphabets; i++ ) //where is this 'nalphabets' variable is declared ?!!
+	for( i=0; i<nalphabets; i++ )
 	{
 //		fprintf( stderr, "i=%d, i=%c\n", i, i );
 		amino[i] = (unsigned char)i;

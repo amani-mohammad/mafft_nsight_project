@@ -52,7 +52,7 @@ char seqcheck( char **seq )
 		len = strlen( *seq );
 		for( i=0; i<len; i++ ) 
 		{
-			if( amino_n[(int)(*seq)[i]] == -1 ) 
+			if( amino_n[(int)(*seq)[i]] == -1 ) //this character is not found in amino_n characters array
 			{
 
 				reporterr(       "========================================================================= \n" );
@@ -8928,7 +8928,7 @@ void FreeTmpSeqs( char **mseq2, char *mseq1 )
 }
 
 
-void gappick0( char *aseq, char *seq )
+void gappick0( char *aseq, char *seq ) //copy 'seq' chars to 'aseq' without gaps chars
 {
 	for( ; *seq != 0; seq++ )
 	{
@@ -13449,7 +13449,7 @@ void fillimp( double **impmtx, double *imp, int clus1, int clus2, int lgth1, int
 				{
 					if( *pt1 != '-' && *pt2 != '-' )
 					{
-// 重みを二重にかけないように注意して下さい。
+// 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申
 //						impmtx[k1][k2] += tmpptr->wimportance * fastathreshold;
 //						impmtx[k1][k2] += tmpptr->importance * effij;
 //						impmtx[k1][k2] += tmpptr->fimportance * effij;
