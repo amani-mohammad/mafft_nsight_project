@@ -1,3 +1,4 @@
+#I think this file reads check list from URL, then read each file using its id from check list read
 #!/usr/bin/perl
 
 ####################################################################################
