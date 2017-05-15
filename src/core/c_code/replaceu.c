@@ -13,7 +13,7 @@ static void replace_unusual( int n, char **seq, char *usual, char unknown, int (
 		pt = seq[i];
 		while( *pt )
 		{
-			if( !strchr( usual, *pt ) ) *pt = unknown;
+			if( !strchr( usual, *pt ) ) *pt = unknown; //strchr searches for the first occurrence of char *pt in usual string
 			else *pt = uporlow( *pt );
 			pt++;
 		}
