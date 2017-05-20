@@ -696,7 +696,7 @@ void putlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 
 	st = 0;
 	iscore = 0;
-	while( *pt1 != 0 )
+	while( *pt1 != 0 ) //while first sequence contains chars
 	{
 //		fprintf( stderr, "pt = %c, %c, st=%d\n", *pt1, *pt2, st );
 		if( st == 1 && ( *pt1 == '-' || *pt2 == '-' ) )
@@ -721,7 +721,7 @@ void putlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 			localhompt->last  = tmppt;
 
 #if 1
-			if( divpairscore )
+			if( divpairscore ) //defined in io.c and set in multi2hat3s to 0
 			{
 				tmppt->overlapaa   = end2-start2+1;
 				tmppt->opt = (double)iscore / tmppt->overlapaa * 5.8 / 600;
@@ -751,6 +751,7 @@ void putlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 				start1 = pos1; start2 = pos2;
 				st = 1;
 			}
+			//n_dis and amino_n are defined in defs and initialized in constants.c (before this method is called)
 			iscore += n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset ��������������
 //			fprintf( stderr, "%c-%c, iscore(0) = %d\n", *pt1, *pt2, iscore );
 		}
@@ -1470,8 +1471,8 @@ void readDataforgaln( FILE *fp, char **name, int *nlen, char **seq )
 #if 0
 		fprintf( stderr, "name[%d] = %s\n", i, name[i] );
 #endif
-		tmpseq = load1SeqWithoutName_realloc( fp );
-		strcpy( seq[i], tmpseq );
+		tmpseq = load1SeqWithoutName_realloc( fp ); //load sequence characters in tmpseq
+		strcpy( seq[i], tmpseq ); //copy tmpseq to seq[i]
 		nlen[i] = strlen( seq[i] );
 		free( tmpseq );
 	}
@@ -1675,8 +1676,8 @@ void readData_pointer( FILE *fp, char **name, int *nlen, char **seq )
 	}
 #endif
 
-	rewind( fp );
-	searchKUorWA( fp );
+	rewind( fp ); //point to first character in the fp stream
+	searchKUorWA( fp ); //locates the stream pointer to start of first sequence
 
 	for( i=0; i<njob; i++ )
 	{
@@ -1688,15 +1689,15 @@ void readData_pointer( FILE *fp, char **name, int *nlen, char **seq )
 			ErrorExit( "Too long name\n" );
 		name[i][j-1] = 0;
 #else
-		myfgets( name[i]+1, B-2, fp ); 
+		myfgets( name[i]+1, B-2, fp ); //read sequence name into 'name[i]' with max length B-2
 #endif
 #if 0
 		fprintf( stderr, "name[%d] = %s\n", i, name[i] );
 #endif
-		tmpseq = load1SeqWithoutName_realloc( fp );
-		strcpy( seq[i], tmpseq );
+		tmpseq = load1SeqWithoutName_realloc( fp ); //load sequence characters in tmpseq
+		strcpy( seq[i], tmpseq ); //copy tmpseq to seq[i]
 		free( tmpseq );
-		nlen[i] = strlen( seq[i] );
+		nlen[i] = strlen( seq[i] ); //save length of seq[i] in nlen[i]
 	}
 	if( dorp == 'd' && upperCase != -1 ) seqLower( njob, seq ); //set all chars to lower case
 #if 0
@@ -1710,13 +1711,13 @@ void readData_pointer( FILE *fp, char **name, int *nlen, char **seq )
 		for( i=0; i<njob; i++ )
 		{
 			namebuf[0] = '=';
-			cptr = strstr( name[i], "_numo_e_" );
-			if( cptr )
+			cptr = strstr( name[i], "_numo_e_" ); //find the first occurrence of second param in the name[i]
+			if( cptr ) //sprintf send formatted output to first parameter string
 				sprintf( namebuf+1, "_numo_s_%08d_numo_e_%s", i+1, cptr+8 );
 			else
 				sprintf( namebuf+1, "_numo_s_%08d_numo_e_%s", i+1, name[i]+1 );
-			strncpy( name[i], namebuf, B );
-			name[i][B-1] = 0;
+			strncpy( name[i], namebuf, B ); //copy B chars from namebuf to name[i]
+			name[i][B-1] = 0; //add null char at the end of name[i]
 		}
 		free( namebuf );
 //		exit( 1 );
@@ -2439,17 +2440,17 @@ void getnumlen( FILE *fp )
 	char *tmpseq;
 	char *tmpname;
 	double atgcfreq;
-	tmpname = AllocateCharVec( N );
-	njob = countKUorWA( fp ); //number of sequences
+	tmpname = AllocateCharVec( N ); //N is defined in mltaln.h and = 5,000,000
+	njob = countKUorWA( fp ); //number of sequences. defined in defs.h
 	searchKUorWA( fp ); //stop at first sequence
-	nlenmax = 0;
+	nlenmax = 0; //defined in defs.h
 	atgcnum = 0;
 	total = 0;
 	for( i=0; i<njob; i++ )
 	{
 		myfgets( tmpname, N-1, fp ); //read sequence name into tmpname
 		tmpseq = load1SeqWithoutName_realloc( fp ); //read sequence itself
-		tmp = strlen( tmpseq );
+		tmp = strlen( tmpseq ); //get length of tmpseq
 		if( tmp > nlenmax ) nlenmax  = tmp; //save max length of sequences
 		atgcnum += countATGC( tmpseq, &nsite ); //count atgc chars in all sequences
 		total += nsite; //count total number of chars in all sequences
@@ -2465,7 +2466,7 @@ void getnumlen( FILE *fp )
 		if( atgcfreq > 0.75 ) 	
 		{
 			dorp = 'd';
-			upperCase = -1;
+			upperCase = -1; //defined here in io.c
 		}
 		else                  
 		{

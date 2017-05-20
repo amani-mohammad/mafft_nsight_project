@@ -39,7 +39,7 @@
 #define DISPSEQF  60
 #define DISPSITEI    0
 #define MAXITERATION 500
-#define M  500000       /* njob no saidaiti */
+#define M  500000       /* njob no saidaiti */ //saidaiti = max in Japanese
 #define N 5000000       /* nlen no saidaiti */
 #define MAXSEG 100000
 #define B     256

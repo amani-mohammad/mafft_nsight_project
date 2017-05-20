@@ -262,7 +262,7 @@ void constants( int nseq, char **seq )
 		if( ppenalty_EX == NOTSPECIFIED ) ppenalty_EX = DEFAULTGEP_N;
 		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_N; //constant defined in DNA.h
 		if( RNApthr == NOTSPECIFIED ) RNApthr = DEFAULTRNATHR_N; //constant defined in DNA.h
-		if( pamN == NOTSPECIFIED ) pamN = DEFAULTPAMN; //constant defined in DNA.h. PAM number
+		if( pamN == NOTSPECIFIED ) pamN = DEFAULTPAMN; //pamN defined in DNA.h. PAM number
 		if( kimuraR == NOTSPECIFIED ) kimuraR = 2;
 
 		RNApenalty = (int)( 3 * 600.0 / 1000.0 * RNAppenalty + 0.5 );
@@ -1043,7 +1043,7 @@ void constants( int nseq, char **seq )
 		if( ppenalty_ex == NOTSPECIFIED ) ppenalty_ex = DEFAULTGEP_J;
 		if( ppenalty_EX == NOTSPECIFIED ) ppenalty_EX = DEFAULTGEP_J;
 		if( poffset == NOTSPECIFIED ) poffset = DEFAULTOFS_J;
-		if( pamN == NOTSPECIFIED )    pamN    = DEFAULTPAMN; //defined in JTT.h and = 200
+		if( pamN == NOTSPECIFIED )    pamN    = DEFAULTPAMN; //DEFAULTPAMN defined in JTT.h and = 200
 		if( kimuraR == NOTSPECIFIED ) kimuraR = 1;
 
 		if( pamN == 0 )

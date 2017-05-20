@@ -75,7 +75,7 @@ void multi2hat3s_arguments( int argc, char *argv[] )
             switch( c )
             {
 				case 'i':
-					inputfile = *++argv;
+					inputfile = *++argv; //inputfile defined in defs.h
 					fprintf( stderr, "seed = %s\n", inputfile );
 					--argc;
 					goto nextoption;
@@ -106,7 +106,7 @@ void multi2hat3s_arguments( int argc, char *argv[] )
 	}
     if( argc == 1 )
     {
-        cut = atof( (*argv) );
+        cut = atof( (*argv) ); //cut defined in defs.h
         argc--;
     }
     if( argc != 0 ) 
@@ -114,12 +114,12 @@ void multi2hat3s_arguments( int argc, char *argv[] )
         fprintf( stderr, "options: Check source file !\n" );
         exit( 1 );
     }
-	if( tbitr == 1 && outgap == 0 )
+	if( tbitr == 1 && outgap == 0 ) //tbitr and outgap are defined in defs.h and defs.c
 	{
 		fprintf( stderr, "conflicting options : o, m or u\n" );
 		exit( 1 );
 	}
-	if( alg == 'C' && outgap == 0 )
+	if( alg == 'C' && outgap == 0 ) //alg is defined in defs.h
 	{
 		fprintf( stderr, "conflicting options : C, o\n" );
 		exit( 1 );
@@ -143,11 +143,11 @@ static void pairalign( char **name, int nlen[M], char **seq, double *effarr, int
 	static double *effarr2 = NULL;
 	char *aseq;
 	static char **pseq;
-	LocalHom **localhomtable, *tmpptr;
-	double tsuyosa;
+	LocalHom **localhomtable, *tmpptr; //LocalHom defined in mltaln.h
+	double tsuyosa; //tsuyosa = force in japanese
 
-	if( nhomologs < 1 ) nhomologs = 1; // tsuyosa=0.0 wo sakeru
-	tsuyosa = (double)nhomologs * nhomologs * TSUYOSAFACTOR;
+	if( nhomologs < 1 ) nhomologs = 1; // tsuyosa=0.0 wo sakeru   //defined here and set to 1 or entered parameter
+	tsuyosa = (double)nhomologs * nhomologs * TSUYOSAFACTOR; //TSUYOSAFACTOR = 100
 	fprintf( stderr, "tsuyosa = %f\n", tsuyosa );
 	localhomtable = (LocalHom **)calloc( njob, sizeof( LocalHom *) );
 	for( i=0; i<njob; i++)
@@ -207,7 +207,10 @@ static void pairalign( char **name, int nlen[M], char **seq, double *effarr, int
 
 
 			fprintf( stderr, "adding %d-%d\r", i, j );
-			putlocalhom2( pseq[0], pseq[1], localhomtable[i]+j, 0, 0, (int)pscore, strlen( pseq[0] ), 'k' );
+			//I think this method scans the two sequences pseq[0] and pseq[1], and save score and other alignment info in localhomtable
+			//what i need to understand now is LocalHom mechanism and how it works exactly
+			putlocalhom2( pseq[0], pseq[1], localhomtable[i]+j, 0, 0, (int)pscore, strlen( pseq[0] ), 'k' ); //defined in io.c
+			//after filling localhomtable, print it to the hat3p file
 			for( tmpptr=localhomtable[i]+j; tmpptr; tmpptr=tmpptr->next )
 			{
 				if( tmpptr->opt == -1.0 ) continue;
@@ -222,7 +225,7 @@ static void pairalign( char **name, int nlen[M], char **seq, double *effarr, int
 #if DEBUG
 	fprintf( stderr, "calling FreeLocalHomTable\n" );
 #endif
-	FreeLocalHomTable( localhomtable, njob );
+	FreeLocalHomTable( localhomtable, njob ); //defined in io.c. Frees all memory allocated to localhomtable
 #if DEBUG
 	fprintf( stderr, "done. FreeLocalHomTable\n" );
 #endif
@@ -231,20 +234,22 @@ static void pairalign( char **name, int nlen[M], char **seq, double *effarr, int
 static void WriteOptions( FILE *fp )
 {
 
-	if( dorp == 'd' ) fprintf( fp, "DNA\n" );
+	if( dorp == 'd' ) fprintf( fp, "DNA\n" ); //fprintf writes the second parameter to first parameter stream
 	else
-	{
+	{//scoremtx defined in defs.h and set here in arguments method to 1 then in constants to -1
+		//pamN defined in defs.h and set here to Notspecified then set in constants.c to default val = 200 or 0 based on dorp val and scoremtx val
 		if     ( scoremtx ==  0 ) fprintf( fp, "JTT %dPAM\n", pamN );
-		else if( scoremtx ==  1 ) fprintf( fp, "BLOSUM %d\n", nblosum );
+		else if( scoremtx ==  1 ) fprintf( fp, "BLOSUM %d\n", nblosum ); //defined in defs.h and set here to 62
 		else if( scoremtx ==  2 ) fprintf( fp, "M-Y\n" );
 	}
+	//ppenalty, ppenalty_ex and poffset are defined in defs.h and set in constants.c
     fprintf( stderr, "Gap Penalty = %+5.2f, %+5.2f, %+5.2f\n", (double)ppenalty/1000, (double)ppenalty_ex/1000, (double)poffset/1000 );
-    if( use_fft ) fprintf( fp, "FFT on\n" );
+    if( use_fft ) fprintf( fp, "FFT on\n" ); //use_fft defined in defs.h. set here to 0
 
 	fprintf( fp, "tree-base method\n" );
-	if( tbrweight == 0 ) fprintf( fp, "unweighted\n" );
+	if( tbrweight == 0 ) fprintf( fp, "unweighted\n" ); //defined in defs.h. and set here = 3
 	else if( tbrweight == 3 ) fprintf( fp, "clustalw-like weighting\n" );
-	if( tbitr || tbweight ) 
+	if( tbitr || tbweight ) //defined in defs.h. set to 0 here
 	{
 		fprintf( fp, "iterate at each step\n" );
 		if( tbitr && tbrweight == 0 ) fprintf( fp, "  unweighted\n" ); 
@@ -255,7 +260,7 @@ static void WriteOptions( FILE *fp )
 
    	 fprintf( fp, "Gap Penalty = %+5.2f, %+5.2f, %+5.2f\n", (double)ppenalty/1000, (double)ppenalty_ex/1000, (double)poffset/1000 );
 
-	if( alg == 'a' )
+	if( alg == 'a' ) //defined in defs.h. set here to 'A'
 		fprintf( fp, "Algorithm A\n" );
 	else if( alg == 'A' ) 
 		fprintf( fp, "Algorithm A+\n" );
@@ -266,7 +271,7 @@ static void WriteOptions( FILE *fp )
 	else
 		fprintf( fp, "Unknown algorithm\n" );
 
-	if( treemethod == 'x' )
+	if( treemethod == 'x' ) //defined in defs.h and set here to 'x'
 		fprintf( fp, "Tree = UPGMA (3).\n" );
 	else if( treemethod == 's' )
 		fprintf( fp, "Tree = UPGMA (2).\n" );
@@ -275,20 +280,20 @@ static void WriteOptions( FILE *fp )
 	else
 		fprintf( fp, "Unknown tree.\n" );
 
-    if( use_fft )
+    if( use_fft ) //use_fft defined in defs.h. set here to 0
     {
         fprintf( fp, "FFT on\n" );
         if( dorp == 'd' )
             fprintf( fp, "Basis : 4 nucleotides\n" );
         else
         {
-            if( fftscore )
+            if( fftscore ) //defined in defs.h and set here to 1 then set in constants.c
                 fprintf( fp, "Basis : Polarity and Volume\n" );
             else
                 fprintf( fp, "Basis : 20 amino acids\n" );
         }
-        fprintf( fp, "Threshold   of anchors = %d%%\n", fftThreshold );
-        fprintf( fp, "window size of anchors = %dsites\n", fftWinSize );
+        fprintf( fp, "Threshold   of anchors = %d%%\n", fftThreshold ); //defined in defs.h and set in constants.c
+        fprintf( fp, "window size of anchors = %dsites\n", fftWinSize ); //defined in defs.h and set in constants.c
     }
 	else
         fprintf( fp, "FFT off\n" );
@@ -298,7 +303,7 @@ static void WriteOptions( FILE *fp )
 
 int multi2hat3s_main( int argc, char *argv[] )
 {
-	static int  nlen[M];	
+	static int  nlen[M]; //M is defined in mltaln.h and = 500,000
 	static char **name, **seq;
 	static char **bseq;
 	static double *eff;
@@ -307,7 +312,7 @@ int multi2hat3s_main( int argc, char *argv[] )
 	int alloclen;
 	FILE *infp;
 
-	multi2hat3s_arguments( argc, argv );
+	multi2hat3s_arguments( argc, argv ); //parse arguments
 
 	if( inputfile )
 	{
@@ -321,8 +326,8 @@ int multi2hat3s_main( int argc, char *argv[] )
 	else
 		infp = stdin;
 
-	getnumlen( infp );
-	rewind( infp );
+	getnumlen( infp ); //defined in io.c. finds sequences count, max length and dna or protein from input file
+	rewind( infp ); //set the file position to the start of infp
 
 	if( njob < 2 )
 	{
@@ -341,23 +346,26 @@ int multi2hat3s_main( int argc, char *argv[] )
 #if 0
 	Read( name, nlen, seq );
 #else
-	readData_pointer( infp, name, nlen, seq );
+	//this method reads sequences and their names in seq, name and nlen arrays.
+	readData_pointer( infp, name, nlen, seq ); //defined in io.c
 #endif
-	fclose( infp );
+	fclose( infp ); //close input file
 
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
 #if 0
 	fprintf( stderr, "params = %d, %d, %d\n", penalty, penalty_ex, offset );
 #endif
 
-	initSignalSM();
+	initSignalSM(); //defined in io.c - inits signalSM value
 
-	initFiles();
+	initFiles(); //defined in io.c - inits prep_g and trap_g files. I think these files are for tracing
 
-	WriteOptions( trap_g );
+	WriteOptions( trap_g ); //defined here. trap_g is defined in defs.h
 
-	c = seqcheck( seq );
+	c = seqcheck( seq ); //defined in mltaln9.c. check seq and report error if unusual character is found
 	if( c )
 	{
 		fprintf( stderr, "Illeagal character %c\n", c );
@@ -369,13 +377,14 @@ int multi2hat3s_main( int argc, char *argv[] )
 	for( i=0; i<njob; i++ ) eff[i] = 1.0;
 
 
-	for( i=0; i<njob; i++ ) gappick0( bseq[i], seq[i] );
+	for( i=0; i<njob; i++ ) gappick0( bseq[i], seq[i] ); //defined in mltaln9.c. copy seq[i] to bseq[i] without gaps
 
 
 //	for( i=0; i<njob; i++ ) fprintf( stdout, ">_seed_%s\n%s\n", name[i]+1, bseq[i] ); // CHUUI!!
-	for( i=0; i<njob; i++ ) fprintf( stdout, ">_seed_%s\n%s\n", name[i]+1, seq[i] );
+	for( i=0; i<njob; i++ ) fprintf( stdout, ">_seed_%s\n%s\n", name[i]+1, seq[i] ); //print seed input sequences to output file
 
-	pairalign( name, nlen, seq, eff, alloclen );
+	//It finds all pair local alignment between all sequences in the input file, and save this info in hat3 file
+	pairalign( name, nlen, seq, eff, alloclen ); //defined here.
 
 	fprintf( trap_g, "done.\n" );
 #if DEBUG
