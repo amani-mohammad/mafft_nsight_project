@@ -8995,7 +8995,7 @@ void commongappick_record( int nseq, char **seq, int *map )
 	int len = strlen( seq[0] );
 
 
-	for( i=0, count=0; i<=len; i++ ) 
+	for( i=0, count=0; i<=len; i++ ) //loop on seq[0]
 	{
 	/*
 		allgap = 1;
@@ -9004,17 +9004,19 @@ void commongappick_record( int nseq, char **seq, int *map )
 		if( !allgap )
 	*/
 		for( j=0; j<nseq; j++ )
-			if( seq[j][i] != '-' ) break;
-		if( j != nseq )
+			if( seq[j][i] != '-' ) break; //if not gap, break without incrementing j
+		if( j != nseq ) //this happens when it breaks from previous loop
 		{
 			for( j=0; j<nseq; j++ )
 			{
-				seq[j][count] = seq[j][i];
+				seq[j][count] = seq[j][i]; //copy chars from seq[j][i] to seq [j][count]
 			}
 			map[count] = i;
 			count++;
 	 	}
 	}
+	//at end of this loop, seq[i] contains all chars in seq filled in sequentially without gaps and other remaining chars at the end
+	//also, map contains indices of chars in seq
 }
 
 

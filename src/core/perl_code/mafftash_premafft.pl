@@ -14,6 +14,7 @@
 #####################################################################
 
 #moni: PDB -> Protein Data Bank, PDBIDs -> Protein Data Bank IDs. I think this file performs some operations on server and returns back with results.
+#moni: may 20: i think this file is used to get hat3 files from server in case it is not generated from code
 
 use strict;
 use Getopt::Long;

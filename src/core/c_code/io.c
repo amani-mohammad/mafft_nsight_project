@@ -2601,7 +2601,7 @@ void write1seq( FILE *fp, char *aseq )
 	int nalen;
 
 	nalen = strlen( aseq );
-	for( j=0; j<nalen; j=j+C )
+	for( j=0; j<nalen; j=j+C ) //C is constant defined in mltaln.c and = 60
 		fprintf( fp, "%.*s\n", C, aseq+j );
 }
 

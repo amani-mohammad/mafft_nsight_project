@@ -40,19 +40,20 @@ static void readrawmccaskill( FILE *fp, RNApair **pairprob, int length )
 	double prob;
 
 	pairnum = (int *)calloc( length, sizeof( int ) );
-	for( i=0; i<length; i++ ) pairnum[i] = 0;
+	for( i=0; i<length; i++ ) pairnum[i] = 0; //length = max length of sequences
 
 	while( 1 )
 	{
-		fgets( gett, 999, fp );
+		fgets( gett, 999, fp ); //read line from fp to gett with max 999 chars
 		if( feof( fp ) ) break;
 		if( gett[0] == '>' ) continue;
-		sscanf( gett, "%d %d %lf", &left, &right, &prob );
+		sscanf( gett, "%d %d %lf", &left, &right, &prob ); //read formatted input from gett string
 		if( prob < 0.01 ) continue; // mxscarna to mafft ryoho ni eikyou
 //fprintf( stderr, "gett = %s\n", gett );
 
 		if( left != right && prob > 0.0 )
 		{
+			//realloc resizes the memory block pointed to by pairprob[left] that was previously allocated
 			pairprob[left] = (RNApair *)realloc( pairprob[left], (pairnum[left]+2) * sizeof( RNApair ) );
 			pairprob[left][pairnum[left]].bestscore = prob;
 			pairprob[left][pairnum[left]].bestpos = right;
@@ -162,13 +163,13 @@ static void *athread( void *arg )
 void kill_wrap_arguments( int argc, char *argv[] )
 {
     int c;
-	nthread = 1;
-	inputfile = NULL;
-	dorp = NOTSPECIFIED;
-	kimuraR = NOTSPECIFIED;
-	pamN = NOTSPECIFIED;
+	nthread = 1; //defined in defs.c
+	inputfile = NULL; //defined in defs.h
+	dorp = NOTSPECIFIED; //defined in defs.c
+	kimuraR = NOTSPECIFIED; //defined in defs.h
+	pamN = NOTSPECIFIED; //defined in defs.h
 	whereismccaskillmea = NULL;
-	alg = 's';
+	alg = 's'; //defined in defs.h
 
     while( --argc > 0 && (*++argv)[0] == '-' )
 	{
@@ -225,7 +226,7 @@ int mccaskillwrap_main( int argc, char *argv[] )
 	static int *order;
 	int i, j;
 	FILE *infp;
-	RNApair ***pairprob;
+	RNApair ***pairprob; //RNApair is a structure defined in mltaln.h
 	RNApair **alnpairprob;
 	RNApair *pairprobpt;
 	RNApair *pt;
@@ -253,10 +254,10 @@ int mccaskillwrap_main( int argc, char *argv[] )
 	if( !whereismccaskillmea )
 		whereismccaskillmea = "";
 
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. finds sequences count, max length and dna or protein from input file
 	rewind( infp );
 
-	if( dorp != 'd' )
+	if( dorp != 'd' ) //protein, so exit. this means that this file is executed for only nucleotides
 	{
 		fprintf( stderr, "nuc only\n" );
 		exit( 1 );
@@ -274,9 +275,10 @@ int mccaskillwrap_main( int argc, char *argv[] )
 
 	for( i=0; i<nlenmax; i++ ) alnpairnum[i] = 0;
 
-	readData_pointer( infp, name, nlen, seq );
+	readData_pointer( infp, name, nlen, seq ); //defined in io.c. it reads sequences and their names in seq, name and nlen arrays.
 	fclose( infp );
 
+	//initialize pairprob, alnpairprob and nogap matrices
 	for( i=0; i<njob; i++ )
 	{
 		pairprob[i] = (RNApair **)calloc( nlenmax, sizeof( RNApair * ) );
@@ -297,7 +299,9 @@ int mccaskillwrap_main( int argc, char *argv[] )
 	}
 
 
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
 	if( alg == 'G' )
 		fprintf( stderr, "Running DAFS (Sato et al. 2012; http://www.ncrna.org/).\n" );
@@ -354,37 +358,41 @@ int mccaskillwrap_main( int argc, char *argv[] )
 		for( i=0; i<njob; i++ )
 		{
 			fprintf( stderr, "%d / %d\n", i+1, njob );
-			commongappick_record( 1, nogap+i, gapmap[i] );
+			commongappick_record( 1, nogap+i, gapmap[i] ); //defined in mltaln9.c.
+			//at end of this method, nogap[i] contains all chars in nogap filled in sequentially without gaps
+			//and other remaining chars at the end. Also, gapmap contains indices of chars in nogap[i]
 			if( strlen( nogap[i] ) == 0 ) 
 			{
 				fprintf( stdout, ">%d\n", i );
-				continue;
+				continue; //jump directly to next loop iteration
 			}
 
 			infp = fopen( "_mccaskillinorg", "w" );
 //			fprintf( infp, ">in\n%s\n", nogap[i] );
 			fprintf( infp, ">in\n" );
-			write1seq( infp, nogap[i] );
+			write1seq( infp, nogap[i] ); //defined in io.c. write nogap[i] in infp
 			fclose( infp );
 	
+			//this function passes the command parameter to the host environment to be executed by the command-processor
+			//and returns after the command has been executed.
 			system( "tr -d '\\r' < _mccaskillinorg > _mccaskillin" ); // for cygwin, wakaran
 			if( alg == 'G' )
 				sprintf( com, "env PATH=%s dafs --mafft-out _mccaskillout _mccaskillin > _dum1 2>_dum", whereismccaskillmea );
 			else
 				sprintf( com, "env PATH=%s mxscarnamod -m -writebpp  _mccaskillin > _mccaskillout 2>_dum", whereismccaskillmea );
-			res = system( com );
+			res = system( com ); //execute the last given command in 'com'
 	
-			if( res )
+			if( res ) //res == -1, then error
 			{
 				fprintf( stderr, "ERROR IN mccaskill_mea\n" );
 				exit( 1 );
 			}
 	
 			infp = fopen( "_mccaskillout", "r" );
-			readrawmccaskill( infp, pairprob[i], nlenmax );
+			readrawmccaskill( infp, pairprob[i], nlenmax ); //defined here. fill pairprob[i] with values based on '_mccaskillout' file content
 			fclose( infp );
 			fprintf( stdout, ">%d\n", i );
-			outmccaskill( stdout, pairprob[i], nlenmax );
+			outmccaskill( stdout, pairprob[i], nlenmax ); //defined here. print pairprob[i] content to stdout
 		}
 	}
 
@@ -416,13 +424,14 @@ int mccaskillwrap_main( int argc, char *argv[] )
 			pt->bestscore += prob;
 			if( pt->bestpos != right )
 			{
-				fprintf( stderr, "okashii!\n" );
+				fprintf( stderr, "okashii!\n" ); //okashii = funny
 				exit( 1 );
 			}
 //			fprintf( stderr, "adding %d-%d, %f\n", left, right, prob );
 		}
 	}
 
+	//free all allocated memory
 	for( i=0; i<njob; i++ )
 	{
 		for( j=0; j<nlenmax; j++ ) free( pairprob[i][j] );
@@ -441,6 +450,9 @@ int mccaskillwrap_main( int argc, char *argv[] )
 	freeconstants();
 	fprintf( stderr, "%d thread(s)\n", nthread );
 	return( 0 );
+
+	//so, after this file, I think it reads sequences from input file then performs some operations on them
+	//based on data read from _mccaskillinorg and _mccaskillout files. All output are stored to output file
 
 #if 0
 	fprintf( stdout, "result=\n" );

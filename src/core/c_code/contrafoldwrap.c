@@ -25,6 +25,7 @@ void unknown_n( char *out, char *in )
 		in++;
 	}
 	*out = 0; // i need to understand why it sets *out = 0, this happens with all created char*
+	//now I understand it, it stands at the first char in the char array
 }
 
 void outcontrafold( FILE *fp, RNApair **pairprob, int length )
@@ -49,33 +50,34 @@ static void readcontrafold( FILE *fp, RNApair **pairprob, int length )
 	double prob;
 
 	pairnum = (int *)calloc( length, sizeof( int ) );
-	for( i=0; i<length; i++ ) pairnum[i] = 0;
+	for( i=0; i<length; i++ ) pairnum[i] = 0; //length = max length of sequences
 
 	while( 1 )
 	{
 		if( feof( fp ) ) break;
-		fgets( gett, 9999, fp );
+		fgets( gett, 9999, fp ); //read line from fp to gett with max 999 chars
 
 //		fprintf( stderr, "gett=%s\n", gett );
 
 		pt = gett;
 
-		sscanf( gett, "%d ", &left );
+		sscanf( gett, "%d ", &left ); //read formatted input from gett string
 		left--;
 
 //		fprintf( stderr, "left=%d\n", left );
-		pt = strchr( pt, ' ' ) + 1;
+		pt = strchr( pt, ' ' ) + 1; //strchr finds the first occurrence of char ' ' in pt
 //		fprintf( stderr, "pt=%s\n", pt );
 
-		while( (pt = strchr( pt, ' ' ) ) )
+		while( (pt = strchr( pt, ' ' ) ) ) //while there is spaces in pt
 		{
 			pt++;
 //			fprintf( stderr, "pt=%s\n", pt );
-			sscanf( pt, "%d:%lf", &right, &prob );
+			sscanf( pt, "%d:%lf", &right, &prob ); //read formatted input from gett string
 			right--;
 
 //			fprintf( stderr, "%d-%d, %f\n", left, right, prob );
 
+			//realloc resizes the memory block pointed to by pairprob[left] that was previously allocated
 			pairprob[left] = (RNApair *)realloc( pairprob[left], (pairnum[left]+2) * sizeof( RNApair ) );
 			pairprob[left][pairnum[left]].bestscore = prob;
 			pairprob[left][pairnum[left]].bestpos = right;
@@ -100,10 +102,10 @@ static void readcontrafold( FILE *fp, RNApair **pairprob, int length )
 void contraArguments( int argc, char *argv[] ) //parse arguments
 {
     int c;
-	inputfile = NULL;
-	dorp = NOTSPECIFIED;
-	kimuraR = NOTSPECIFIED;
-	pamN = NOTSPECIFIED;
+	inputfile = NULL; //defined in defs.h
+	dorp = NOTSPECIFIED; //defined in defs.c
+	kimuraR = NOTSPECIFIED; //defined in defs.h
+	pamN = NOTSPECIFIED; //defined in defs.h
 	whereiscontrafold = NULL;
 
     while( --argc > 0 && (*++argv)[0] == '-' )
@@ -150,7 +152,7 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 	static int *order;
 	int i, j;
 	FILE *infp;
-	RNApair ***pairprob;
+	RNApair ***pairprob; //RNApair is a structure defined in mltaln.h
 	RNApair **alnpairprob;
 	RNApair *pairprobpt;
 	RNApair *pt;
@@ -175,10 +177,10 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 	if( !whereiscontrafold )
 		whereiscontrafold = "";
 
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. finds sequences count, max length and dna or protein from input file
 	rewind( infp );
 
-	if( dorp != 'd' )
+	if( dorp != 'd' ) //protein, so exit. this means that this file is executed for only nucleotides
 	{
 		fprintf( stderr, "nuc only\n" );
 		exit( 1 );
@@ -196,9 +198,10 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 
 	for( i=0; i<nlenmax; i++ ) alnpairnum[i] = 0;
 
-	readData_pointer( infp, name, nlen, seq );
+	readData_pointer( infp, name, nlen, seq ); //defined in io.c. it reads sequences and their names in seq, name and nlen arrays.
 	fclose( infp );
 
+	//initialize pairprob, alnpairprob and nogap matrices
 	for( i=0; i<njob; i++ )
 	{
 		pairprob[i] = (RNApair **)calloc( nlenmax, sizeof( RNApair * ) );
@@ -208,7 +211,7 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 			pairprob[i][j][0].bestpos = -1;
 			pairprob[i][j][0].bestscore = -1.0;
 		}
-		unknown_n( nogap[i], seq[i] );
+		unknown_n( nogap[i], seq[i] ); //defined here. copy seq[i] chars to nogap[i] with capital chars and N for unknown chars
 		order[i] = i;
 	}
 	for( j=0; j<nlenmax; j++ )
@@ -219,13 +222,17 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 	}
 
 
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
 	fprintf( stderr, "running contrafold\n" );
 	for( i=0; i<njob; i++ )
 	{
 		fprintf( stderr, "%d / %d\n", i+1, njob );
-		commongappick_record( 1, nogap+i, gapmap[i] );
+		commongappick_record( 1, nogap+i, gapmap[i] ); //defined in mltaln9.c.
+		//at end of this method, nogap[i] contains all chars in nogap filled in sequentially without gaps
+		//and other remaining chars at the end. Also, gapmap contains indices of chars in nogap[i]
 		infp = fopen( "_contrafoldin", "w" );
 		fprintf( infp, ">in\n%s\n", nogap[i] );
 		fclose( infp );
@@ -234,8 +241,8 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 #else // contrafold v2
 		sprintf( com, "env PATH=%s contrafold predict _contrafoldin --posteriors 0.01   _contrafoldout", whereiscontrafold );
 #endif
-		res = system( com );
-		if( res )
+		res = system( com ); //execute the last given command in 'com'
+		if( res ) //res == -1, then error
 		{
 			fprintf( stderr, "error in contrafold\n" );
 			fprintf( stderr, "=================================================================\n" );
@@ -253,10 +260,10 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 
 
 		infp = fopen( "_contrafoldout", "r" );
-		readcontrafold( infp, pairprob[i], nlenmax );
+		readcontrafold( infp, pairprob[i], nlenmax ); //defined here. fill pairprob[i] with values based on '_contrafoldout' file content
 		fclose( infp );
 		fprintf( stdout, ">%d\n", i );
-		outcontrafold( stdout, pairprob[i], nlenmax );
+		outcontrafold( stdout, pairprob[i], nlenmax ); //defined here. print pairprob[i] content to stdout
 	}
 
 	for( i=0; i<njob; i++ )
@@ -294,6 +301,11 @@ int contrafold_wrap_main( int argc, char *argv[] ) //main of the file
 		}
 	}
 	return( 0 );
+
+	//so, after this file, I think it reads sequences from input file then performs some operations on them
+	//based on data read from contrafold, _contrafoldin and _contrafoldout files. All output are stored to output file
+
+	//some thing strange here - different from mccaskillwrap -. No memory deallocation happens !!!
 
 #if 0
 	fprintf( stdout, "result=\n" );

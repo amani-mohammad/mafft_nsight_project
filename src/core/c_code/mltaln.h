@@ -43,7 +43,7 @@
 #define N 5000000       /* nlen no saidaiti */
 #define MAXSEG 100000
 #define B     256
-#define C     60       /*  1 gyou no mojisuu */
+#define C     60       /*  1 gyou no mojisuu */ //gyou no mojisuu = number of sequential chars
 #define D      6
 #define DFORMAT      "%#6.3f"
 #define rnd() ( ( 1.0 / ( RAND_MAX + 1.0 ) ) * rand() )
