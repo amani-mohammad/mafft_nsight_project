@@ -491,6 +491,10 @@ void putlocalhom3( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 		}
 	}
 }
+
+//I think this method scans the two sequences mseq1[0] and mseq2[1] and saves score and other alignment info in localhomtable
+//what i need to understand now is LocalHom mechanism and how it works exactly
+//This method is similar to putlocalhom2 except in localhompt->last assignment and localhompt->opt calculation
 void putlocalhom_ext( char *al1, char *al2, LocalHom *localhompt, int off1, int off2, int opt, int overlapaa, char korh )
 {
 	int pos1, pos2, start1, start2, end1, end2;
@@ -498,7 +502,7 @@ void putlocalhom_ext( char *al1, char *al2, LocalHom *localhompt, int off1, int 
 	int iscore;
 	int isumscore;
 	int sumoverlap;
-	LocalHom *tmppt = localhompt;
+	LocalHom *tmppt = localhompt; //LocalHom is a structure defined in mltaln.h.
 	int nlocalhom = 0;
 	int st;
 	pt1 = al1; pt2 = al2;
@@ -512,7 +516,7 @@ void putlocalhom_ext( char *al1, char *al2, LocalHom *localhompt, int off1, int 
 
 	st = 0;
 	iscore = 0;
-	while( *pt1 != 0 )
+	while( *pt1 != 0 ) //while first sequence contains chars
 	{
 //		fprintf( stderr, "pt = %c, %c, st=%d\n", *pt1, *pt2, st );
 		if( st == 1 && ( *pt1 == '-' || *pt2 == '-' ) )
@@ -535,7 +539,7 @@ void putlocalhom_ext( char *al1, char *al2, LocalHom *localhompt, int off1, int 
 			tmppt->korh   = korh  ;
 
 #if 1
-			if( divpairscore )
+			if( divpairscore ) //defined in io.c and set in multi2hat3s to 0
 			{
 				tmppt->overlapaa   = end2-start2+1;
 				tmppt->opt = (double)iscore / tmppt->overlapaa * 5.8 / 600;
@@ -565,6 +569,7 @@ void putlocalhom_ext( char *al1, char *al2, LocalHom *localhompt, int off1, int 
 				start1 = pos1; start2 = pos2;
 				st = 1;
 			}
+			//n_dis and amino_n are defined in defs and initialized in constants.c (before this method is called)
 			iscore += n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]]; // - offset ��������������
 //			fprintf( stderr, "%c-%c, iscore(0) = %d\n", *pt1, *pt2, iscore );
 		}
@@ -673,8 +678,8 @@ void putlocalhom_str( char *al1, char *al2, double *equiv, double scale, LocalHo
 	}
 }
 
-
-
+//I think this method scans the two sequences mseq1[0] and mseq2[1] and saves score and other alignment info in localhomtable
+//what i need to understand now is LocalHom mechanism and how it works exactly
 void putlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, int off2, int opt, int overlapaa, char korh )
 {
 	int pos1, pos2, start1, start2, end1, end2;
@@ -682,7 +687,7 @@ void putlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, int off
 	int iscore;
 	int isumscore;
 	int sumoverlap;
-	LocalHom *tmppt = localhompt;
+	LocalHom *tmppt = localhompt; //LocalHom is a structure defined in mltaln.h.
 	int nlocalhom = 0;
 	int st;
 	pt1 = al1; pt2 = al2;
@@ -953,9 +958,9 @@ char *cutal( char *al, int al_display_start, int start, int end )
 	do
 	{
 		if( start == pos ) val = pt;
-		if( end == pos ) break;
+		if( end == pos ) break; //break while loop
 //		fprintf( stderr, "pos=%d, *pt=%c, val=%p\n", pos, *pt, val );
-		if( *pt != '-' ) pos++;
+		if( *pt != '-' ) pos++; //if char is not gap, increment pos
 	} while( *pt++ != 0 );
 	*(pt+1) = 0;
 	return( val );
@@ -1042,6 +1047,7 @@ char    s[] ; int l ; FILE *fp ;
 		return( 0 );
 }
 
+//read float value from fp and return it
 double input_new( FILE *fp, int d )
 {
 	char mojiretsu[10];
@@ -1418,6 +1424,7 @@ char *load1SeqWithoutName_realloc( FILE *fpp )
 	return( val );
 }
 
+//I think this reads sequence into cbuf - without name -.
 int load1SeqWithoutName_new( FILE *fpp, char *cbuf )
 {
 	int c, b;
@@ -2546,6 +2553,7 @@ void writeDataforgaln( FILE *fp, int locnjob, char **name, int *nlen, char **ase
 	}
 }
 
+//write sequences and their names to fp file
 void writeData_pointer( FILE *fp, int locnjob, char **name, int *nlen, char **aseq )
 {
 	int i, j;
@@ -2594,7 +2602,7 @@ void writeData( FILE *fp, int locnjob, char name[][B], int nlen[], char **aseq )
 	}
 }
 
-
+//write aseq to fp
 void write1seq( FILE *fp, char *aseq )
 {
 	int j;
@@ -2641,24 +2649,26 @@ void readhat2_doublehalf_part_pointer( FILE *fp, int nseq, int nadd, char **name
     }
 }
 
+//read values from fp and fill mtx with them
 void readhat2_doublehalf_pointer( FILE *fp, int nseq, char **name, double **mtx )
 {
     int i, j, nseq0;
     char b[B];
 
-    fgets( b, B, fp );
-    fgets( b, B, fp ); b[5] = 0; nseq0 = atoi( b ); if( nseq != nseq0 ) 
+    fgets( b, B, fp ); //read first line
+    fgets( b, B, fp ); b[5] = 0; nseq0 = atoi( b ); if( nseq != nseq0 ) //then read value from second line and if != number of sequences, return error and exit
 	{
 		fprintf( stderr, "%d != %d\n", nseq, nseq0 );
 		ErrorExit( "hat2 is wrong." );
 	}
-    fgets( b, B, fp );
+    fgets( b, B, fp ); //read third line
     for( i=0; i<nseq; i++ )
     {
 #if 0
         getaline_fp_eof( b, B, fp ); 
 #else
-		myfgets( b, B-2, fp );
+        //what i understand till now is that this reads first line of each sequence(seq. name) into char sequence
+		myfgets( b, B-2, fp ); //defined here.
 #endif
 #if 0
 		j = MIN( strlen( b+6 ), 10 );
@@ -2670,9 +2680,9 @@ void readhat2_doublehalf_pointer( FILE *fp, int nseq, char **name, double **mtx 
 		}
 #endif
     }
-    for( i=0; i<nseq-1; i++ ) for( j=i+1; j<nseq; j++ )
+    for( i=0; i<nseq-1; i++ ) for( j=i+1; j<nseq; j++ ) //for each sequence pair
     {
-        mtx[i][j-i] = ( input_new( fp, D ) );
+        mtx[i][j-i] = ( input_new( fp, D ) ); //input_new defined here. read float value from fp and return it
     }
 }
 void readhat2_doublehalf( FILE *fp, int nseq, char name[M][B], double **mtx )
@@ -2827,24 +2837,26 @@ void readhat2( FILE *fp, int nseq, char name[M][B], double **mtx )
     }
 }
 
+//write name and mtx content to hat2p file in specific format
 void WriteFloatHat2_pointer_halfmtx( FILE *hat2p, int locnjob, char **name, double **mtx )
 {
 	int i, j, ijsa;
 	double max = 0.0;
-	for( i=0; i<locnjob-1; i++ ) for( j=1; j<locnjob-i; j++ ) if( mtx[i][j] > max ) max = mtx[i][j];
+	for( i=0; i<locnjob-1; i++ ) for( j=1; j<locnjob-i; j++ ) if( mtx[i][j] > max ) max = mtx[i][j]; //get max value from mtx.
 
+	//write number of sequences and max distance value to hat2 file
 	fprintf( hat2p, "%5d\n", 1 );
 	fprintf( hat2p, "%5d\n", locnjob );
 	fprintf( hat2p, " %#6.3f\n", max * 2.5 );
 
-	for( i=0; i<locnjob; i++ ) fprintf( hat2p, "%4d. %s\n", i+1, name[i] );
-	for( i=0; i<locnjob; i++ )
+	for( i=0; i<locnjob; i++ ) fprintf( hat2p, "%4d. %s\n", i+1, name[i] ); //write names to file
+	for( i=0; i<locnjob; i++ ) //then write sequences
 	{
 		for( j=i+1; j<njob; j++ )
 		{
-			fprintf( hat2p, DFORMAT, mtx[i][j-i] );
+			fprintf( hat2p, DFORMAT, mtx[i][j-i] ); //DFORMAT defined in mltaln.h.
 			ijsa = j-i;
-			if( ijsa % 12 == 0 || ijsa == locnjob-i-1 ) fprintf( hat2p, "\n" );
+			if( ijsa % 12 == 0 || ijsa == locnjob-i-1 ) fprintf( hat2p, "\n" ); //write new line
 		}
 	}
 }
@@ -2913,6 +2925,7 @@ void WriteHat2_int( FILE *hat2p, int locnjob, char name[M][B], int **mtx )
 	}
 }
 
+//write name and mtx content to hat2p file in specific format
 void WriteHat2_part_pointer( FILE *hat2p, int locnjob, int nadd, char **name, double **mtx )
 {
 	int i, j;
@@ -2929,8 +2942,8 @@ void WriteHat2_part_pointer( FILE *hat2p, int locnjob, int nadd, char **name, do
 	{
 		for( j=0; j<nadd; j++ ) 
 		{
-			fprintf( hat2p, DFORMAT, mtx[i][j] );
-			if( (j+1) % 12 == 0 || j == nadd-1 ) fprintf( hat2p, "\n" );
+			fprintf( hat2p, DFORMAT, mtx[i][j] ); //DFORMAT defined in mltaln.h.
+			if( (j+1) % 12 == 0 || j == nadd-1 ) fprintf( hat2p, "\n" ); //add new line
 		}
 	}
 }
@@ -2939,21 +2952,22 @@ void WriteHat2_pointer( FILE *hat2p, int locnjob, char **name, double **mtx )
 {
 	int i, j;
 	double max = 0.0;
-	for( i=0; i<locnjob-1; i++ ) for( j=i+1; j<locnjob; j++ ) if( mtx[i][j] > max ) max = mtx[i][j];
+	for( i=0; i<locnjob-1; i++ ) for( j=i+1; j<locnjob; j++ ) if( mtx[i][j] > max ) max = mtx[i][j]; //get max val from mtx
 
+	//write number of sequences and max distance value to hat2 file
 	fprintf( hat2p, "%5d\n", 1 );
 	fprintf( hat2p, "%5d\n", locnjob );
 	fprintf( hat2p, " %#6.3f\n", max * 2.5 );
 
-	for( i=0; i<locnjob; i++ ) fprintf( hat2p, "%4d. %s\n", i+1, name[i] );
+	for( i=0; i<locnjob; i++ ) fprintf( hat2p, "%4d. %s\n", i+1, name[i] ); //write sequences names to hat2 file
 	for( i=0; i<locnjob-1; i++ )
 	{
 		for( j=i+1; j<locnjob; j++ ) 
 		{
-			fprintf( hat2p, DFORMAT, mtx[i][j] );
+			fprintf( hat2p, DFORMAT, mtx[i][j] ); //DFORMAT is constant format defined in mltaln.h
 			if( (j-i) % 12 == 0 || j == locnjob-1 ) fprintf( hat2p, "\n" );
 		}
-	}
+	} //print mtx values in hat2 file
 }
 
 void WriteHat2( FILE *hat2p, int locnjob, char name[M][B], double **mtx )
@@ -3456,14 +3470,14 @@ int ReadFasta34noalign( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *localhomlist )
 {
     int count=0;
-    char b[B];
+    char b[B]; //B is constant in mltaln.h and = 256
 	char *pt;
-    static int junban[M];
+    static int junban[M]; //B is constant in mltaln.h and = 500,000
 	int overlapaa;
 	int opt, qstart, qend, tstart, tend;
 	double z, bits;
 	int qal_display_start, tal_display_start;
-	static char qal[N], tal[N];
+	static char qal[N], tal[N]; //N is constant in mltaln.h and = 5,000,000
 	char *qal2, *tal2;
 	int c;
 
@@ -3475,22 +3489,22 @@ int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *
     while( !feof( fp ) )
 #endif
     {
-        fgets( b, B-1, fp );
-        if( !strncmp( "+==========+", b, 12 ) )
+        fgets( b, B-1, fp ); //read line from fp to b with max B-1 chars
+        if( !strncmp( "+==========+", b, 12 ) ) //strncmp compares at most the first 12 bytes of two strings
         {
-            junban[count] = atoi( b+12 );
+            junban[count] = atoi( b+12 ); //read sequence index into junban[count]
 
-			if( strchr( b, 'r' ) ) continue;
+			if( strchr( b, 'r' ) ) continue; //find first occurrence of 'r' in b. if not found, continue to next iteration
 
-			pt = strchr( b, ']' ) + 1;
-			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); 
-            dis[junban[count]] = (double)opt;
+			pt = strchr( b, ']' ) + 1; //find first occurrence of ']' in b and point to next char
+			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); //read formatted input from pt string
+            dis[junban[count]] = (double)opt; //set opt value in dis[seq. index]
             count++;
 
         }
 		else if( 0 == strncmp( ">>+==========+", b, 14 ) )
 		{
-			break;
+			break; //leave while loop and jump to next code
 		}
 
     }
@@ -3501,37 +3515,37 @@ int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 	{
 		if( strncmp( ">>+==========+", b, 14 ) )
 		{
-			fgets( b, B-1, fp );
-			if( feof( fp ) ) break;
-			continue;
+			fgets( b, B-1, fp ); //read line from fp to b with max B-1 chars
+			if( feof( fp ) ) break; //leave loop
+			continue; //jump to next iteration
 		}
-		junban[count++] = atoi( b+14 );
+		junban[count++] = atoi( b+14 ); //set int at b[14] to junban[count]
 //		fprintf( stderr, "t = %d\n", atoi( b+14 ) );
 		while( fgets( b, B-1, fp ) )
-			if( !strncmp( "; fa_opt:", b, 9 ) || !strncmp( "; sw_s-w opt:", b, 13 ) ) break;
+			if( !strncmp( "; fa_opt:", b, 9 ) || !strncmp( "; sw_s-w opt:", b, 13 ) ) break; //break this small while loop
 		pt = strstr( b, ":" ) +1;
-		opt = atoi( pt );
+		opt = atoi( pt ); //set opt value
 
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_overlap:", b+4, 9 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		overlapaa = atoi( pt );
+		overlapaa = atoi( pt ); //set overlapaa value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_start:", b+4, 7 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		qstart = atoi( pt ) - 1;
+		qstart = atoi( pt ) - 1; //set qstart value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_stop:", b+4, 6 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		qend = atoi( pt ) - 1;
+		qend = atoi( pt ) - 1; //set qend value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_display_start:", b+4, 15 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		qal_display_start = atoi( pt ) - 1;
+		qal_display_start = atoi( pt ) - 1; //set qal_display_start value
 
 		pt = qal;
 		while( (c = fgetc( fp )) )
@@ -3539,27 +3553,27 @@ int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 			if( c == '>' ) 
 			{
 				ungetc( c, fp );
-				break;
+				break; //break this while loop
 			}
-			if( isalpha( c ) || c == '-' ) 
-			*pt++ = c;
-		}
+			if( isalpha( c ) || c == '-' ) //check if c is alphabetic or -
+			*pt++ = c; //read char in pt and forward pt.
+		} //I think after this while loop, the sequence chars are saved in qal array
 		*pt = 0;
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_start:", b+4, 7 ) ) break;
 		pt = strstr( b, ":" ) + 1;
-		tstart = atoi( pt ) - 1;
+		tstart = atoi( pt ) - 1; //set tstart value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_stop:", b+4, 6 ) ) break;
 		pt = strstr( b, ":" ) + 1;
-		tend = atoi( pt ) - 1;
+		tend = atoi( pt ) - 1; //set tend value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_display_start:", b+4, 15 ) ) break;
 		pt = strstr( b, ":" ) + 1;
-		tal_display_start = atoi( pt ) - 1;
+		tal_display_start = atoi( pt ) - 1; //set tal_display_start value
 
 		pt = tal;
 		while( ( c = fgetc( fp ) ) )
@@ -3567,11 +3581,11 @@ int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 			if( c == '>' ) 
 			{
 				ungetc( c, fp );
-				break;
+				break; //break this while loop
 			}
-			if( isalpha( c ) || c == '-' ) 
-			*pt++ = c;
-		}
+			if( isalpha( c ) || c == '-' ) //check if c is alphabetic or -
+			*pt++ = c; //read char in pt and forward pt
+		} //I think after this while loop, the sequence chars are saved in tal array
 		*pt = 0;
 
 //		fprintf( stderr, "(%d-%d:%d-%d)\n", qstart, qend, tstart, tend );
@@ -3580,14 +3594,16 @@ int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 //		fprintf( stderr, "qal = %s\n", qal );
 //		fprintf( stderr, "tal = %s\n", tal );
 
-		qal2 = cutal( qal, qal_display_start, qstart, qend );
+		qal2 = cutal( qal, qal_display_start, qstart, qend ); //defined here. I think this method returns subsequence starting from qstart
 		tal2 = cutal( tal, tal_display_start, tstart, tend );
 
 //		fprintf( stderr, "qal2 = %s\n", qal2 );
 //		fprintf( stderr, "tal2 = %s\n", tal2 );
 
 //		fprintf( stderr, "putting   %d - %d, opt = %d\n", qmem, junban[count-1], opt );
-		putlocalhom2( qal2, tal2, localhomlist+junban[count-1], qstart, tstart, opt, overlapaa, 'h' );
+		putlocalhom2( qal2, tal2, localhomlist+junban[count-1], qstart, tstart, opt, overlapaa, 'h' ); //defined here.
+		//I think this method scans the two sequences qal2 and tal2, and save score and other alignment info in localhomlist
+		//what i need to understand now is LocalHom mechanism and how it works exactly
 	}
 //	fprintf( stderr, "count = %d\n", count );
     return count;
@@ -3595,14 +3611,14 @@ int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 int ReadFasta34m10( FILE *fp, double *dis, int qmem, char **name, LocalHom *localhomlist )
 {
     int count=0;
-    char b[B];
+    char b[B]; //B is constant in mltaln.h and = 256
 	char *pt;
-    static int junban[M];
+    static int junban[M]; //B is constant in mltaln.h and = 500,000
 	int overlapaa;
 	int opt, qstart, qend, tstart, tend;
 	double z, bits;
 	int qal_display_start, tal_display_start;
-	static char qal[N], tal[N];
+	static char qal[N], tal[N]; //N is constant in mltaln.h and = 5,000,000
 	char *qal2, *tal2;
 	int c;
 
@@ -3614,20 +3630,20 @@ int ReadFasta34m10( FILE *fp, double *dis, int qmem, char **name, LocalHom *loca
     while( !feof( fp ) )
 #endif
     {
-        fgets( b, B-1, fp );
-        if( !strncmp( "+==========+", b, 12 ) )
+        fgets( b, B-1, fp ); //read line from fp to b with max B-1 chars
+        if( !strncmp( "+==========+", b, 12 ) ) //strncmp compares at most the first 12 bytes of two strings
         {
-            junban[count] = atoi( b+12 );
+            junban[count] = atoi( b+12 ); //read sequence index into junban[count]
 
-			pt = strchr( b, ')' ) + 1;
-			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); 
-            dis[junban[count]] = (double)opt;
+			pt = strchr( b, ')' ) + 1; //find first occurrence of ')' in b and point to next char
+			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); //read formatted input from pt string
+            dis[junban[count]] = (double)opt; //set opt value in dis[seq. index]
             count++;
 
         }
 		else if( 0 == strncmp( ">>+==========+", b, 14 ) )
 		{
-			break;
+			break; //leave while loop and jump to next code
 		}
 
     }
@@ -3638,37 +3654,37 @@ int ReadFasta34m10( FILE *fp, double *dis, int qmem, char **name, LocalHom *loca
 	{
 		if( strncmp( ">>+==========+", b, 14 ) )
 		{
-			fgets( b, B-1, fp );
-			if( feof( fp ) ) break;
-			continue;
+			fgets( b, B-1, fp ); //read line from fp to b with max B-1 chars
+			if( feof( fp ) ) break; //leave loop
+			continue; //jump to next iteration
 		}
-		junban[count++] = atoi( b+14 );
+		junban[count++] = atoi( b+14 ); //set int at b[14] to junban[count]
 //		fprintf( stderr, "t = %d\n", atoi( b+14 ) );
 		while( fgets( b, B-1, fp ) )
-			if( !strncmp( "; fa_opt:", b, 9 ) || !strncmp( "; sw_s-w opt:", b, 13 ) ) break;
+			if( !strncmp( "; fa_opt:", b, 9 ) || !strncmp( "; sw_s-w opt:", b, 13 ) ) break; //break this small while loop
 		pt = strstr( b, ":" ) +1;
-		opt = atoi( pt );
+		opt = atoi( pt ); //set opt value
 
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_overlap:", b+4, 9 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		overlapaa = atoi( pt );
+		overlapaa = atoi( pt ); //set overlapaa value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_start:", b+4, 7 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		qstart = atoi( pt ) - 1;
+		qstart = atoi( pt ) - 1; //set qstart value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_stop:", b+4, 6 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		qend = atoi( pt ) - 1;
+		qend = atoi( pt ) - 1; //set qend value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_display_start:", b+4, 15 ) ) break;
 		pt = strstr( b, ":" ) +1;
-		qal_display_start = atoi( pt ) - 1;
+		qal_display_start = atoi( pt ) - 1; //set qal_display_start value
 
 		pt = qal;
 		while( (c = fgetc( fp )) )
@@ -3676,27 +3692,27 @@ int ReadFasta34m10( FILE *fp, double *dis, int qmem, char **name, LocalHom *loca
 			if( c == '>' ) 
 			{
 				ungetc( c, fp );
-				break;
+				break; //break this while loop
 			}
-			if( isalpha( c ) || c == '-' ) 
-			*pt++ = c;
+			if( isalpha( c ) || c == '-' ) //check if c is alphabetic or -
+			*pt++ = c; //read char in pt and forward pt.
 		}
-		*pt = 0;
+		*pt = 0; //I think after this while loop, the sequence chars are saved in qal array
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_start:", b+4, 7 ) ) break;
 		pt = strstr( b, ":" ) + 1;
-		tstart = atoi( pt ) - 1;
+		tstart = atoi( pt ) - 1; //set tstart value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_stop:", b+4, 6 ) ) break;
 		pt = strstr( b, ":" ) + 1;
-		tend = atoi( pt ) - 1;
+		tend = atoi( pt ) - 1; //set tend value
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "_display_start:", b+4, 15 ) ) break;
 		pt = strstr( b, ":" ) + 1;
-		tal_display_start = atoi( pt ) - 1;
+		tal_display_start = atoi( pt ) - 1; //set tal_display_start value
 
 		pt = tal;
 		while( ( c = fgetc( fp ) ) )
@@ -3704,11 +3720,11 @@ int ReadFasta34m10( FILE *fp, double *dis, int qmem, char **name, LocalHom *loca
 			if( c == '>' ) 
 			{
 				ungetc( c, fp );
-				break;
+				break; //break this while loop
 			}
-			if( isalpha( c ) || c == '-' ) 
-			*pt++ = c;
-		}
+			if( isalpha( c ) || c == '-' ) //check if c is alphabetic or -
+			*pt++ = c; //read char in pt and forward pt
+		} //I think after this while loop, the sequence chars are saved in tal array
 		*pt = 0;
 
 //		fprintf( stderr, "(%d-%d:%d-%d)\n", qstart, qend, tstart, tend );
@@ -3717,14 +3733,16 @@ int ReadFasta34m10( FILE *fp, double *dis, int qmem, char **name, LocalHom *loca
 //		fprintf( stderr, "qal = %s\n", qal );
 //		fprintf( stderr, "tal = %s\n", tal );
 
-		qal2 = cutal( qal, qal_display_start, qstart, qend );
+		qal2 = cutal( qal, qal_display_start, qstart, qend ); //defined here. I think this method returns subsequence starting from qstart
 		tal2 = cutal( tal, tal_display_start, tstart, tend );
 
 //		fprintf( stderr, "qal2 = %s\n", qal2 );
 //		fprintf( stderr, "tal2 = %s\n", tal2 );
 
 //		fprintf( stderr, "putting   %d - %d, opt = %d\n", qmem, junban[count-1], opt );
-		putlocalhom2( qal2, tal2, localhomlist+junban[count-1], qstart, tstart, opt, overlapaa, 'h' );
+		putlocalhom2( qal2, tal2, localhomlist+junban[count-1], qstart, tstart, opt, overlapaa, 'h' ); //defined here.
+		//I think this method scans the two sequences qal2 and tal2, and save score and other alignment info in localhomlist
+		//what i need to understand now is LocalHom mechanism and how it works exactly
 	}
 //	fprintf( stderr, "count = %d\n", count );
     return count;
@@ -4175,6 +4193,7 @@ void readOtherOptions( int *ppidptr, int *fftThresholdptr, int *fftWinSizeptr )
 #endif
 }
 
+//inits signalSM value which is defined in defs.h.
 void initSignalSM( void )
 {
 //	int signalsmid;
@@ -4198,7 +4217,8 @@ void initSignalSM( void )
 #endif
 }
 
-void initFiles( void ) //init prep_g and trap_g files. I think these files are for tracing
+//init prep_g and trap_g files. I think these files are for tracing
+void initFiles( void )
 {
 	char pname[100];
 	if( ppid )
@@ -4223,22 +4243,23 @@ void closeFiles( void )
 
 void WriteForFasta( FILE *fp, int locnjob, char **name, int nlen[M], char **aseq )
 {
-    static char b[N];
+    static char b[N]; //N is constant defined in mltaln9.h and = 5,000,000
     int i, j;
-    int nalen[M];
+    int nalen[M]; //M is constant defined in mltaln9.h and = 500,000
 
     for( i=0; i<locnjob; i++ )
     {
-        nalen[i] = strlen( aseq[i] );
-        fprintf( fp, ">%s\n", name[i] );
-        for( j=0; j<nalen[i]; j=j+C ) 
+        nalen[i] = strlen( aseq[i] ); //set sequence length in nalen[i]
+        fprintf( fp, ">%s\n", name[i] ); //print name[i] in fp file
+        for( j=0; j<nalen[i]; j=j+C ) //read sequence chars
         {
-            strncpy( b, aseq[i]+j, C ); b[C] = 0;
-            fprintf( fp, "%s\n",b );
-        }
+            strncpy( b, aseq[i]+j, C ); b[C] = 0; //copy C chars from aseq[i] to b
+            fprintf( fp, "%s\n",b ); //print b to fp file
+        } //but I need to know, why this writes each C chars - 60 - in separated line. why not the whole sequence ?!!
     }
 }
 
+//updates localhomtable values based on fp content. also set kozoarivec value based on it.
 void readlocalhomtable2_target( FILE*fp, int njob, LocalHom **localhomtable, char *kozoarivec, int *targetmap )
 {
 	double opt;
@@ -4249,10 +4270,10 @@ void readlocalhomtable2_target( FILE*fp, int njob, LocalHom **localhomtable, cha
 
 //	for( i=0; i<njob; i++ ) for( j=0; j<njob; j++ ) nlocalhom[i][j] = 0;
 
-	while ( NULL != fgets( buff, B-1, fp ) )
+	while ( NULL != fgets( buff, B-1, fp ) ) //B is a constant defined in mltaln.h and = 256
 	{
 //		fprintf( stderr, "\n" );
-		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor );
+		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor ); //read these values from file
 		if( *infor == 'k' ) kozoarivec[i] = kozoarivec[j] = 1;
 
 #if 0
@@ -4332,6 +4353,8 @@ void readlocalhomtable2_target( FILE*fp, int njob, LocalHom **localhomtable, cha
 	}
 }
 
+//updates localhomtable values based on fp content. also set kozoarivec value based on it.
+//the difference between this and the previous one is the absence of targetmap here
 void readlocalhomtable2_half( FILE*fp, int njob, LocalHom **localhomtable, char *kozoarivec )
 {
 	double opt;
@@ -4345,7 +4368,7 @@ void readlocalhomtable2_half( FILE*fp, int njob, LocalHom **localhomtable, char 
 	while ( NULL != fgets( buff, B-1, fp ) )
 	{
 //		fprintf( stderr, "\n" );
-		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor );
+		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor ); //read these values from file
 		if( *infor == 'k' ) kozoarivec[i] = kozoarivec[j] = 1;
 
 #if 0
@@ -4938,6 +4961,7 @@ void outlocalhompt( LocalHom ***localhom, int n1, int n2 )
 	}
 }
 
+//free memory allocated to localhomtable
 void FreeLocalHomTable_part( LocalHom **localhomtable, int n, int m ) 
 {
 	int i, j;
@@ -5083,6 +5107,7 @@ void FreeLocalHomTable_one( LocalHom **localhomtable, int n, int m )
 #endif
 }
 
+//free memory allocated to localhomtable
 void FreeLocalHomTable_half( LocalHom **localhomtable, int n ) 
 {
 	int i, j;
@@ -5477,7 +5502,7 @@ static int readasubalignment( char *s, int *t, int *preservegaps )
 	char status = 's';
 	char *pt = s;
 	*preservegaps = 0;
-	tab2space( s );
+	tab2space( s ); //convert tabs to space
 	while( *pt )
 	{
 		if( *pt == ' ' )
@@ -5488,15 +5513,15 @@ static int readasubalignment( char *s, int *t, int *preservegaps )
 		{
 			if( status == 's' ) 
 			{
-				if( *pt == '\n' || *pt == '#' ) break;
+				if( *pt == '\n' || *pt == '#' ) break; //exit while loop
 				status = 'n';
-				t[v] = atoi( pt );
+				t[v] = atoi( pt ); //convert char in pt to int and assign to t[v]
 				if( t[v] == 0 )
 				{
 					fprintf( stderr, "Format error? Sequences must be specified as 1, 2, 3...\n" );
 					exit( 1 );
 				}
-				if( t[v] < 0 ) *preservegaps = 1;
+				if( t[v] < 0 ) *preservegaps = 1; //if negative number, set preservegaps to 1
 				t[v] = abs( t[v] );
 				t[v] -= 1;
 				v++;
@@ -5513,7 +5538,7 @@ static int countspace( char *s )
 	int v = 0;
 	char status = 's';
 	char *pt = s;
-	tab2space( s ); //converts all taps in s to spaces
+	tab2space( s ); //defined here. converts all taps in s to spaces
 	while( *pt )
 	{
 		if( *pt == ' ' )
@@ -5524,7 +5549,7 @@ static int countspace( char *s )
 		{
 			if( status == 's' ) 
 			{
-				if( *pt == '\n' || *pt == '#' ) break;
+				if( *pt == '\n' || *pt == '#' ) break; //exit from while loop
 				v++;
 				status = 'n';
 				if( atoi( pt ) == 0 )
@@ -5539,7 +5564,9 @@ static int countspace( char *s )
 	return( v );
 }
 
-
+//First call of this method with table = NULL reads number of subalignments in subalignments file and assign to nsubpt
+//also reads max number of spaces in all sequences into maxmempt
+//Second call reads data from the file and fills table with it
 void readsubalignmentstable( int nseq, int **table, int *preservegaps, int *nsubpt, int *maxmempt )
 {
 	FILE *fp;
@@ -5565,16 +5592,16 @@ void readsubalignmentstable( int nseq, int **table, int *preservegaps, int *nsub
 		{
 			fgets( line, linelen-1, fp );
 			if( feof( fp ) ) break;
-			if( line[strlen(line)-1] != '\n' )
+			if( line[strlen(line)-1] != '\n' ) //line length exceeds max length
 			{
 				fprintf( stderr, "too long line? \n" );
 				exit( 1 );
 			}
-			if( line[0] == '#' ) continue;
-			if( atoi( line ) == 0 ) continue;
-			nmem = countspace( line ); //count number of spaces in line
-			if( nmem > *maxmempt ) *maxmempt = nmem;
-			(*nsubpt)++;
+			if( line[0] == '#' ) continue; //comment line, so jump to next iteration, i. e. line
+			if( atoi( line ) == 0 ) continue; //jump to next iteration, i. e. line
+			nmem = countspace( line ); //defined here. converts all tabs in line to spaces and counts their number
+			if( nmem > *maxmempt ) *maxmempt = nmem; //maxmempt contains max number of spaces in all subalignments
+			(*nsubpt)++; //increment count of subalignments
 		}
 	}
 	else
@@ -5586,15 +5613,15 @@ void readsubalignmentstable( int nseq, int **table, int *preservegaps, int *nsub
 		{
 			fgets( line, linelen-1, fp );
 			if( feof( fp ) ) break;
-			if( line[strlen(line)-1] != '\n' )
+			if( line[strlen(line)-1] != '\n' ) //line length exceeds max length
 			{
 				fprintf( stderr, "too long line? \n" );
 				exit( 1 );
 			}
-			if( line[0] == '#' ) continue;
-			if( atoi( line ) == 0 ) continue;
-			readasubalignment( line, table[lpos], preservegaps+lpos );
-			for( i=0; (p=table[lpos][i])!=-1; i++ )
+			if( line[0] == '#' ) continue; //comment line, so jump to next iteration, i. e. line
+			if( atoi( line ) == 0 ) continue; //jump to next iteration, i. e. line
+			readasubalignment( line, table[lpos], preservegaps+lpos ); //defined here. read sequence in line and fill table[lpos] with chars
+			for( i=0; (p=table[lpos][i])!=-1; i++ ) //i think this loop checks for duplicated sequences in different groups
 			{
 				if( tab01[p] )
 				{
@@ -5617,7 +5644,7 @@ void readsubalignmentstable( int nseq, int **table, int *preservegaps, int *nsub
 	free( line );
 }
 
-
+//fill pairprob with values from fp file
 void readmccaskill( FILE *fp, RNApair **pairprob, int length )
 {
 	char gett[1000];
@@ -5638,7 +5665,7 @@ void readmccaskill( FILE *fp, RNApair **pairprob, int length )
 			exit( 1 );
 		}
 	}
-	fgets( gett, 999, fp );
+	fgets( gett, 999, fp ); //read line from file
 	while( 1 )
 	{
 		if( feof( fp ) ) break;
@@ -5650,7 +5677,7 @@ void readmccaskill( FILE *fp, RNApair **pairprob, int length )
 		}
 		fgets( gett, 999, fp );
 //		fprintf( stderr, "gett = %s\n", gett );
-		sscanf( gett, "%d %d %lf", &left, &right, &prob );
+		sscanf( gett, "%d %d %lf", &left, &right, &prob ); //fill variables from line
 
 		if( left >= length || right >= length )
 		{
@@ -5682,6 +5709,7 @@ void readmccaskill( FILE *fp, RNApair **pairprob, int length )
 	free( pairnum );
 }
 
+//fill aln1 and aln2 based on alignment values read from fold align file and processed using other args and some calcs.
 void readpairfoldalign( FILE *fp, char *s1, char *s2, char *aln1, char *aln2, int q1, int q2, int *of1, int *of2, int sumlen )
 {
 	char gett[1000];
@@ -5707,11 +5735,11 @@ void readpairfoldalign( FILE *fp, char *s1, char *s2, char *aln1, char *aln2, in
 
 	while( !feof( fp ) )
 	{
-		fgets( gett, 999, fp );
-		if( !strncmp( gett, "; ALIGNING", 10 ) ) break;
+		fgets( gett, 999, fp ); //read line from fold align file
+		if( !strncmp( gett, "; ALIGNING", 10 ) ) break; //if first 10 characters are '; ALIGNING', break from this loop and go to next line after it.
 	}
 	sprintf( qstr, "; ALIGNING            %d against %d\n", q1+1, q2+1 );
-	if( strcmp( gett, qstr ) )
+	if( strcmp( gett, qstr ) ) //if given indices are not like the one read from fold align file
 	{
 		fprintf( stderr, "Error in FOLDALIGN\n" );
 		fprintf( stderr, "qstr = %s, but gett = %s\n", qstr, gett );
@@ -5730,12 +5758,12 @@ void readpairfoldalign( FILE *fp, char *s1, char *s2, char *aln1, char *aln2, in
 		fgets( gett, 999, fp );
 		if( !strncmp( gett, "; ********", 10 ) ) break;
 //		fprintf( stderr, "gett = %s\n", gett );
-		sscanf( gett, "%c %c %s %s %d %d", &dumc, &dumc, sinseq, sinaln, &dumi, &dumi );
+		sscanf( gett, "%c %c %s %s %d %d", &dumc, &dumc, sinseq, sinaln, &dumi, &dumi ); //read values from read line into variables
 		posinaln = atoi( sinaln );
 		posinseq = atoi( sinseq );
 //		fprintf( stderr, "posinseq = %d\n", posinseq );
 //		fprintf( stderr, "posinaln = %d\n", posinaln );
-		maptoseq1[posinaln-1] = posinseq-1;
+		maptoseq1[posinaln-1] = posinseq-1; //fill maptoseq1
 	}
 	alnlen = posinaln;
 
@@ -5750,12 +5778,12 @@ void readpairfoldalign( FILE *fp, char *s1, char *s2, char *aln1, char *aln2, in
 		fgets( gett, 999, fp );
 		if( !strncmp( gett, "; ********", 10 ) ) break;
 //		fprintf( stderr, "gett = %s\n", gett );
-		sscanf( gett, "%c %c %s %s %d %d", &dumc, &dumc, sinseq, sinaln, &dumi, &dumi );
+		sscanf( gett, "%c %c %s %s %d %d", &dumc, &dumc, sinseq, sinaln, &dumi, &dumi ); //read values from read line into variables
 		posinaln = atof( sinaln );
 		posinseq = atof( sinseq );
 //		fprintf( stderr, "posinseq = %d\n", posinseq );
 //		fprintf( stderr, "posinaln = %d\n", posinaln );
-		maptoseq2[posinaln-1] = posinseq-1;
+		maptoseq2[posinaln-1] = posinseq-1; //fill maptoseq2
 	}
 	if( alnlen != posinaln )
 	{

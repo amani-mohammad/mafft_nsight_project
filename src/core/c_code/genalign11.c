@@ -10,6 +10,7 @@
 static TLS int localstop; //localstop variable which is defined in the CUDA MAFFT paper
 
 #if 1
+//fills match array with numbers from mtx based on s1 and s2 chars matching
 static void match_calc_mtx( double **mtx, double *match, char **s1, char **s2, int i1, int lgth2 ) 
 {
 	char *seq2 = s2[0];
@@ -28,6 +29,7 @@ static void match_calc( double *match, char **s1, char **s2, int i1, int lgth2 )
 }
 #endif
 
+//updates mseq1, mseq2, ijpi and ijpj values based on some calculations on other args
 static double gentracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -110,7 +112,7 @@ static double gentracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
-
+//passed here before. it is like G__align11 with some small differences specially absence of warp
 double genL__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen, int *off1pt, int *off2pt )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -274,12 +276,13 @@ double genL__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloc
 
     for( i=0; i<nalphabets; i++) for( j=0; j<nalphabets; j++ )
 		amino_dynamicmtx[(unsigned char)amino[i]][(unsigned char)amino[j]] = (double)n_dynamicmtx[i][j];
+    //amino is defined in defs.h.
 
 	mseq1[0] = mseq[0];
 	mseq2[0] = mseq[1];
 
 
-	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 )
+	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 ) //commonAlloc1 and commonAlloc2 defined in defs.c and set to 0 as default.
 	{
 		int ll1, ll2;
 
@@ -296,8 +299,8 @@ double genL__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloc
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
-		commonJP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c
+		commonJP = AllocateIntMtx( ll1+10, ll2+10 ); //commonJP defined in defs.c
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -318,8 +321,9 @@ double genL__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloc
 	currentw = w1;
 	previousw = w2;
 
-	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 );
-
+	//fills initverticalw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
+	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //defined here.
+	//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 );
 
 
@@ -376,6 +380,7 @@ fprintf( stderr, "\n" );
 
 		previousw[0] = initverticalw[i-1];
 
+		//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 		match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, i, lgth2 );
 #if DEBUG2
 		fprintf( stderr, "%c   ", seq1[0][i] );
@@ -581,8 +586,8 @@ fprintf( stderr, "\n" );
 		return( 0.0 );
 	}
 
-
-	gentracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, cpmx1, cpmx2, ijpi, ijpj, off1pt, off2pt, endali, endalj );
+	//updates mseq1, mseq2, ijpi and ijpj values based on some calculations on other args
+	gentracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, cpmx1, cpmx2, ijpi, ijpj, off1pt, off2pt, endali, endalj ); //defined here.
 
 //	fprintf( stderr, "### impmatch = %f\n", *impmatch );
 

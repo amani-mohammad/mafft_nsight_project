@@ -16,10 +16,11 @@ int seqlen( char *seq )
 	return( val );
 }
 #else
+//this method returns the count of chars in seq without gaps (both - or any other defined gap char)
 int seqlen( char *seq )
 {
 	int val = 0;
-	if( *newgapstr == '-' )
+	if( *newgapstr == '-' ) //defined in defs.c.
 	{
 		while( *seq )
 			if( *seq++ != '-' ) val++;
@@ -35,7 +36,7 @@ int seqlen( char *seq )
 	return( val );
 }
 #endif
-//calculate length of an integer
+//calculate length of an integer array
 int intlen( int *num )
 {
 	int value = 0;
@@ -1409,6 +1410,7 @@ static void msaresetnearest( int nseq, Bchain *acpt, double **distfrompt, double
 }
 #endif
 
+//set mindisfrompt and nearestpt values based on other parameters values and calculations on them
 static void setnearest( int nseq, Bchain *acpt, double **eff, double *mindisfrompt, int *nearestpt, int pos )
 {
 	int j;
@@ -1492,14 +1494,14 @@ static void setnearest_double_fullmtx( int nseq, Bchain *acpt, double **eff, dou
 }
 
 
-
+//read line from fp - which is a guide tree -, and fill ar and len with it
 static void loadtreeoneline( int *ar, double *len, FILE *fp )
 {
 	static char gett[1000];
 	int res;
 	char *p;
 
-	p = fgets( gett, 999, fp );
+	p = fgets( gett, 999, fp ); //read 999 chars from fp
 	if( p == NULL )
 	{
 		reporterr(       "\n\nFormat error (1) in the tree?  It has to be a bifurcated and rooted tree.\n" );
@@ -1508,7 +1510,7 @@ static void loadtreeoneline( int *ar, double *len, FILE *fp )
 	}
 
 
-	res = sscanf( gett, "%d %d %lf %lf", ar, ar+1, len, len+1 );
+	res = sscanf( gett, "%d %d %lf %lf", ar, ar+1, len, len+1 ); //read these values from the line read
 	if( res != 4 )
 	{
 		reporterr(       "\n\nFormat error (2) in the tree?  It has to be a bifurcated and rooted tree.\n" );
@@ -2348,12 +2350,13 @@ void createchain( int nseq, int ***topol, double **len, char **name, int *nlen, 
 }
 #endif
 
+//read tree from '_guidetree' file and fill nlen and dep with values from it. i think if treeout != 0, it writes the tree read to infile.tree
 void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Treedep *dep, int treeout )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
 	int *intpt, *intpt2;
 	int *hist = NULL;
-	Bchain *ac = NULL;
+	Bchain *ac = NULL; //structure defined in mltaln.h.
 	int im = -1, jm = -1;
 	Bchain *acjmnext, *acjmprev;
 	int prevnode;
@@ -2395,14 +2398,14 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 //		tree = AllocateCharMtx( nseq, nseq*50 );
 		tree = AllocateCharMtx( nseq, 0 );
 
-		for( i=0; i<nseq; i++ )
+		for( i=0; i<nseq; i++ ) //this loop fills tree with modified names of sequences
 		{
-			for( j=0; j<999; j++ ) nametmp[j] = 0;
+			for( j=0; j<999; j++ ) nametmp[j] = 0; //initialize nametmp
 			for( j=0; j<999; j++ ) 
 			{
 				namec = name[i][j];
 				if( namec == 0 )
-					break;
+					break; //go out of this loop
 				else if( isalnum( namec ) || namec == '/' || namec == '=' || namec == '-' || namec == '{' || namec == '}' )
 					nametmp[j] = namec;
 				else
@@ -2410,7 +2413,7 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 			}
 			nametmp[j] = 0;
 //			sprintf( tree[i], "%d_l=%d_%.20s", i+1, nlen[i], nametmp+1 );
-			if( outnumber )
+			if( outnumber ) //defined in defs.c.
 				nameptr = strstr( nametmp, "_numo_e" ) + 8;
 			else
 				nameptr = nametmp + 1;
@@ -2423,12 +2426,12 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 				reporterr(       "Cannot allocate tree!\n" );
 				exit( 1 );
 			}
-			sprintf( tree[i], "\n%d_%.900s\n", i+1, nameptr );
+			sprintf( tree[i], "\n%d_%.900s\n", i+1, nameptr ); //write formatted string to tree[i]
 		}
 
 	}
 
-	for( i=0; i<nseq; i++ )
+	for( i=0; i<nseq; i++ ) //initialize ac
 	{
 		ac[i].next = ac+i+1;
 		ac[i].prev = ac+i-1;
@@ -2437,7 +2440,7 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 	ac[nseq-1].next = NULL;
 
 
-	for( i=0; i<nseq; i++ ) 
+	for( i=0; i<nseq; i++ ) //initialize hist and nmemar
 	{
 		hist[i] = -1;
 		nmemar[i] = 1;
@@ -2466,7 +2469,7 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 		}
 #else
 		len[k][0] = len[k][1] = -1.0;
-		loadtreeoneline( node, len[k], fp );
+		loadtreeoneline( node, len[k], fp ); //defined here. read line from fp - which is a guide tree -, and fill node and len[k] with it
 		im = node[0];
 		jm = node[1];
 
@@ -2688,6 +2691,7 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 
 }
 
+//read first line from '_guidetree' file and determine the type used and memory size required, then returns char to represent type found
 int check_guidetreefile( int *seed, int *npick, double *limitram )
 {
 	char string[100];
@@ -2699,28 +2703,28 @@ int check_guidetreefile( int *seed, int *npick, double *limitram )
 	*seed = 0;
 	*npick = 200;
 	*limitram = 10.0 * 1000 * 1000 * 1000; // 10GB
-	fp = fopen( "_guidetree", "r" );
+	fp = fopen( "_guidetree", "r" ); //open _guidetree file
 	if( !fp )
 	{
 		reporterr(       "cannot open _guidetree\n" );
 		exit( 1 );
 	}
 
-	fgets( string, 999, fp );
-	fclose( fp );
+	fgets( string, 999, fp ); //read first line from it
+	fclose( fp ); //then close
 
-	if( !strncmp( string, "shuffle", 7 ) )
+	if( !strncmp( string, "shuffle", 7 ) ) //if first chars are 'shuffle'
 	{
-		sscanf( string+7, "%d", seed );
+		sscanf( string+7, "%d", seed ); //read seed value
 		reporterr( "shuffle, seed=%d\n", *seed );
 		return( 's' );
 	}
-	else if( !strncmp( string, "pileup", 6 ) )
+	else if( !strncmp( string, "pileup", 6 ) ) //if first chars are 'pileup'
 	{
 		reporterr( "pileup.\n" );
 		return( 'p' );
 	}
-	else if( !strncmp( string, "auto", 4 ) )
+	else if( !strncmp( string, "auto", 4 ) ) //if first chars are 'auto'
 	{
 		sscanf( string+4, "%d %d", seed, npick );
 		reporterr( "auto, seed=%d, npick=%d\n", *seed, *npick );
@@ -2731,7 +2735,7 @@ int check_guidetreefile( int *seed, int *npick, double *limitram )
 		}
 		return( 'a' );
 	}
-	else if( !strncmp( string, "test", 4 ) )
+	else if( !strncmp( string, "test", 4 ) ) //if first chars are 'test'
 	{
 		sscanf( string+4, "%d %d", seed, npick );
 		reporterr( "calc, seed=%d, npick=%d\n", *seed, *npick );
@@ -2742,7 +2746,7 @@ int check_guidetreefile( int *seed, int *npick, double *limitram )
 		}
 		return( 't' );
 	}
-	else if( !strncmp( string, "compact", 7 ) )
+	else if( !strncmp( string, "compact", 7 ) ) //if first chars are 'compact'
 	{
 		sizestring = string + 7;
 		reporterr( "sizestring = %s\n", sizestring );
@@ -2760,7 +2764,7 @@ int check_guidetreefile( int *seed, int *npick, double *limitram )
 		reporterr( "Initial RAM usage = %10.3fGB\n", *limitram/1000/1000/1000 );
 		return( 'c' );
 	}
-	else if( !strncmp( string, "very compact", 12 ) )
+	else if( !strncmp( string, "very compact", 12 ) ) //if first chars are 'very compact'
 	{
 		reporterr( "very compact.\n" );
 		return( 'C' );
@@ -2803,6 +2807,7 @@ static double cluster_minimum_double( double d1, double d2 )
 }
 #endif
 
+//modify eff and groups values based on other args values and some calculations
 static void increaseintergroupdistanceshalfmtx( double **eff, int ngroup, int **groups, int nseq )
 {
 	int nwarned = 0;
@@ -2931,6 +2936,7 @@ static void increaseintergroupdistancesfullmtx( double **eff, int ngroup, int **
 	free( others );
 }
 
+//update eff, topol, len, dep, groups values based on other args values and calculations to determine tree shape and values - to be studied in details later -.
 void fixed_supg_double_realloc_nobk_halfmtx_treeout_constrained( int nseq, double **eff, int ***topol, double **len, char **name, int *nlen, Treedep *dep, int ngroup, int **groups, int efffree )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -2963,7 +2969,8 @@ void fixed_supg_double_realloc_nobk_halfmtx_treeout_constrained( int nseq, doubl
 	int allinconsistent;
 	int firsttime;
 
-	increaseintergroupdistanceshalfmtx( eff, ngroup, groups, nseq );
+	//modify eff and groups values based on other args values and some calculations
+	increaseintergroupdistanceshalfmtx( eff, ngroup, groups, nseq ); //defined here. increase inter-group distances half mtx
 
 	sueff1 = 1 - (double)sueff_global;
 	sueff05 = (double)sueff_global * 0.5;
@@ -3037,7 +3044,8 @@ void fixed_supg_double_realloc_nobk_halfmtx_treeout_constrained( int nseq, doubl
 	}
 	ac[nseq-1].next = NULL;
 
-	for( i=0; i<nseq; i++ ) setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle
+	//set mindisfrom+i and nearest+i values based on other parameters values and calculations on them
+	for( i=0; i<nseq; i++ ) setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle  //defined here.
 
 	for( i=0; i<nseq; i++ ) tmptmplen[i] = 0.0;
 	for( i=0; i<nseq; i++ ) 
@@ -3371,7 +3379,7 @@ void fixed_supg_double_realloc_nobk_halfmtx_treeout_constrained( int nseq, doubl
 					 maxiim = i;
 				}
 				if( eff[miniim][maxiim-miniim] > mindisfrom[i] )
-					setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i );
+					setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); //defined here.
 			}
 		}
 #endif
@@ -3968,6 +3976,7 @@ static void *msadistarrthreadjoblist( void *arg ) // enablemultithread == 0 demo
 	}
 }
 
+//update nearest, mindist, topol, len, dep values based on tree construction - needs to be studied in details later -
 void compacttree_memsaveselectable( int nseq, double **partmtx, int *nearest, double *mindist, int **pointt, int *tselfscore, char **seq, int **skiptable, int ***topol, double **len, char **name, int *nlen, Treedep *dep, int treeout, int howcompact, int memsave )
 {
 	int i, j, k;
@@ -3999,8 +4008,8 @@ void compacttree_memsaveselectable( int nseq, double **partmtx, int *nearest, do
 	void *(*resetnearestfunc)( void * );
 	int numfilled;
 	int nthreadtree;
-	compactdistarrthread_arg_t *distarrarg;
-	resetnearestthread_arg_t *resetarg;
+	compactdistarrthread_arg_t *distarrarg; //structure defined here.
+	resetnearestthread_arg_t *resetarg; //structure defined here.
 	int *joblist, nactive, posshared;
 	double *result;
 
@@ -4988,6 +4997,8 @@ void fixed_musclesupg_double_realloc_nobk_halfmtx_treeout_memsave( int nseq, dou
 	free( nearest );
 }
 
+//update eff, topol, len, dep values based on other args values and calculations to determine tree shape and values - to be studied in details later -.
+//similar to fixed_supg_double_realloc_nobk_halfmtx_treeout_constrained but smaller and some details are changed
 void fixed_musclesupg_double_realloc_nobk_halfmtx_treeout( int nseq, double **eff, int ***topol, double **len, char **name, int *nlen, Treedep *dep, int efffree )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -5083,7 +5094,8 @@ void fixed_musclesupg_double_realloc_nobk_halfmtx_treeout( int nseq, double **ef
 	}
 	ac[nseq-1].next = NULL;
 
-	for( i=0; i<nseq; i++ ) setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle
+	//set mindisfrom+i and nearest+i values based on other parameters values and calculations on them
+	for( i=0; i<nseq; i++ ) setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle //defined here.
 
 	for( i=0; i<nseq; i++ ) tmptmplen[i] = 0.0;
 	for( i=0; i<nseq; i++ ) 
@@ -6525,6 +6537,9 @@ void fixed_musclesupg_double_realloc_nobk_halfmtx_memsave( int nseq, double **ef
 	free( mindisfrom );
 	free( nearest );
 }
+
+//update eff, topol, len, dep values based on other args values and calculations to determine tree shape and values - to be studied in details later -.
+//I think it uses Muscle algorithm to build the tree
 void fixed_musclesupg_double_realloc_nobk_halfmtx( int nseq, double **eff, int ***topol, double **len, Treedep *dep, int progressout, int efffree )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -6580,7 +6595,8 @@ void fixed_musclesupg_double_realloc_nobk_halfmtx( int nseq, double **eff, int *
 	}
 	ac[nseq-1].next = NULL;
 
-	for( i=0; i<nseq; i++ ) setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle
+	//set mindisfrom+i and nearest+i values based on other parameters values and calculations on them
+	for( i=0; i<nseq; i++ ) setnearest( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle  //defined here.
 
 	for( i=0; i<nseq; i++ ) tmptmplen[i] = 0.0;
 	for( i=0; i<nseq; i++ ) 
@@ -8342,6 +8358,7 @@ void counteff_simple_double_nostatic_memsave( int nseq, int ***topol, double **l
 	FreeIntMtx( localmem );
 }
 
+//update node value based on calculations on topol and len values.
 void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, double *node )
 {
     int i, j, s1, s2;
@@ -8352,6 +8369,7 @@ void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, doub
 	rootnode = AllocateDoubleVec( nseq );
 	eff = AllocateDoubleVec( nseq );
 
+	//check len lengths to make sure no branch has negative length
 	for( i=0; i<nseq; i++ ) // 2014/06/07, fu no eff wo sakeru.
 	{
 		if( len[i][0] < 0.0 ) 
@@ -8378,7 +8396,7 @@ void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, doub
 		reporterr(       "len1 = %f\n", len[i][1] );
 	}
 #endif
-    for( i=0; i<nseq; i++ )
+    for( i=0; i<nseq; i++ ) //initialize rootnode and eff.
 	{
 		rootnode[i] = 0.0;
 		eff[i] = 1.0;
@@ -8386,7 +8404,7 @@ void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, doub
 		rootnode[i] = 1.0;
 */
 	}
-   	for( i=0; i<nseq-1; i++ )
+   	for( i=0; i<nseq-1; i++ ) //fill rootnode and eff with values based on calculations on len and eff values
    	{
        	for( j=0; (s1=topol[i][0][j]) > -1; j++ )
 		{
@@ -8410,7 +8428,7 @@ void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, doub
 	for( i=0; i<nseq; i++ ) 
 	{
 #if 1 /* 97.9.29 */
-		rootnode[i] += GETA3;
+		rootnode[i] += GETA3;  //GETA3 is a constant defined in mltaln.h and = 0.001.
 #endif
 #if 0
 		reporterr(       "### rootnode for %d = %f\n", i, rootnode[i] );
@@ -8418,7 +8436,7 @@ void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, doub
 	}
 #if 1
 	total = 0.0;
-	for( i=0; i<nseq; i++ ) 
+	for( i=0; i<nseq; i++ ) //calculate total based on rootnode values
 	{
 		total += rootnode[i];
 	}
@@ -8426,7 +8444,7 @@ void counteff_simple_double_nostatic( int nseq, int ***topol, double **len, doub
 	total = 1.0;
 #endif
 		
-	for( i=0; i<nseq; i++ ) 
+	for( i=0; i<nseq; i++ ) //update node based on rootnode and total values.
 	{
 		node[i] = rootnode[i] / total;
 	}
@@ -8927,8 +8945,8 @@ void FreeTmpSeqs( char **mseq2, char *mseq1 )
 	free( (char *)mseq1 );
 }
 
-
-void gappick0( char *aseq, char *seq ) //copy 'seq' chars to 'aseq' without gaps chars
+//copy 'seq' chars to 'aseq' without gaps chars
+void gappick0( char *aseq, char *seq )
 {
 	for( ; *seq != 0; seq++ )
 	{
@@ -9019,14 +9037,14 @@ void commongappick_record( int nseq, char **seq, int *map )
 	//also, map contains indices of chars in seq
 }
 
-
+//update seq values based on gaps positions in it and nseq value
 void commongappick( int nseq, char **seq )
 {
 	int i, j, count;
 	int len = strlen( seq[0] );
 #if 1
 
-	int *mapfromnewtoold;
+	int *mapfromnewtoold; //map from new to old
 
 	mapfromnewtoold = calloc( len+1, sizeof( int ) );
 
@@ -9966,6 +9984,7 @@ void dontcalcimportance_firstone( int nseq, double *eff, char **seq, LocalHom **
 #endif
 }
 
+//update localhom->importance based on other arguments values
 void calcimportance_target( int nseq, int ntarget, double *eff, char **seq, LocalHom **localhom, int *targetmap, int *targetmapr )
 {
 	int i, j, pos, len, ti, tj;
@@ -10199,6 +10218,8 @@ void calcimportance_target( int nseq, int ntarget, double *eff, char **seq, Loca
 	free( ieff );
 }
 
+//update localhom->importance based on other arguments values
+//similar to calcimportance_target but without target and its related calculations
 void calcimportance_half( int nseq, double *eff, char **seq, LocalHom **localhom )
 {
 	int i, j, pos, len;
@@ -10878,7 +10899,7 @@ void gapireru( char *res, char *ori, char *gt )
 	{
 		if( g == '-' )
 		{
-			*res++ = *newgapstr;
+			*res++ = *newgapstr; //newgapstr defined in defs.c.
 		}
 		else
 		{
@@ -10897,6 +10918,7 @@ void getkyokaigap( char *g, char **s, int pos, int n )
 //	reporterr(       "bk = %s\n", bk );
 }
 
+//fill ogcp array with values based on some calcs.
 void new_OpeningGapCount( double *ogcp, int clus, char **seq, double *eff, int len, char *sgappat )
 #if 0
 {
@@ -11070,6 +11092,7 @@ void new_FinalGapCount_zure( double *fgcp, int clus, char **seq, double *eff, in
 	}
 }
 #endif
+//this method fills fgcp based on some calcs on other arguments
 void new_FinalGapCount( double *fgcp, int clus, char **seq, double *eff, int len, char *egappat )
 #if 0
 {
@@ -11135,6 +11158,7 @@ void new_FinalGapCount( double *fgcp, int clus, char **seq, double *eff, int len
 }
 #endif
 
+//fill ogcp based on other params values
 void st_OpeningGapAdd( double *ogcp, int clus, char **seq, double *eff, int len )
 {
 	int i, j, gc, gb; 
@@ -11177,6 +11201,7 @@ void st_OpeningGapAdd( double *ogcp, int clus, char **seq, double *eff, int len 
 #endif
 }
 
+//fills ogcp with values based on calcs on other args.
 void st_OpeningGapCount( double *ogcp, int clus, char **seq, double *eff, int len )
 {
 	int i, j, gc, gb; 
@@ -11246,6 +11271,7 @@ void st_FinalGapCount_zure( double *fgcp, int clus, char **seq, double *eff, int
 	}
 }
 
+//fills fgcp based on other args values.
 void st_FinalGapAdd( double *fgcp, int clus, char **seq, double *eff, int len )
 {
 	int i, j, gc, gb; 
@@ -11291,6 +11317,7 @@ void st_FinalGapAdd( double *fgcp, int clus, char **seq, double *eff, int len )
 	}
 }
 
+//fill fgcp based on calcs on other params
 void st_FinalGapCount( double *fgcp, int clus, char **seq, double *eff, int len )
 {
 	int i, j, gc, gb; 
@@ -11662,6 +11689,8 @@ static int minimum( int i1, int i2 )
 	return MIN( i1, i2 );
 }
 
+//I think this method fills skip1 and skip2 with counters based on gaps matching in i1 and i2.
+//also fills r1 and r2 with chars from i1 and i2 based on gaps locations
 static void commongappickpairfast( char *r1, char *r2, char *i1, char *i2, int *skip1, int *skip2 )
 {
 //	char *i1bk = i1;
@@ -11717,6 +11746,7 @@ static void commongappickpairfast( char *r1, char *r2, char *i1, char *i2, int *
 	*r2 = 0;
 }
 
+//fills r1 and r2 with chars from i1 and i2 except common gaps positions.
 static void commongappickpair( char *r1, char *r2, char *i1, char *i2 )
 {
 //	strcpy( r1, i1 );
@@ -12028,6 +12058,8 @@ double naiveHpairscore( int n1, int n2, char **seq1, char **seq2, double *eff1, 
 //	exit( 1 );
 }
 
+//I think this fills skip1 and skip2 with counters based on gaps matching in seq1 and seq2.
+//and returns score value based on seq1 and seq2 chars matching and amino_dis saved values.
 double naivepairscorefast( char *seq1, char *seq2, int *skip1, int *skip2, int penal )
 {
 	double  vali;
@@ -12039,7 +12071,9 @@ double naivepairscorefast( char *seq1, char *seq2, int *skip1, int *skip2, int p
 	s2 = calloc( len+1, sizeof( char ) );
 	{
 		vali = 0.0;
-		commongappickpairfast( s1, s2, seq1, seq2, skip1, skip2 );
+		//I think this method fills skip1 and skip2 with counters based on gaps matching in seq1 and seq2.
+		//also fills s1 and s2 with chars from seq1 and seq2 based on gaps locations
+		commongappickpairfast( s1, s2, seq1, seq2, skip1, skip2 ); //defined here.
 //		commongappickpair( s1, s2, seq1, seq2 );
 //		printf(       "\n###s1 = %s\n", seq1 );
 //		printf(       "###s2 = %s\n", seq2 );
@@ -12085,6 +12119,7 @@ double naivepairscorefast( char *seq1, char *seq2, int *skip1, int *skip2, int p
 	return( vali );
 }
 
+//I think this method calculates the score of matching seq1 and seq2
 double naivepairscore11_dynmtx( double **mtx, char *seq1, char *seq2, int penal )
 {
 	double  vali;
@@ -12097,7 +12132,7 @@ double naivepairscore11_dynmtx( double **mtx, char *seq1, char *seq2, int penal 
 	s2 = calloc( len+1, sizeof( char ) );
 	{
 		vali = 0.0;
-		commongappickpair( s1, s2, seq1, seq2 );
+		commongappickpair( s1, s2, seq1, seq2 ); //defined here. fills s1 and s2 with chars from seq1 and seq2 except common gaps positions.
 //		reporterr(       "###i1 = %s\n", s1 );
 //		reporterr(       "###i2 = %s\n", s2 );
 //		reporterr(       "###penal = %d\n", penal );
@@ -12141,6 +12176,7 @@ double naivepairscore11_dynmtx( double **mtx, char *seq1, char *seq2, int penal 
 	return( vali );
 }
 
+//calculates score between seq1 and seq2 based on penal and amino_dis values
 double naivepairscore11( char *seq1, char *seq2, int penal )
 {
 	double  vali;
@@ -12151,7 +12187,7 @@ double naivepairscore11( char *seq1, char *seq2, int penal )
 	s2 = calloc( len+1, sizeof( char ) );
 	{
 		vali = 0.0;
-		commongappickpair( s1, s2, seq1, seq2 );
+		commongappickpair( s1, s2, seq1, seq2 ); //defined here. fills s1 and s2 with chars from seq1 and seq2 except common gaps positions.
 //		reporterr(       "###i1 = %s\n", s1 );
 //		reporterr(       "###i2 = %s\n", s2 );
 //		reporterr(       "###penal = %d\n", penal );
@@ -12184,7 +12220,7 @@ double naivepairscore11( char *seq1, char *seq2, int penal )
 				continue;
 			}
 //			reporterr(       "adding %c-%c, %d\n", *p1, *p2, amino_dis[*p1][*p2] );
-			vali += (double)amino_dis[(unsigned char)*p1++][(unsigned char)*p2++];
+			vali += (double)amino_dis[(unsigned char)*p1++][(unsigned char)*p2++]; //amino_dis defined in defs.c.
 		}
 	}
 	free( s1 );
@@ -12257,6 +12293,7 @@ double naivepairscore( int n1, int n2, char **seq1, char **seq2, double *eff1, d
 //	exit( 1 );
 }
 
+//calculates score between all sequences in s based on naive score method
 double plainscore( int nseq, char **s )
 {
 	int i, j, ilim;
@@ -12265,7 +12302,7 @@ double plainscore( int nseq, char **s )
 	ilim = nseq-1;
 	for( i=0; i<ilim; i++ ) for( j=i+1; j<nseq; j++ )
 	{
-		v += (double)naivepairscore11( s[i], s[j], penalty );
+		v += (double)naivepairscore11( s[i], s[j], penalty ); //defined here. calculates score between s[i] and s[j] based on penalty and amino_dis values
 	}
 
 	reporterr(       "penalty = %d\n", penalty );
@@ -12806,6 +12843,7 @@ int samemember( int *mem, int *cand )
 	}
 }
 #else
+//I think this method returns 1 if mem and cand contains the same values, 0 otherwise.
 int samemember( int *mem, int *cand )
 {
 	int i, j;
@@ -12843,6 +12881,7 @@ int samemember( int *mem, int *cand )
 }
 #endif
 
+//I think this method returns 1 if mem and cand contains the same values, 0 otherwise.
 int samemembern( int *mem, int *cand, int nc )
 {
 	int i, j;
@@ -12883,7 +12922,7 @@ int samemembern( int *mem, int *cand, int nc )
 	}
 }
 
-
+//return 0 if mem not included in cand, 1 otherwise
 int includemember( int *mem, int *cand ) // mem in cand 
 {
 	int i, j;
@@ -12939,6 +12978,7 @@ void gapcount( double *freq, char **seq, int nseq, double *eff, int lgth )
 	return;
 }
 
+//fill freq based on other args values
 void gapcountadd( double *freq, char **seq, int nseq, double *eff, int lgth )
 {
 	int i;
@@ -12963,6 +13003,7 @@ void gapcountadd( double *freq, char **seq, int nseq, double *eff, int lgth )
 //	reporterr(       "\n" );
 	return;
 }
+//fill freq array with values based on other args calcs
 void gapcountf( double *freq, char **seq, int nseq, double *eff, int lgth )
 {
 	int i, j;
@@ -12985,6 +13026,7 @@ void gapcountf( double *freq, char **seq, int nseq, double *eff, int lgth )
 	return;
 }
 
+//set count of '-' chars in gappat to freq
 void outgapcount( double *freq, int nseq, char *gappat, double *eff )
 {
 	int j;
@@ -12999,6 +13041,7 @@ void outgapcount( double *freq, int nseq, char *gappat, double *eff )
 	return;
 }
 
+//returns value based on some calcs on dist value
 double dist2offset( double dist )
 {
 	double val = dist * 0.5 - specificityconsideration; // dist ha 0..2 dakara
@@ -13007,16 +13050,18 @@ double dist2offset( double dist )
 	return val;
 }
 
+//fill out matrix based on in matrix values and offset value
 void makedynamicmtx( double **out, double **in, double offset )
 {
 	int i, j, ii, jj;
 	double av;
  
-	offset = dist2offset( offset * 2.0 ); // offset 0..1 -> 0..2
+	offset = dist2offset( offset * 2.0 ); // offset 0..1 -> 0..2 //defined here //returns value based on some calcs on dist value
 
 //	if( offset > 0.0 ) offset = 0.0;
 //	reporterr(       "dynamic offset = %f\n", offset );
 
+	//copy in to out
 	for( i=0; i<nalphabets; i++ ) for( j=0; j<nalphabets; j++ )
 	{
 		out[i][j] = in[i][j];
@@ -13025,13 +13070,13 @@ void makedynamicmtx( double **out, double **in, double offset )
 
 	for( i=0; i<nalphabets; i++ ) 
 	{
-		ii = (int)amino[i];
-		if( ii == '-' ) continue; // text no toki arieru
+		ii = (int)amino[i]; //amino is defined in defs.h.
+		if( ii == '-' ) continue; // text no toki arieru  //if gap, go to next iteration
 		for( j=0; j<nalphabets; j++ )
 		{
-			jj = (int)amino[j];
-			if( jj == '-' ) continue; // text no toki arieru
-			out[i][j] = in[i][j] + offset * 600;
+			jj = (int)amino[j]; //amino is defined in defs.h.
+			if( jj == '-' ) continue; // text no toki arieru  //if gap, go to next iteration
+			out[i][j] = in[i][j] + offset * 600; //update value of out based on some calcs on in value and offset
 //			reporterr(       "%c-%c: %f\n", ii, jj, out[i][j] );
 		}
 	}
@@ -13041,7 +13086,7 @@ void makedynamicmtx( double **out, double **in, double offset )
 //	reporterr(       "out[A][A] = %f\n", out[amino_n['A']][amino_n['A']] );
 
 
-	return;
+	return; //I think the consequent part is not executed !!
 
 // Taikaku youso no heikin ga 600 ni naruyouni re-scale.
 // Hitaikaku youso ga ookiku narisugi.
@@ -13073,6 +13118,7 @@ void FreeCommonIP()
 	commonAlloc2 = 0;
 }
 
+//fill skip matrix with values based on gaps in seq
 void makeskiptable( int n, int **skip, char **seq )
 {
 	char *nogapseq;
@@ -13080,9 +13126,9 @@ void makeskiptable( int n, int **skip, char **seq )
 	int i, j, posinseq, gaplen;
 
 	nogapseq = calloc( strlen( seq[0] )+1, sizeof( char ) );
-	for( i=0; i<n; i++ )
+	for( i=0; i<n; i++ ) //for each sequence
 	{
-		gappick0( nogapseq, seq[i] );
+		gappick0( nogapseq, seq[i] ); //defined here. copy 'seq[i]' chars to 'nogapseq' without gaps chars
 		nogaplen = strlen( nogapseq );
 		alnlen = strlen( seq[i] );
 		skip[i] = calloc( nogaplen+1, sizeof( int ) );
@@ -13190,7 +13236,7 @@ int generatesubalignmentstable( int nseq, int ***tablept, int *nsubpt, int *maxm
 }
 
 
-
+//return score of all sequences in seq based on naive pair score method
 double sumofpairsscore( int nseq, char **seq )
 {
 	double v = 0;
@@ -13252,6 +13298,7 @@ int commonsextet_p( int *table, int *pointt )
 	return( value );
 }
 
+//calculates and returns score between seq1 and seq2 based on skiptable1 and skiptable2 values and ss1 and ss2 values
 double distcompact_msa( char *seq1, char *seq2, int *skiptable1, int *skiptable2, int ss1, int ss2 ) // osoi!
 {
 	int bunbo = MIN( ss1, ss2 );
@@ -13262,7 +13309,10 @@ double distcompact_msa( char *seq1, char *seq2, int *skiptable1, int *skiptable2
 		return( 2.0 );
 	else
 	{
-		value = ( 1.0 - (double)naivepairscorefast( seq1, seq2, skiptable1, skiptable2, penalty_dist ) / bunbo ) * 2.0; // 2014/Aug/15 fast 
+
+		//I think this fills skiptable1 and skiptable2 with counters based on gaps matching in seq1 and seq2.
+		//and returns score value based on seq1 and seq2 chars matching and amino_dis saved values.
+		value = ( 1.0 - (double)naivepairscorefast( seq1, seq2, skiptable1, skiptable2, penalty_dist ) / bunbo ) * 2.0; // 2014/Aug/15 fast  //defined here
 		if( value > 10 ) value = 10.0;  // 2015/Mar/17
 		return( value );
 	}
@@ -13389,6 +13439,7 @@ static void movereg_swap( char *seq1, char *seq2, LocalHom *tmpptr, int *start1p
 	}
 }
 
+//fills impmtx matrix based on other params values
 void fillimp( double **impmtx, double *imp, int clus1, int clus2, int lgth1, int lgth2, char **seq1, char **seq2, double *eff1, double *eff2, double *eff1_kozo, double *eff2_kozo, LocalHom ***localhom, char *swaplist, int forscore, int *orinum1, int *orinum2 )
 {
 	int i, j, k1, k2, start1, start2, end1, end2;

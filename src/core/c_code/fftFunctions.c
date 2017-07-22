@@ -28,7 +28,7 @@ double maxItch( double *soukan, int size )
 	return( value );
 }
 
-void calcNaiseki( Fukusosuu *value, Fukusosuu *x, Fukusosuu *y )
+void calcNaiseki( Fukusosuu *value, Fukusosuu *x, Fukusosuu *y ) //it calculates the inner product of two complex numbers: x & y in value
 {
 	value->R =  x->R * y->R + x->I * y->I;
 	value->I = -x->R * y->I + x->I * y->R;
@@ -95,7 +95,7 @@ void FreeFukusosuuMtx( Fukusosuu **mtx )
 	free( (void *)mtx );
 }
 
-int getKouho( int *kouho, int nkouho, double *soukan, int nlen2 )
+int getKouho( int *kouho, int nkouho, double *soukan, int nlen2 ) //I think this finds the max value in soukan array and its index
 {
 	int i, j;
 	int nlen4 = nlen2 / 2;
@@ -130,7 +130,7 @@ int getKouho( int *kouho, int nkouho, double *soukan, int nlen2 )
 
 void zurasu2( int lag, int    clus1, int    clus2, 
                        char  **seq1, char  **seq2, 
-		 			   char **aseq1, char **aseq2 )
+		 			   char **aseq1, char **aseq2 ) //zurasu = shift
 {
 	int i;
 #if 0
@@ -168,7 +168,7 @@ void zurasu( int lag, int    clus1, int    clus2,
 	}
 }
 
-
+//I think this method extracts alignable region between seq1 and seq2
 int alignableReagion( int    clus1, int    clus2, 
 					   char  **seq1, char  **seq2,
 					   double *eff1, double *eff2,
@@ -218,23 +218,23 @@ int alignableReagion( int    clus1, int    clus2,
 
 	if( prf1 == NULL )
 	{
-		prf1 = AllocateDoubleVec( nalphabets );
+		prf1 = AllocateDoubleVec( nalphabets ); //nalphabets defined in defs.c.
 		prf2 = AllocateDoubleVec( nalphabets );
 		hat1 = AllocateIntVec( nalphabets+1 );
 		hat2 = AllocateIntVec( nalphabets+1 );
 	}
 
 	len = MIN( strlen( seq1[0] ), strlen( seq2[0] ) );
-	maxlen = MAX( strlen( seq1[0] ), strlen( seq2[0] ) ) + fftWinSize;
+	maxlen = MAX( strlen( seq1[0] ), strlen( seq2[0] ) ) + fftWinSize; //fftWinSize defined in defs.h. default = notspecififed, else set from argument
 	if( alloclen < maxlen )
 	{
-		if( alloclen )
+		if( alloclen ) //if alloclen != 0
 		{
 			FreeDoubleVec( stra );
 		}
-		else
+		else //if alloclen == 0
 		{
-			threshold = (int)fftThreshold / 100.0 * 600.0 * fftWinSize;
+			threshold = (int)fftThreshold / 100.0 * 600.0 * fftWinSize; //fftThreshold defined in defs.h. it is set to notspecified by default
 		}
 		stra = AllocateDoubleVec( maxlen );
 		alloclen = maxlen;
@@ -261,6 +261,8 @@ int alignableReagion( int    clus1, int    clus2,
 #endif
 		for( j=0; j<clus2; j++ ) prf2[amino_n[(unsigned char)seq2[j][i]]] += eff2[j];
 
+		//may be previous steps makes profiles ?!!
+
 		/* make hats */
 		pre1 = pre2 = nalphabets;
 		for( j=25; j>=0; j-- )
@@ -284,7 +286,7 @@ int alignableReagion( int    clus1, int    clus2,
 		for( k=hat1[nalphabets]; k!=-1; k=hat1[k] ) 
 			for( j=hat2[nalphabets]; j!=-1; j=hat2[j] ) 
 //				stra[i] += n_dis[k][j] * prf1[k] * prf2[j];
-				stra[i] += n_disFFT[k][j] * prf1[k] * prf2[j];
+				stra[i] += n_disFFT[k][j] * prf1[k] * prf2[j]; //n_disFFT defined in defs.c. it is allocated and first filled in constants.c.
 		stra[i] /= totaleff;
 	}
 
@@ -323,7 +325,7 @@ int alignableReagion( int    clus1, int    clus2,
 			cumscore += score;
 #endif
 		}
-		if( score <= threshold || length > SEGMENTSIZE )
+		if( score <= threshold || length > SEGMENTSIZE ) //SEGMENTSIZE is a constant defined here and = 150
 		{
 			if( status )
 			{
@@ -353,7 +355,7 @@ int alignableReagion( int    clus1, int    clus2,
 				cumscore = 0.0;
 				status = 0;
 				starttmp = i;
-				if( value > MAXSEG - 3 ) ErrorExit( "TOO MANY SEGMENTS!");
+				if( value > MAXSEG - 3 ) ErrorExit( "TOO MANY SEGMENTS!"); //MAXSEG is a constant defined in mltaln.h and = 100,000
 			}
 		}
 	}
@@ -384,6 +386,7 @@ static int permit( Segment *seg1, Segment *seg2 )
 	else return( 1 );
 }
 
+//fill cut1, cut2 and ncut with values based on some calculations and conditions - i didn't dive into details -
 void blockAlign2( int *cut1, int *cut2, Segment **seg1, Segment **seg2, double **ocrossscore, int *ncut )
 {
 	int i, j, k, shift, cur1, cur2, count, klim;

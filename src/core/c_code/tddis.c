@@ -158,6 +158,7 @@ void cpmx_calc_new_bk( char **seq, double **cpmx, double *eff, int lgth, int clu
     }
 }
 
+//fill cmpx based on other args values
 void cpmx_calc_add( char **seq, double **cpmx, double *eff, int lgth, int clus ) // lastmem = newmem; summ eff must be 1.0
 {
 	double neweff, orieff;
@@ -181,6 +182,7 @@ void cpmx_calc_add( char **seq, double **cpmx, double *eff, int lgth, int clus )
 #endif
 }
 
+//fills cmpx matrix based on other args values
 void cpmx_calc_new( char **seq, double **cpmx, double *eff, int lgth, int clus ) // summ eff must be 1.0
 {
 	int  i, j, k;
@@ -371,6 +373,7 @@ int conjuctionforgaln( int s0, int s1, char **seq, char **aseq, double *peff, do
 	return( k );
 }
 
+//fill group with values based on all and memlist values
 void makegrouprna( RNApair ***group, RNApair ***all, int *memlist )
 {
 	int k, m;
@@ -414,6 +417,7 @@ int fastconjuction_noweight( int *memlist, char **seq, char **aseq, double *peff
 	return( k );
 }
 
+//update aseq, peff, peff_kozo values based on other arguments values and calculations on them
 int fastconjuction_noname_kozo( int *memlist, char **seq, char **aseq, double *peff, double *eff, double *peff_kozo, double *eff_kozo, char *d )
 {
 	int m, k, dln;
@@ -517,7 +521,7 @@ int fastconjuction_target( int *memlist, char **seq, char **aseq, double *peff, 
 }
 #endif
 
-
+//update aseq, peff, d values based on other arguments values and calculations on them
 int fastconjuction_noname( int *memlist, char **seq, char **aseq, double *peff, double *eff, char *d, double mineff  )
 {
 	int m, k, dln;
@@ -1042,7 +1046,7 @@ int fastshrinklocalhom( int *mem1, int *mem2, LocalHom **localhom, LocalHom ***l
 	return( 0 );
 }
 
-
+//update localhomshrink values based on other arguments values and calculations on them
 int fastshrinklocalhom_half( int *mem1, int *mem2, LocalHom **localhom, LocalHom ***localhomshrink )
 {
 	int k1, k2;
@@ -1075,7 +1079,7 @@ int fastshrinklocalhom_half( int *mem1, int *mem2, LocalHom **localhom, LocalHom
 	return( 0 );
 }
 
-
+//update localhomshrink and swaplist values based on other arguments values and calculations on them
 int fastshrinklocalhom_target( int *mem1, int *mem2, LocalHom **localhom, LocalHom ***localhomshrink, char *swaplist, int *targetmap )
 {
 	int k1, k2;

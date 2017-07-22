@@ -7,6 +7,7 @@
 #define USE_PENALTY_EX  1
 
 #if 1
+//fills match array with numbers from mtx based on s1 and s2 chars matching
 static void match_calc_mtx( double **mtx, double *match, char **s1, char **s2, int i1, int lgth2 ) 
 {
 	char *seq2 = s2[0];
@@ -25,6 +26,7 @@ static void match_calc( double *match, char **s1, char **s2, int i1, int lgth2 )
 }
 #endif
 
+//updates mseq1, mseq2 and ijp values based on some calculations on other args
 static double Atracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -162,7 +164,7 @@ static double Atracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
-
+//passed here before
 double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen, int headgp, int tailgp )
 {
 //	int k;
@@ -174,11 +176,11 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 	double wm;   /* int ?????? */
 	double g;
 	double *currentw, *previousw;
-	double fpenalty = (double)penalty;
-	double fpenalty_shift = (double)penalty_shift;
+	double fpenalty = (double)penalty; //penalty is defined in defs.h and set in constants.c
+	double fpenalty_shift = (double)penalty_shift; //penalty_shift is defined in defs.h and set in constants.c
 	double fpenalty_tmp;
-#if USE_PENALTY_EX
-	double fpenalty_ex = (double)penalty_ex;
+#if USE_PENALTY_EX //defined here and = 1
+	double fpenalty_ex = (double)penalty_ex; //penalty_ex is defined in defs.h and set in constants.c
 #endif
 #if 1
 	double *wtmp;
@@ -259,7 +261,7 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 	warpis = NULL;
 	warpjs = NULL;
 	warpn = 0;
-	if( trywarp )
+	if( trywarp ) //defined in defs.c and set = 0 as default value
 	{
 //		fprintf( stderr, "IN G__align11\n" );
 		if( headgp == 0 || tailgp == 0 )
@@ -293,7 +295,7 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 	if( lgth1 == 0 && lgth2 == 0 )
 		return( 0.0 );
 
-	if( lgth1 == 0 )
+	if( lgth1 == 0 ) //if first sequence is empty, fill it with number of gaps = length of the second sequence then return 0 as the alignment score
 	{
 		seq1[0][lgth2] = 0;
 		while( lgth2 ) seq1[0][--lgth2] = *newgapstr;
@@ -301,7 +303,7 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 		return( 0.0 );
 	}
 
-	if( lgth2 == 0 )
+	if( lgth2 == 0 ) //if second sequence is empty, fill it with number of gaps = length of the first sequence then return 0 as the alignment score
 	{
 		seq2[0][lgth1] = 0;
 		while( lgth1 ) seq2[0][--lgth1] = *newgapstr;
@@ -378,13 +380,14 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 	}
     for( i=0; i<nalphabets; i++) for( j=0; j<nalphabets; j++ )
 		amino_dynamicmtx[(unsigned char)amino[i]][(unsigned char)amino[j]] = (double)n_dynamicmtx[i][j];
+    //amino is defined in defs.h.
 
 
 	mseq1[0] = mseq[0];
 	mseq2[0] = mseq[1];
 
 
-	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 )
+	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 ) //commonAlloc1 and commonAlloc2 defined in defs.c and set to 0 as default.
 	{
 		int ll1, ll2;
 
@@ -400,7 +403,7 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -421,7 +424,9 @@ double G__align11( double **n_dynamicmtx, char **seq1, char **seq2, int alloclen
 	previousw = w2;
 
 
-	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 );
+	//fills initverticalw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
+	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //defined here.
+	//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 );
 
 	if( headgp == 1 )
@@ -472,6 +477,7 @@ fprintf( stderr, "\n" );
 
 		previousw[0] = initverticalw[i-1];
 
+		//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 		match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, i, lgth2 );
 #if XXXXXXX
 fprintf( stderr, "\n" );
@@ -642,9 +648,9 @@ fprintf( stderr, "\n" );
 
 		if( trywarp )
 		{
-			fltncpy( prevwmrecords, wmrecords, lastj );
-			intncpy( prevwarpi, warpi, lastj );
-			intncpy( prevwarpj, warpj, lastj );
+			fltncpy( prevwmrecords, wmrecords, lastj ); //copy lastj items from wmrecords to prevwmrecords
+			intncpy( prevwarpi, warpi, lastj ); //copy lastj items from warpi to prevwarpi
+			intncpy( prevwarpj, warpj, lastj ); //copy lastj items from warpj to prevwarpj
 		}
 	}
 
@@ -660,19 +666,20 @@ fprintf( stderr, "\n" );
 		free( prevwarpj );
 	}
 
-	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, tailgp, warpis, warpjs, warpbase );
+	//updates mseq1, mseq2 and ijp values based on some calculations on other args
+	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, tailgp, warpis, warpjs, warpbase ); //defined here.
 	if( warpis ) free( warpis );
 	if( warpjs ) free( warpjs );
 
 
 	resultlen = strlen( mseq1[0] );
-	if( alloclen < resultlen || resultlen > N )
+	if( alloclen < resultlen || resultlen > N ) //N is constant defined in mltaln.h and = 500,000
 	{
 		fprintf( stderr, "alloclen=%d, resultlen=%d, N=%d\n", alloclen, resultlen, N );
 		ErrorExit( "LENGTH OVER!\n" );
 	}
 
-
+	//copy modified sequences to original ones
 	strcpy( seq1[0], mseq1[0] );
 	strcpy( seq2[0], mseq2[0] );
 #if 0
@@ -685,6 +692,7 @@ fprintf( stderr, "\n" );
 	return( wm );
 }
 
+//it is like G__align11 but without warp and some other details
 double G__align11_noalign( double **n_dynamicmtx, int penal, int penal_ex, char **seq1, char **seq2, int alloclen )
 /* warp mitaiou */
 {
@@ -696,9 +704,9 @@ double G__align11_noalign( double **n_dynamicmtx, int penal, int penal_ex, char 
 	double wm;   /* int ?????? */
 	double g;
 	double *currentw, *previousw;
-	double fpenalty = (double)penal;
-#if USE_PENALTY_EX
-	double fpenalty_ex = (double)penal_ex;
+	double fpenalty = (double)penal; //penalty is defined in defs.h and set in constants.c
+#if USE_PENALTY_EX //defined here and = 1
+	double fpenalty_ex = (double)penal_ex; //penalty_ex is defined in defs.h and set in constants.c
 #endif
 #if 1
 	double *wtmp;
@@ -810,6 +818,7 @@ double G__align11_noalign( double **n_dynamicmtx, int penal, int penal_ex, char 
 
     for( i=0; i<nalphabets; i++) for( j=0; j<nalphabets; j++ )
 		amino_dynamicmtx[(int)amino[i]][(int)amino[j]] = (double)n_dynamicmtx[i][j];
+    //amino is defined in defs.h.
 
 
 
@@ -822,10 +831,10 @@ double G__align11_noalign( double **n_dynamicmtx, int penal, int penal_ex, char 
 	currentw = w1;
 	previousw = w2;
 
+	//fills initverticalw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
+	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //defined here.
 
-	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 );
-
-
+	//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 );
 
 	if( 1 ) // tsuneni outgap-1
@@ -875,6 +884,7 @@ fprintf( stderr, "\n" );
 
 		previousw[0] = initverticalw[i-1];
 
+		//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 		match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, i, lgth2 );
 #if XXXXXXX
 fprintf( stderr, "\n" );

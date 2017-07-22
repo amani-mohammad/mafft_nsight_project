@@ -76,6 +76,7 @@ void imp_rna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 	foldrna( nseq1, nseq2, seq1, seq2, eff1, eff2, grouprna1, grouprna2, impmtx, gapmap1, gapmap2, pair );
 }
 
+//fills impmtx matrix based on other params values
 void imp_match_init_strict( double *imp, int clus1, int clus2, int lgth1, int lgth2, char **seq1, char **seq2, double *eff1, double *eff2, double *eff1_kozo, double *eff2_kozo, LocalHom ***localhom, char *swaplist, int forscore, int *orinum1, int *orinum2 )
 {
 //	int i, j, k1, k2, tmpint, start1, start2, end1, end2;
@@ -89,7 +90,7 @@ void imp_match_init_strict( double *imp, int clus1, int clus2, int lgth1, int lg
 
 	if( seq1 == NULL )
 	{
-		if( impmtx ) FreeFloatMtx( impmtx );
+		if( impmtx ) FreeFloatMtx( impmtx ); //defined here above
 		impmtx = NULL;
 //		if( nocount1 ) free( nocount1 );
 //		nocount1 = NULL;
@@ -110,6 +111,7 @@ void imp_match_init_strict( double *imp, int clus1, int clus2, int lgth1, int lg
 //		nocount2 = AllocateCharVec( impalloclen );
 	}
 
+	//defined in mltaln9.c. fills impmtx matrix based on other params values
 	fillimp( impmtx, imp, clus1, clus2, lgth1, lgth2, seq1, seq2, eff1, eff2, eff1_kozo, eff2_kozo, localhom, swaplist, forscore, orinum1, orinum2 );
 }
 
@@ -294,6 +296,8 @@ static void match_calc_add( double **scoreingmtx, double *match, double **cpmx1,
 	free( scarr );
 #endif
 }
+
+//update match, doublework and intwork based on other params values
 static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
 #if FASTMATCHCALC
@@ -393,6 +397,7 @@ static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, do
 #endif
 }
 
+//updates mseq1, mseq2, ijp, ngap1 and ngap2 values based on some calculations on other args
 static void Atracking_localhom( double *impwmpt, double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -542,6 +547,7 @@ static void Atracking_localhom( double *impwmpt, double *lasthorizontalw, double
 	free( gt2bk );
 }
 
+//updates mseq1, mseq2, ijp, ngap1 and ngap2 values based on some calculations on other args
 static double Atracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -691,6 +697,7 @@ static double Atracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
+//passed here before
 double A__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, double *eff2, int icyc, int jcyc, int alloclen, LocalHom ***localhom, double *impmatch, char *sgap1, char *sgap2, char *egap1, char *egap2, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp, int firstmem, int calledbyfulltreebase )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -778,6 +785,7 @@ double A__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 			orlgth1 = 0;
 			orlgth2 = 0;
 
+			//frees impmtx and return.
 			imp_match_init_strict( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL );
 
 			free( mseq1 );
@@ -1016,7 +1024,7 @@ double A__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c.
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -1045,42 +1053,54 @@ double A__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 	if( reuseprofiles )
 	{
 //		reporterr( "r" );
-		cpmx_calc_add( seq1, cpmx1, eff1, lgth1, icyc );
+		cpmx_calc_add( seq1, cpmx1, eff1, lgth1, icyc ); //defined in tddis.c. fill cmpx1 based on other args values
 	}
 	else
 	{
 //		reporterr( "n" );
-		cpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc );
+		cpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc ); //defined in tddis.c. fills cmpx1 matrix based on other args values
 	}
-	cpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );
+	//the difference is that cpmx_calc_new initializes cmpx before filling it, while cpmx_calc_add reuse old values
+	cpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );  //fills cmpx2 matrix based on other args values
 
 	if( sgap1 )
 	{
-		new_OpeningGapCount( ogcp1o, icyc, seq1, eff1, lgth1, sgap1 );
+		//fill ogcp1o array with values based on some calcs.
+		new_OpeningGapCount( ogcp1o, icyc, seq1, eff1, lgth1, sgap1 ); //defined in mltaln9.c.
+		//this method fills fgcp1o based on some calcs on other arguments
 		new_FinalGapCount( fgcp1o, icyc, seq1, eff1, lgth1, egap1 );
 
+		//fill ogcp2 array with values based on some calcs.
 		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 );
+		//this method fills fgcp2 based on some calcs on other arguments
 		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 );
 
-		outgapcount( &headgapfreq1, icyc, sgap1, eff1 );
-		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 );
-		outgapcount( gapfreq1+lgth1, icyc, egap1, eff1 );
-		outgapcount( gapfreq2+lgth2, jcyc, egap2, eff2 );
+		//set count of '-' chars in sgap1 to headgapfreq1
+		outgapcount( &headgapfreq1, icyc, sgap1, eff1 ); //defined in mltaln9.c.
+		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 ); //set count of '-' chars in sgap2 to headgapfreq2
+		outgapcount( gapfreq1+lgth1, icyc, egap1, eff1 ); //set count of '-' chars in egap1 to gapfreq1+lgth1
+		outgapcount( gapfreq2+lgth2, jcyc, egap2, eff2 ); //set count of '-' chars in egap2 to gapfreq2+lgth2
 	}
 	else
 	{
 		if( reuseprofiles )
 		{
-			st_OpeningGapAdd( ogcp1o, icyc, seq1, eff1, lgth1 );
-			st_FinalGapAdd( fgcp1o, icyc, seq1, eff1, lgth1 );
+			//fill ogcp1o based on other params values
+			st_OpeningGapAdd( ogcp1o, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c.
+			//fills fgcp1o based on other args values.
+			st_FinalGapAdd( fgcp1o, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c.
 		}
 		else
 		{
-			st_OpeningGapCount( ogcp1o, icyc, seq1, eff1, lgth1 );
-			st_FinalGapCount( fgcp1o, icyc, seq1, eff1, lgth1 );
+			//fills ogcp1o with values based on calcs on other args.
+			st_OpeningGapCount( ogcp1o, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c.
+			//fill fgcp1o based on calcs on other params
+			st_FinalGapCount( fgcp1o, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c.
 		}
 
+		//fills ogcp2 with values based on calcs on other args.
 		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 );
+		//fill fgcp2 based on calcs on other params
 		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 );
 
 		headgapfreq1 = 0.0;
@@ -1092,10 +1112,13 @@ double A__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 	if( legacygapcost == 0 )
 	{
 		if( reuseprofiles )
-			gapcountadd( gapfreq1, seq1, icyc, eff1, lgth1 );
+			gapcountadd( gapfreq1, seq1, icyc, eff1, lgth1 ); //defined in mltaln9.c.
+		//fill gapfreq1 based on other args values
 		else
 			gapcountf( gapfreq1, seq1, icyc, eff1, lgth1 );
+		//fill gapfreq1 array with values based on other args calcs
 
+		//fill gapfreq2 array with values based on other args calcs
 		gapcountf( gapfreq2, seq2, jcyc, eff2, lgth2 );
 
 		for( i=0; i<lgth1+1; i++ ) gapfreq1[i] = 1.0 - gapfreq1[i];
@@ -1141,13 +1164,16 @@ double A__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 	currentw = w1;
 	previousw = w2;
 
-	match_calc( n_dynamicmtx, initverticalw, cpmx2, cpmx1, 0, lgth1, doublework, intwork, 1 );
+	//update initverticalw, doublework and intwork based on other params values
+	match_calc( n_dynamicmtx, initverticalw, cpmx2, cpmx1, 0, lgth1, doublework, intwork, 1 ); //defined here.
 	if( localhom )
 		imp_match_out_vead_tate( initverticalw, 0, lgth1 ); // 060306
+	//add values from impmtx to values in initverticalw.
 
+	//update currentw, doublework and intwork based on other params values
 	match_calc( n_dynamicmtx, currentw, cpmx1, cpmx2, 0, lgth2, doublework, intwork, 1 );
 	if( localhom )
-		imp_match_out_vead( currentw, 0, lgth2 ); // 060306
+		imp_match_out_vead( currentw, 0, lgth2 ); // 060306  //add values from impmtx to values in currentw.
 #if 0 // -> tbfast.c
 	if( localhom )
 		imp_match_calc( n_dynamicmtx, currentw, icyc, jcyc, lgth1, lgth2, seq1, seq2, eff1, eff2, localhom, 1, 0 );
@@ -1240,6 +1266,7 @@ for( i=0; i<lgth2; i++ )
 
 		previousw[0] = initverticalw[i-1];
 
+		//update currentw, doublework and intwork based on other params values
 		match_calc( n_dynamicmtx, currentw, cpmx1, cpmx2, i, lgth2, doublework, intwork, 0 );
 #if XXXXXXX
 fprintf( stderr, "\n" );
@@ -1257,7 +1284,7 @@ fprintf( stderr, "\n" );
 #if  0
 			imp_match_out_vead( currentw, i, lgth2 );
 #else
-			imp_match_out_vead( currentw, i, lgth2 );
+			imp_match_out_vead( currentw, i, lgth2 ); //add values from impmtx to values in currentw.
 #endif
 		}
 #if XXXXXXX
@@ -1423,9 +1450,9 @@ fprintf( stderr, "\n" );
 
 		if( trywarp )
 		{
-			fltncpy( prevwmrecords, wmrecords, lastj );
-			intncpy( prevwarpi, warpi, lastj );
-			intncpy( prevwarpj, warpj, lastj );
+			fltncpy( prevwmrecords, wmrecords, lastj ); //copy lastj characters from wmrecords into prevwmrecords
+			intncpy( prevwarpi, warpi, lastj ); //copy lastj characters from warpi into prevwarpi
+			intncpy( prevwarpj, warpj, lastj ); //copy lastj characters from warpj into prevwarpj
 		}
 	}
 
@@ -1460,6 +1487,7 @@ fprintf( stderr, "\n" );
 	for( i=0; i<icyc; i++ ) strcpy( mseq1[i], seq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( mseq2[j], seq2[j] );
 	*/
+	//updates mseq1, mseq2 and ijp values based on some calculations on other args
 	if( localhom )
 	{
 		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase, &ngap1, &ngap2, reuseprofiles );
@@ -1482,6 +1510,7 @@ fprintf( stderr, "\n" );
 	}
 
 
+	//copy mseq to seq
 	if( ngap1 || !reuseprofiles )
 		for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	if( ngap2 || !reuseprofiles )
@@ -1513,7 +1542,7 @@ double A__align_gapmap( char **seq1, char **seq2, double *eff1, double *eff2, in
 	exit( 1 );
 }
 
-
+//passed here before
 double A__align_variousdist( int **which, double ***matrices, double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, double *eff2, double **eff1s, double **eff2s, int icyc, int jcyc, int alloclen, LocalHom ***localhom, double *impmatch, char *sgap1, char *sgap2, char *egap1, char *egap2, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -1529,8 +1558,8 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 	double g;
 	double *currentw, *previousw;
 //	double fpenalty = (double)penalty;
-#if USE_PENALTY_EX
-	double fpenalty_ex = (double)penalty_ex;
+#if USE_PENALTY_EX //defined here and = 1
+	double fpenalty_ex = (double)penalty_ex; //penalty_ex defined in defs.h.
 #endif
 #if 1
 	double *wtmp;
@@ -1559,8 +1588,8 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 	static TLS int orlgth1 = 0, orlgth2 = 0;
 	static TLS double *gapfreq1;
 	static TLS double *gapfreq2;
-	double fpenalty = (double)penalty;
-	double fpenalty_shift = (double)penalty_shift;
+	double fpenalty = (double)penalty; //penalty defined in defs.h.
+	double fpenalty_shift = (double)penalty_shift; //penalty_shift defined in defs.h.
 	double *fgcp2pt;
 	double *ogcp2pt;
 	double fgcp1va;
@@ -1596,7 +1625,8 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 			orlgth1 = 0;
 			orlgth2 = 0;
 
-			imp_match_init_strict( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL );
+			//frees impmtx and return.
+			imp_match_init_strict( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL ); //defined here
 
 			free( mseq1 );
 			free( mseq2 );
@@ -1848,7 +1878,7 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c.
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -1874,28 +1904,28 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 //	cpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );
 	for( c=0; c<maxdistclass; c++ )
 	{
-		cpmx_calc_new( seq1, cpmx1s[c], eff1s[c], lgth1, icyc );
-		cpmx_calc_new( seq2, cpmx2s[c], eff2s[c], lgth2, jcyc );
+		cpmx_calc_new( seq1, cpmx1s[c], eff1s[c], lgth1, icyc ); //defined in tddis.c. fills cpmx1s[c] matrix based on other args values
+		cpmx_calc_new( seq2, cpmx2s[c], eff2s[c], lgth2, jcyc ); //fills cpmx2s[c] matrix based on other args values
 	}
 #endif
 
 	if( sgap1 )
 	{
-		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 );
-		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 );
-		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap1 );
-		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 );
-		outgapcount( &headgapfreq1, icyc, sgap1, eff1 );
-		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 );
-		outgapcount( gapfreq1+lgth1, icyc, egap1, eff1 );
-		outgapcount( gapfreq2+lgth2, jcyc, egap2, eff2 );
+		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 ); //defined in mltaln9.c. fill ogcp1 array with values based on some calcs.
+		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 ); //fill ogcp2 array with values based on some calcs.
+		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap1 ); //defined in mltaln9.c. fills fgcp1 based on some calcs on other arguments
+		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 ); //fills fgcp2 based on some calcs on other arguments
+		outgapcount( &headgapfreq1, icyc, sgap1, eff1 ); //defined in mltaln9.c. set count of '-' chars in sgap1 to headgapfreq1
+		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 ); //set count of '-' chars in sgap2 to headgapfreq2
+		outgapcount( gapfreq1+lgth1, icyc, egap1, eff1 ); //set count of '-' chars in egap1 to gapfreq1+lgth1
+		outgapcount( gapfreq2+lgth2, jcyc, egap2, eff2 ); //set count of '-' chars in egap2 to gapfreq2+lgth2
 	}
 	else
 	{
-		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 );
-		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 );
-		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 );
-		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 );
+		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills ogcp1 with values based on calcs on other args.
+		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 ); //fills ogcp2 with values based on calcs on other args.
+		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills fgcp1 based on calcs on other params
+		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 ); //fills fgcp2 based on calcs on other params
 		headgapfreq1 = 0.0;
 		headgapfreq2 = 0.0;
 		gapfreq1[lgth1] = 0.0;
@@ -1904,8 +1934,8 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 
 	if( legacygapcost == 0 )
 	{
-		gapcountf( gapfreq1, seq1, icyc, eff1, lgth1 );
-		gapcountf( gapfreq2, seq2, jcyc, eff2, lgth2 );
+		gapcountf( gapfreq1, seq1, icyc, eff1, lgth1 ); //defined in mltaln9.c. fill gapfreq1 array with values based on other args calcs
+		gapcountf( gapfreq2, seq2, jcyc, eff2, lgth2 ); //fill gapfreq2 array with values based on other args calcs
 		for( i=0; i<lgth1+1; i++ ) gapfreq1[i] = 1.0 - gapfreq1[i];
 		for( i=0; i<lgth2+1; i++ ) gapfreq2[i] = 1.0 - gapfreq2[i];
 		headgapfreq1 = 1.0 - headgapfreq1;
@@ -1955,15 +1985,19 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 #if SLOW
 	match_calc_slow( which, matrices, initverticalw, jcyc, seq2, eff2, icyc, seq1, eff1, 0, lgth1, *doublework, *intwork, 1, 1 );
 #else
-	fillzero( initverticalw, lgth1 );
+	fillzero( initverticalw, lgth1 ); //defined here. fills initverticalw with 0's
 	for( c=0; c<maxdistclass; c++ )
 	{
 //		fprintf( stderr, "c=%d matrices[c][W][W] = %f\n", c, matrices[c][amino_n['W']][amino_n['W']] );
 //		for( i=0; i<lgth1; i++ ) fprintf( stderr, "seq1[i] = %c, cpmx1s[c][3][%d] = %f\n", seq1[0][i], i, cpmx1s[c][3][i] );
 //		for( i=0; i<lgth2; i++ ) fprintf( stderr, "seq2[i] = %c, cpmx2s[c][3][%d] = %f\n", seq2[0][i], i, cpmx2s[c][3][i] );
-		match_calc_add( matrices[c], initverticalw, cpmx2s[c], cpmx1s[c], 0, lgth1, doublework[c], intwork[c], 1 );
+
+		//fills initverticalw, doublework[c] and intwork[c] based on other params values.
+		match_calc_add( matrices[c], initverticalw, cpmx2s[c], cpmx1s[c], 0, lgth1, doublework[c], intwork[c], 1 ); //defined here
+
 //		for( i=0; i<lgth1; i++ ) fprintf( stderr, "c=%d, %d - %f\n", c, i, initverticalw[i] );
-		if( nmask[c] ) match_calc_del( which, matrices, initverticalw, jcyc, seq2, eff2, icyc, seq1, eff1, 0, lgth1, c, nmask[c], masklist2[c], masklist1[c] );
+		if( nmask[c] ) match_calc_del( which, matrices, initverticalw, jcyc, seq2, eff2, icyc, seq1, eff1, 0, lgth1, c, nmask[c], masklist2[c], masklist1[c] ); //defined here.
+		//updates initverticalw values based on matrices, eff1 and eff2 values.
 	}
 //	for( i=0; i<lgth1; i++ ) fprintf( stderr, "%d - %f\n", i, initverticalw[i] );
 #endif
@@ -1972,17 +2006,20 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 
 	if( localhom )
 		imp_match_out_vead_tate( initverticalw, 0, lgth1 ); // 060306
+	//defined here. add values from impmtx to values in initverticalw.
 
 #if SLOW
 	match_calc_slow( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, 0, lgth2, *doublework, *intwork, 1, 0 );
 //	for( i=0; i<lgth2; i++ ) fprintf( stderr, "%d - %f\n", i, currentw[i] );
 //	exit( 1 );
 #else
-	fillzero( currentw, lgth2 );
+	fillzero( currentw, lgth2 ); //fills currentw array with 0.0 values
 	for( c=0; c<maxdistclass; c++ )
 	{
+		//fills currentw, doublework[c] and intwork[c] based on other params values.
 		match_calc_add( matrices[c], currentw, cpmx1s[c], cpmx2s[c], 0, lgth2, doublework[c], intwork[c], 1 );
 		if( nmask[c] ) match_calc_del( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, 0, lgth2, c, nmask[c], masklist1[c], masklist2[c] );
+		//updates currentw values based on matrices, eff1 and eff2 values.
 	}
 //	for( i=0; i<lgth2; i++ ) fprintf( stderr, "%d - %f\n", i, currentw[i] );
 //	exit( 1 );
@@ -1990,6 +2027,8 @@ double A__align_variousdist( int **which, double ***matrices, double **n_dynamic
 
 	if( localhom )
 		imp_match_out_vead( currentw, 0, lgth2 ); // 060306
+	//defined here. add values from impmtx to values in currentw.
+
 #if 0 // -> tbfast.c
 	if( localhom )
 		imp_match_calc( n_dynamicmtx, currentw, icyc, jcyc, lgth1, lgth2, seq1, seq2, eff1, eff2, localhom, 1, 0 );
@@ -2088,11 +2127,13 @@ for( i=0; i<lgth2; i++ )
 #if SLOW
 		match_calc_slow( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, i, lgth2, *doublework, *intwork, 0, 0 );
 #else
-		fillzero( currentw, lgth2 );
+		fillzero( currentw, lgth2 ); //fill currentw with 0.0
 		for( c=0; c<maxdistclass; c++ )
 		{
+			//fills currentw, doublework[c] and intwork[c] based on other params values.
 			match_calc_add( matrices[c], currentw, cpmx1s[c], cpmx2s[c], i, lgth2, doublework[c], intwork[c], 0 );
 			if( nmask[c] ) match_calc_del( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, i, lgth2, c, nmask[c], masklist1[c], masklist2[c] );
+			//updates currentw values based on matrices, eff1 and eff2 values.
 		}
 #endif
 #if 0
@@ -2120,7 +2161,7 @@ fprintf( stderr, "\n" );
 #if  0
 			imp_match_out_vead( currentw, i, lgth2 );
 #else
-			imp_match_out_vead( currentw, i, lgth2 );
+			imp_match_out_vead( currentw, i, lgth2 ); //add values from impmtx to values in currentw.
 #endif
 		}
 #if XXXXXXX
@@ -2285,9 +2326,10 @@ fprintf( stderr, "\n" );
 
 		if( trywarp )
 		{
-			fltncpy( prevwmrecords, wmrecords, lastj );
-			intncpy( prevwarpi, warpi, lastj );
-			intncpy( prevwarpj, warpj, lastj );
+			//copy lastj items from wmrecords to prevwmrecords
+			fltncpy( prevwmrecords, wmrecords, lastj ); //defined in mltaln9.c.
+			intncpy( prevwarpi, warpi, lastj ); //defined in mltaln9.c. copy lastj items from warpi to prevwarpi
+			intncpy( prevwarpj, warpj, lastj ); //copy lastj items from warpi to prevwarpi
 		}
 	}
 	if( trywarp )
@@ -2322,12 +2364,14 @@ fprintf( stderr, "\n" );
 	for( i=0; i<icyc; i++ ) strcpy( mseq1[i], seq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( mseq2[j], seq2[j] );
 	*/
+
+	//updates mseq1, mseq2, ijp, ngap1 and ngap2 values based on some calculations on other args
 	if( localhom )
 	{
-		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase, &ngap1, &ngap2, 0 );
+		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase, &ngap1, &ngap2, 0 ); //defined here.
 	}
 	else
-		Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, tailgp, warpis, warpjs, warpbase, &ngap1, &ngap2, 0 );
+		Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, tailgp, warpis, warpjs, warpbase, &ngap1, &ngap2, 0 ); //defined here.
 
 	if( warpis ) free( warpis );
 	if( warpjs ) free( warpjs );
@@ -2342,6 +2386,7 @@ fprintf( stderr, "\n" );
 	}
 
 
+	//copy mseq to seq
 	for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( seq2[j], mseq2[j] );
 #if 0

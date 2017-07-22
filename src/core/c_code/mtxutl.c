@@ -472,6 +472,7 @@ double **AllocateDoubleMtx( int ll1, int ll2 )
 	return mtx;
 }
 
+//free mtx memory
 void FreeDoubleHalfMtx( double **mtx, int n )
 {
 	int i;

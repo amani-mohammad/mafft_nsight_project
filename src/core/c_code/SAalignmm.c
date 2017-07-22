@@ -4,6 +4,7 @@
 
 #define DEBUG 0
 
+//fill match array
 static void match_calc( double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
 	int j, k, l;
@@ -36,7 +37,7 @@ static void match_calc( double *match, double **cpmx1, double **cpmx2, int i1, i
 	{
 		scarr[l] = 0.0;
 		for( k=0; k<nalphabets; k++ )
-			scarr[l] += n_dis[k][l] * cpmx1[k][i1];
+			scarr[l] += n_dis[k][l] * cpmx1[k][i1]; //n_dis defined in defs.c
 	}
 	for( j=0; j<lgth2; j++ )
 	{
@@ -47,6 +48,7 @@ static void match_calc( double *match, double **cpmx1, double **cpmx2, int i1, i
 	free( scarr );
 }
 
+//updates mseq1, mseq2 and ijp values based on some calculations
 static double Atracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -156,11 +158,11 @@ static double Atracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
-
+//apply specific algorithm to align seq1 and seq2
 double Aalign( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, int jcyc, int alloclen )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
-	register int i, j;
+	register int i, j; //register suggests to the compiler to allocate these variable in registers, if possible
 	int lasti;                      /* outgap == 0 -> lgth1, outgap == 1 -> lgth1+1 */
 	int lgth1, lgth2;
 	int resultlen;
@@ -254,13 +256,13 @@ double Aalign( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, i
 	for( j=0; j<jcyc; j++ ) mseq2[j] = mseq[icyc+j];
 
 
-	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 )
+	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 ) //commonAlloc1 and commonAlloc2 defined in defs.c and = 0
 	{
 		int ll1, ll2;
 
-		if( commonAlloc1 && commonAlloc2 )
+		if( commonAlloc1 && commonAlloc2 ) //if commonAlloc1 != 0 & commonAlloc2 != 0
 		{
-			FreeIntMtx( commonIP );
+			FreeIntMtx( commonIP ); //commonIP is defined in defs.c
 		}
 
 		ll1 = MAX( orlgth1, commonAlloc1 );
@@ -277,17 +279,17 @@ double Aalign( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, i
 	}
 	ijp = commonIP;
 
-	cpmx_calc( seq1, cpmx1, eff1, strlen( seq1[0] ), icyc );
-	cpmx_calc( seq2, cpmx2, eff2, strlen( seq2[0] ), jcyc );
+	cpmx_calc( seq1, cpmx1, eff1, strlen( seq1[0] ), icyc ); //defined in tddis.c. fill in cpmx1 matrix based on amino_n and eff1 values.
+	cpmx_calc( seq2, cpmx2, eff2, strlen( seq2[0] ), jcyc ); //fill cpmx2
 
-	match_calc( initverticalw, cpmx2, cpmx1, 0, lgth1, doublework, intwork, 1 );
-	match_calc( currentw, cpmx1, cpmx2, 0, lgth2, doublework, intwork, 1 );
+	match_calc( initverticalw, cpmx2, cpmx1, 0, lgth1, doublework, intwork, 1 ); //defined here. fills match array based on other params values
+	match_calc( currentw, cpmx1, cpmx2, 0, lgth2, doublework, intwork, 1 ); //fill currentw array
 
-	if( outgap == 1 )
+	if( outgap == 1 ) //defined in defs.c and = 1
 	{
 		for( i=1; i<lgth1+1; i++ )
 		{
-			initverticalw[i] += penalty * 0.5;
+			initverticalw[i] += penalty * 0.5; //penalty defined in defs.h and set in constants.c
 		}
 		for( j=1; j<lgth2+1; j++ )
 		{
@@ -307,10 +309,10 @@ double Aalign( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, i
 	for( i=1; i<lasti; i++ )
 	{
 
-		doublencpy( previousw, currentw, lgth2+1 );
+		doublencpy( previousw, currentw, lgth2+1 ); //defined in mltaln9.c. copy (lgth2+1) numbers from currentw to previousw
 		previousw[0] = initverticalw[i-1];
 
-		match_calc( currentw, cpmx1, cpmx2, i, lgth2, doublework, intwork, 0 );
+		match_calc( currentw, cpmx1, cpmx2, i, lgth2, doublework, intwork, 0 ); //defined here. fill currentw array without initialization step
 		currentw[0] = initverticalw[i];
 
 		mi = previousw[0] + penalty * 0.5; mpi = 0;
@@ -351,7 +353,7 @@ double Aalign( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, i
 			currentw[j] += wm;
 		}
 		lastverticalw[i] = currentw[lgth2-1];
-	}
+	} //I think this loop fills lastverticalw based on currentw values and some calculations
 	/*
 	fprintf( stderr, "\n" );
 	for( i=0; i<icyc; i++ ) fprintf( stderr,"%s\n", seq1[i] );
@@ -361,15 +363,17 @@ double Aalign( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, i
 	for( i=0; i<icyc; i++ ) strcpy( mseq1[i], seq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( mseq2[j], seq2[j] );
 	*/
-	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, cpmx1, cpmx2, ijp, icyc, jcyc );
+	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, cpmx1, cpmx2, ijp, icyc, jcyc ); //defined here.
+	//updates mseq1, mseq2 and ijp values based on some calculations
 
 	resultlen = strlen( mseq1[0] );
-	if( alloclen < resultlen || resultlen > N )
+	if( alloclen < resultlen || resultlen > N ) //if resultlen > allocated length or max length of sequence
 	{
 		fprintf( stderr, "alloclen=%d, resultlen=%d, N=%d\n", alloclen, resultlen, N );
 		ErrorExit( "LENGTH OVER!\n" );
 	}
 
+	//copy new sequences to original ones
 	for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( seq2[j], mseq2[j] );
 	/*

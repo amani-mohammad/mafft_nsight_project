@@ -194,7 +194,7 @@ extern char seqcheck( char ** );
 
 typedef struct _LocalHom
 {
-	int nokori;
+	int nokori; //= remaining in Japanese
 	struct _LocalHom *next;
 	struct _LocalHom *last;
 	int start1;
@@ -266,7 +266,7 @@ typedef struct _Fukusosuu
 {
     double R;
     double I;
-} Fukusosuu;
+} Fukusosuu; //Fukusosuu = complex number :D
 
 typedef struct _Gappattern
 {

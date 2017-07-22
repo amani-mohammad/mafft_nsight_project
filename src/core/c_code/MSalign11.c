@@ -6,11 +6,12 @@
 #define XXXXXXX    0
 #define USE_PENALTY_EX  0
 
+// I think this method fills mseq1 and mseq2 with chars from seq1 and seq2 and gaps in appropriate indices based on other args values
 static void extendmseq( char **mseq1, char **mseq2, char **seq1, char **seq2, int i, int j, int prevhiti, int prevhitj )
 {
 //	char gap[] = "-";
 	char *gap;
-	gap = newgapstr;
+	gap = newgapstr; //newgapstr defined in defs.c.
 	int l;
 
 	fprintf( stderr, "i=%d, prevhiti=%d\n", i, prevhiti );
@@ -36,6 +37,7 @@ static void extendmseq( char **mseq1, char **mseq2, char **seq1, char **seq2, in
 	fprintf( stderr, "added %c to mseq2, mseq2 = %s \n", seq2[0][j], mseq2[0] );
 }
 
+//fills match array with numbers from amino_dis based on seq1 and seq2 chars
 static void match_calc( double *match, char **s1, char **s2, int i1, int lgth2 )
 {
 	char tmpc = s1[0][i1];
@@ -45,6 +47,7 @@ static void match_calc( double *match, char **s1, char **s2, int i1, int lgth2 )
 		*match++ = amino_dis[(int)tmpc][(int)*seq2++];
 }
 
+//updates mseq1, mseq2 and ijp values based on some calculations on other args
 static double Atracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -119,6 +122,7 @@ static double Atracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
+//I think this method means back dynamic programming!! It updates mseq1 and mseq2 values based on other args values.
 void backdp( double **WMMTX, double wmmax, double *maxinw, double *maxinh, int lgth1, int lgth2, int alloclen, double *w1, double *w2, double *initverticalw, double *m, int *mp, int iin, int jin, char **seq1, char **seq2, char **mseq1, char **mseq2 )
 {
 	register int i, j;
@@ -140,15 +144,16 @@ void backdp( double **WMMTX, double wmmax, double *maxinw, double *maxinh, int l
 	currentw = w1;
 	previousw = w2;
 
-	match_calc( initverticalw, seq2, seq1, lgth2-1, lgth1 );
-	match_calc( currentw, seq1, seq2, lgth1-1, lgth2 );
+	match_calc( initverticalw, seq2, seq1, lgth2-1, lgth1 ); //defined her. fills initverticalw array with numbers from amino_dis based on seq1 and seq2 chars
+	match_calc( currentw, seq1, seq2, lgth1-1, lgth2 ); //fills currentw array with numbers from amino_dis based on seq1 and seq2 chars
 
 
 	prevhiti = iin;
 	prevhitj = jin;
 	fprintf( stderr, "prevhiti = %d, lgth1 = %d\n", prevhiti, lgth1 );
 	fprintf( stderr, "prevhitj = %d, lgth2 = %d\n", prevhitj, lgth2 );
-	extendmseq( mseq1, mseq2, seq1, seq2, prevhiti, prevhitj, lgth1, lgth2 );
+	//I think this method fills mseq1 and mseq2 with chars from seq1 and seq2 and gaps in appropriate indices based on other args values
+	extendmseq( mseq1, mseq2, seq1, seq2, prevhiti, prevhitj, lgth1, lgth2 ); //defined here.
 
 	for( i=0; i<lgth1-1; i++ )
 	{
@@ -190,7 +195,7 @@ void backdp( double **WMMTX, double wmmax, double *maxinw, double *maxinh, int l
 
 		previousw[lgth2-1] = initverticalw[i+1];
 
-		match_calc( currentw, seq1, seq2, i, lgth2 );
+		match_calc( currentw, seq1, seq2, i, lgth2 ); //fills currentw array with numbers from amino_dis based on seq1 and seq2 chars
 
 #if 0
 		fprintf( stderr, "i=%d, currentw = \n", i );
@@ -260,6 +265,7 @@ void backdp( double **WMMTX, double wmmax, double *maxinw, double *maxinh, int l
 			if( forwwm == wmmax && i<prevhiti && j<prevhitj ) 
 			{
 				fprintf( stderr, "hit!\n" );
+				// I think this method fills mseq1 and mseq2 with chars from seq1 and seq2 and gaps in appropriate indices based on other args values
 				extendmseq( mseq1, mseq2, seq1, seq2, i, j, prevhiti, prevhitj );
 				if( forwwm == wmmax )
 				{
@@ -277,10 +283,11 @@ void backdp( double **WMMTX, double wmmax, double *maxinw, double *maxinh, int l
 			curpt--;
 		}
 	}
+	// I think this method fills mseq1 and mseq2 with chars from seq1 and seq2 and gaps in appropriate indices based on other args values
 	extendmseq( mseq1, mseq2, seq1, seq2, -1, -1, prevhiti, prevhitj );
 }
 
-
+//aligns seq1 and seq2
 double MSalign11( char **seq1, char **seq2, int alloclen )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -293,7 +300,7 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 	double wm = 0.0;   /* int ?????? */
 	double g;
 	double *currentw, *previousw;
-	double fpenalty = (double)penalty;
+	double fpenalty = (double)penalty; //penalty is defined in defs.h and set in constants.c
 #if USE_PENALTY_EX
 	double fpenalty_ex = (double)penalty_ex;
 #endif
@@ -401,7 +408,7 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 	mseq2[0] = mseq[1];
 
 
-	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 )
+	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 ) //commonAlloc1 and commonAlloc2 defined in defs.c and set to 0 as default.
 	{
 		int ll1, ll2;
 
@@ -418,7 +425,7 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c
 		WMMTX = AllocateFloatMtx( ll1+10, ll2+10 );
 
 #if DEBUG
@@ -439,9 +446,10 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 	currentw = w1;
 	previousw = w2;
 
-	match_calc( initverticalw, seq2, seq1, 0, lgth1 );
+	//fills initverticalw array with numbers from amino_dis based on seq1 and seq2 chars
+	match_calc( initverticalw, seq2, seq1, 0, lgth1 ); //defined here.
 
-
+	//fills currentw array with numbers from amino_dis based on seq1 and seq2 chars
 	match_calc( currentw, seq1, seq2, 0, lgth2 );
 
 	WMMTX[0][0] = initverticalw[0];
@@ -478,7 +486,8 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 
 		previousw[0] = initverticalw[i-1];
 
-		match_calc( currentw, seq1, seq2, i, lgth2 );
+		//fills currentw array with numbers from amino_dis based on seq1 and seq2 chars
+		match_calc( currentw, seq1, seq2, i, lgth2 ); //defined here.
 
 		currentw[0] = initverticalw[i];
 
@@ -614,7 +623,8 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 	mseq2[0] += lgth1+lgth2;
 	*mseq2[0] = 0;
 
-	backdp( WMMTX, wmmax, maxinw, maxinh, lgth1, lgth2, alloclen, w1, w2, initverticalw, m, mp, iin, jin, seq1, seq2, mseq1, mseq2 );
+	//I think this method means back dynamic programming!! It updates mseq1 and mseq2 values based on other args values.
+	backdp( WMMTX, wmmax, maxinw, maxinh, lgth1, lgth2, alloclen, w1, w2, initverticalw, m, mp, iin, jin, seq1, seq2, mseq1, mseq2 ); //defined here.
 
 	fprintf( stderr, "\n" );
 #if 1
@@ -641,17 +651,18 @@ double MSalign11( char **seq1, char **seq2, int alloclen )
 	mseq2[0] += lgth1+lgth2;
 	*mseq2[0] = 0;
 
-	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, cpmx1, cpmx2, ijp );
+	//updates mseq1, mseq2 and ijp values based on some calculations on other args
+	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, cpmx1, cpmx2, ijp ); //defined here.
 
 
 	resultlen = strlen( mseq1[0] );
-	if( alloclen < resultlen || resultlen > N )
+	if( alloclen < resultlen || resultlen > N ) //N is constant defined in mltaln.h and = 500,000
 	{
 		fprintf( stderr, "alloclen=%d, resultlen=%d, N=%d\n", alloclen, resultlen, N );
 		ErrorExit( "LENGTH OVER!\n" );
 	}
 
-
+	//copy modified sequences to original ones
 	strcpy( seq1[0], mseq1[0] );
 	strcpy( seq2[0], mseq2[0] );
 #if 1

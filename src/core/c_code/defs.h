@@ -50,7 +50,7 @@ int constraint;
 int divpairscore;
 int fmodel; // 1-> fmodel 0->default -1->raw
 int nblosum; // 45, 50, 62, 80
-int kobetsubunkatsu;
+int kobetsubunkatsu; //kobetsubunkatsu = individual division
 int bunkatsu;
 extern int dorp; // arguments de shitei suruto, tbfast -> pairlocalalign no yobidashi de futsugou
 int niter;
@@ -83,7 +83,7 @@ char use_fft;
 char force_fft;
 int nevermemsave;
 int fftscore;
-int fftWinSize;
+int fftWinSize; //may be means fft window size
 int fftThreshold;
 int fftRepeatStop;
 int fftNoAnchStop;

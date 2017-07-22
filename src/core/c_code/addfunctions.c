@@ -356,6 +356,7 @@ void findnewgaps( int n, int rep, char **seq, int *gaplen )
 #endif
 }
 
+//fill gapmap with values based on gaps positions in seq and value of n
 void findcommongaps( int n, char **seq, int *gapmap )
 {
 	int i, j, pos, len, len1;
@@ -1610,6 +1611,7 @@ int deletenewinsertions_whole_eq( int on, int an, char **oseq, char **aseq, int 
 	return( i-p );
 }
 
+//update oseq, aseq and deletelist based on conditions on oseq and aseq values
 int deletenewinsertions_whole( int on, int an, char **oseq, char **aseq, int **deletelist )
 {
 	int i, j, p, q, allgap, ndel;
@@ -1761,17 +1763,17 @@ exit( 1 );
 
 #endif
 
-
+//fill originallygapped array with indicators based on gaps found in s
 int recordoriginalgaps( char *originallygapped, int n, char **s )
 {
 	int i, j;
 	int len = strlen( s[0] );
 	int v = 0;
-	for( i=0; i<len; i++ )
+	for( i=0; i<len; i++ ) //for each char in the first sequences in s matrix
 	{
-		for( j=0; j<n; j++ ) if( s[j][i] != '-' ) break;
+		for( j=0; j<n; j++ ) if( s[j][i] != '-' ) break; //for each item in n - which is jobs number -, check if gap, break loop
 
-		if( j == n ) 
+		if( j == n ) //if no gap found in the previous loop
 			originallygapped[i] = '-';
 		else
 			originallygapped[i] = 'o';
@@ -1780,6 +1782,7 @@ int recordoriginalgaps( char *originallygapped, int n, char **s )
 	return( v );
 }
 
+//restore gaps from originalgaps to seq
 void restoreoriginalgaps( int n, char **seq, char *originalgaps )
 {
 	int i, j, p;
@@ -1800,6 +1803,7 @@ void restoreoriginalgaps( int n, char **seq, char *originalgaps )
 	free( tmpseq );
 }
 
+//print addbk and name content to fp file
 void reconstructdeletemap( int nadd, char **addbk, int **deletelist, char **realn, FILE *fp, char **name )
 {
 	int i, j, p, len;
@@ -1818,7 +1822,7 @@ void reconstructdeletemap( int nadd, char **addbk, int **deletelist, char **real
 
 		if( (tmpptr=strstr( nameptr, "_oe_" )) ) nameptr = tmpptr + 4; // = -> _ no tame
 
-		fprintf( fp, ">%s\n", nameptr );
+		fprintf( fp, ">%s\n", nameptr ); //print name in fp
 		fprintf( fp, "# letter, position in the original sequence, position in the reference alignment\n" );
 
 //		reporterr( "addbk[%d] = %s\n", i, addbk[i] );

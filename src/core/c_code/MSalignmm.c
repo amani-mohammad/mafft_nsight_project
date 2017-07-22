@@ -13,7 +13,7 @@
 
 static TLS int reccycle = 0;
 
-
+//fills match, doublework and intwork based on calcs on other args.
 static void match_calc_add( double **scoringmtx, double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
 	int j, k, l;
@@ -54,7 +54,7 @@ static void match_calc_add( double **scoringmtx, double *match, double **cpmx1, 
 			scarr[l] += scoringmtx[k][l] * cpmx1[i1][k];
 		}
 	}
-#if 0 /* これを使うときはdoubleworkのアロケートを逆にする */
+#if 0 /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申doublework鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 	{
 		double *fpt, **fptpt, *fpt2;
 		int *ipt, **iptpt;
@@ -93,6 +93,7 @@ static void match_calc_add( double **scoringmtx, double *match, double **cpmx1, 
 	free( scarr );
 }
 
+//fills match, doublework and intwork based on calcs on other args.
 static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
 	int j, k, l;
@@ -133,7 +134,7 @@ static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, do
 			scarr[l] += n_dynamicmtx[k][l] * cpmx1[i1][k];
 		}
 	}
-#if 0 /* これを使うときはdoubleworkのアロケートを逆にする */
+#if 0 /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申doublework鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 	{
 		double *fpt, **fptpt, *fpt2;
 		int *ipt, **iptpt;
@@ -161,7 +162,7 @@ static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, do
 	cpmxpdpt = cpmxpd;
 	while( lgth2-- )
 	{
-		*matchpt = 0.0;
+		*matchpt = 0.0; //this is the only difference between match_calc and match_calc_add. In match_calc_add this line is commented.
 		for( k=0; (cpkd=(*cpmxpdnpt)[k])>-1; k++ )
 			*matchpt += scarr[cpkd] * (*cpmxpdpt)[k];
 		matchpt++;
@@ -172,6 +173,7 @@ static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, do
 	free( scarr );
 }
 
+//updates mseq1, mseq2 and ijp values based on some calculations on other args
 static double Atracking( double *lasthorizontalw, double *lastverticalw,
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -321,6 +323,7 @@ static double Atracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
+//update mseq1 and mseq2 based on specific algorithm. It returns wm which I think the weight of matches
 static double MSalignmm_tanni( double **n_dynamicmtx, int icyc, int jcyc, double *eff1, double *eff2, char **seq1, char **seq2, double **cpmx1, double **cpmx2, int ist, int ien, int jst, int jen, int alloclen, int fulllen1, int fulllen2, char **mseq1, char **mseq2, double **gapinfo, int headgp, int tailgp, double headgapfreq1_g, double headgapfreq2_g )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -431,10 +434,13 @@ static double MSalignmm_tanni( double **n_dynamicmtx, int icyc, int jcyc, double
 	currentw = w1;
 	previousw = w2;
 
-	match_calc( n_dynamicmtx, initverticalw, cpmx2+jst, cpmx1+ist, 0, lgth1, doublework, intwork, 1 );
+	match_calc( n_dynamicmtx, initverticalw, cpmx2+jst, cpmx1+ist, 0, lgth1, doublework, intwork, 1 ); //defined here.
+	//fills initverticalw, doublework and intwork based on calcs on other args.
 
 	match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, 0, lgth2, doublework, intwork, 1 );
+	//fills currentw, doublework and intwork based on calcs on other args.
 
+	//then complete initverticalw and currentw filling and updating values
 	if( headgp || ist != 0 )
 	{
 		for( i=1; i<lgth1+1; i++ )
@@ -470,6 +476,7 @@ static double MSalignmm_tanni( double **n_dynamicmtx, int icyc, int jcyc, double
 		previousw[0] = initverticalw[i-1];
 
 		match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 );
+		//fills currentw, doublework and intwork based on calcs on other args.
 		currentw[0] = initverticalw[i];
 
 		mi = previousw[0] + ogcp2[1] * gapfreq1f[i-1];
@@ -545,6 +552,7 @@ static double MSalignmm_tanni( double **n_dynamicmtx, int icyc, int jcyc, double
 
 //	fprintf( stderr, "wm = %f\n", wm );
 
+	//defined here. updates mseq1, mseq2 and ijp values based on some calculations
 	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, ist, ien, jst, jen, fulllen1, fulllen2, tailgp );
 #if 0
 	fprintf( stderr, "res in _tanni mseq1[0] = %s\n", mseq1[0] );
@@ -633,6 +641,8 @@ static void freearrays_rec2( char *gaps, char **aseq1, char **aseq2 )
 #endif
 }
 
+//this method uses recursion technique. It calls itself with some different conditions. I think it returns the weight of matching sequences.
+//mseq1 and mseq2 are modified based on matching algorithm.
 static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *eff1, double *eff2, char **seq1, char **seq2, double **cpmx1, double **cpmx2, int ist, int ien, int jst, int jen, int alloclen, int fulllen1, int fulllen2, char **mseq1, char **mseq2, int depth, double **gapinfo, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp, double headgapfreq1_g, double headgapfreq2_g )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -755,7 +765,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 			mseq2[i][0] = 0;
 			for( j=0; j<lgth1; j++ )
 //				strcat( mseq2[i], "-" );
-				strcat( mseq2[i], newgapstr );
+				strcat( mseq2[i], newgapstr ); //newgapstr defined in defs.c
 		}
 
 //		fprintf( stderr, "==== mseq1[0] (%d) = %s\n", depth, mseq1[0] );
@@ -779,10 +789,11 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 
 //  if( lgth1 < DPTANNI && lgth2 < DPTANNI ) // & dato lgth ==1 no kanousei ga arunode yokunai 
 //    if( lgth1 < DPTANNI ) // kore mo lgth2 ga mijikasugiru kanousei ari
-    if( lgth1 < DPTANNI || lgth2 < DPTANNI ) // zettai ni anzen ka?
+    if( lgth1 < DPTANNI || lgth2 < DPTANNI ) // zettai ni anzen ka?  //DPTANNI defined here = 100
 	{
 //		fprintf( stderr, "==== Going to _tanni\n" );
 
+    	//defined here. Updates aseq1 and aseq2 values based on specific algorithm. It returns wm which I think the weight of matches
 		value = MSalignmm_tanni( n_dynamicmtx, icyc, jcyc, eff1, eff2, seq1, seq2, cpmx1, cpmx2, ist, ien, jst, jen, alloclen, fulllen1, fulllen2, aseq1, aseq2, gapinfo, headgp, tailgp, headgapfreq1_g, headgapfreq2_g );	
 
 
@@ -799,7 +810,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 
 //		fprintf( stderr, "value = %f\n", value );
 
-		return( value );
+		return( value ); //I think this returns the weight of matching sequences
 	}
 //	fprintf( stderr, "Trying to divide the mtx\n" );
 
@@ -852,8 +863,10 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 	currentw = w1;
 	previousw = w2;
 
+	//fills initverticalw, doublework and intwork based on calcs on other args.
 	match_calc( n_dynamicmtx, initverticalw, cpmx2+jst, cpmx1+ist, 0, lgth1, doublework, intwork, 1 );
 
+	//fills currentw, doublework and intwork based on calcs on other args.
 	match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, 0, lgth2, doublework, intwork, 1 );
 
 	for( i=1; i<lgth1+1; i++ )
@@ -890,7 +903,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 
 	imid = lgth1 * 0.5;
 
-	jumpi = 0; // atode kawaru.
+	jumpi = 0; // atode kawaru. = I will change later
 	lasti = lgth1+1;
 #if STOREWM
 	for( i=1; i<lasti; i++ )
@@ -924,6 +937,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 
 		previousw[0] = initverticalw[i-1];
 
+		//fills currentw, doublework and intwork based on calcs on other args.
 		match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 );
 		currentw[0] = initverticalw[i];
 
@@ -1067,7 +1081,9 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 
 // gyakudp
 
+	//fills initverticalw, doublework and intwork based on calcs on other args.
 	match_calc( n_dynamicmtx, initverticalw, cpmx2+jst, cpmx1+ist, lgth2-1, lgth1, doublework, intwork, 1 );
+	//fills currentw, doublework and intwork based on calcs on other args.
 	match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, lgth1-1, lgth2, doublework, intwork, 1 );
 
 	for( i=0; i<lgth1-1; i++ )
@@ -1150,6 +1166,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 		currentw = wtmp;
 		previousw[lgth2-1] = initverticalw[i+1];
 //		match_calc( currentw, seq1, seq2, i, lgth2 );
+		//fills currentw, doublework and intwork based on calcs on other args.
 		match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 );
 
 		currentw[lgth2-1] = initverticalw[i];
@@ -1504,6 +1521,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 
 //	fprintf( stderr, "==== calling myself (first)\n" );
 
+	//call itself - recursion
 	value = MSalignmm_rec( n_dynamicmtx, icyc, jcyc, eff1, eff2, seq1, seq2, cpmx1, cpmx2, ist, ist+jumpi, jst, jst+jumpj, alloclen, fulllen1, fulllen2, aseq1, aseq2, depth, gapinfo, NULL, 0, NULL, headgp, tailgp, headgapfreq1_g, headgapfreq2_g ); // chudan mada	
 #if 0
 		fprintf( stderr, "aseq1[0] = %s\n", aseq1[0] );
@@ -1579,6 +1597,7 @@ static double MSalignmm_rec( double **n_dynamicmtx, int icyc, int jcyc, double *
 	for( i=0; i<jcyc; i++ ) aseq2[i] += alnlen;
 #endif
 
+	//call itself - recursion
 	value += MSalignmm_rec( n_dynamicmtx, icyc, jcyc, eff1, eff2, seq1, seq2, cpmx1, cpmx2, ist+imid, ien, jst+jmid, jen, alloclen, fulllen1, fulllen2, aseq1, aseq2, depth, gapinfo, NULL, 0, NULL, headgp, tailgp, headgapfreq1_g, headgapfreq2_g ); // chudan mada
 #if 0
 		fprintf( stderr, "aseq1[0] = %s\n", aseq1[0] );
@@ -1670,6 +1689,7 @@ static void freearrays(
 	FreeCharMtx( mseq2 );
 }
 
+//passed here before
 double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, double *eff2, int icyc, int jcyc, int alloclen, char *sgap1, char *sgap2, char *egap1, char *egap2, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -1687,7 +1707,7 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 	double **cpmx1;
 	double **cpmx2;
 	double **gapinfo;
-	double fpenalty = (double)penalty;
+	double fpenalty = (double)penalty; //penalty is defined in defs.h and set in constants.c
 	double *gapfreq1f;
 	double *gapfreq2f;
 	int nglen1, nglen2;
@@ -1699,8 +1719,9 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 	for( i=0; i<icyc; i++ ) fprintf( stderr, "eff1[%d] = %f\n", i, eff1[i] );
 #endif
 
-	nglen1 = seqlen( seq1[0] );
-	nglen2 = seqlen( seq2[0] );
+	//nglen = no gap length
+	nglen1 = seqlen( seq1[0] ); //defined in mltaln9.c. returns count of chars in seq1[0] without gaps
+	nglen2 = seqlen( seq2[0] ); //returns count of chars in seq2[0] without gaps
 
 #if 0
 	fprintf( stderr, "\n" );
@@ -1725,7 +1746,7 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 	fgcp2 = AllocateFloatVec( ll2+2 );
 
 
-	cpmx1 = AllocateFloatMtx( ll1+2, nalphabets+1 );
+	cpmx1 = AllocateFloatMtx( ll1+2, nalphabets+1 ); //cpmx1 and cpmx2 are defined in MSalignmm_variousdist as cube not 2D matrix
 	cpmx2 = AllocateFloatMtx( ll2+2, nalphabets+1 );
 
 	gapfreq1f = AllocateFloatVec( ll1+2 ); // must be filled with 0.0
@@ -1736,7 +1757,7 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 		if( strlen( seq1[i] ) != lgth1 )
 		{
 			fprintf( stderr, "i = %d / %d\n", i, icyc );
-			fprintf( stderr, "bug! hairetsu ga kowareta!\n" );
+			fprintf( stderr, "bug! hairetsu ga kowareta!\n" ); // it means the insurance broke down
 			exit( 1 );
 		}
 	}
@@ -1750,39 +1771,39 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 		}
 	}
 
-	MScpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc );
-	MScpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );
+	MScpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc ); //defined in tddis.c. fills cpmx1 based on other params values
+	MScpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc ); //fills cpmx2 based on other params values
 
 
 #if 1
 
 	if( sgap1 )
 	{
-		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 );
-		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 );
-		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap2 );
-		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 );
-		outgapcount( &headgapfreq1, icyc, sgap1, eff1 );
-		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 );
-		outgapcount( gapfreq1f+lgth1, icyc, egap1, eff1 );
-		outgapcount( gapfreq2f+lgth2, jcyc, egap2, eff2 );
+		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 ); //defined in mltaln9.c. fills ogcp1 array with values based on some calcs on other args.
+		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 ); //fills ogcp2 array with values based on some calcs on other args.
+		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap2 ); //defined in mltaln9.c. fills fgcp1 based on some calcs on other arguments.
+		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 ); //fills fgcp2 based on some calcs on other arguments.
+		outgapcount( &headgapfreq1, icyc, sgap1, eff1 ); //defined in mltaln9.c. sets count of '-' chars in sgap1 to headgapfreq1.
+		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 ); //sets count of '-' chars in sgap2 to headgapfreq2.
+		outgapcount( gapfreq1f+lgth1, icyc, egap1, eff1 ); //sets count of '-' chars in egap1 to gapfreq1f end.
+		outgapcount( gapfreq2f+lgth2, jcyc, egap2, eff2 ); //sets count of '-' chars in egap2 to gapfreq2f end.
 	}
 	else
 	{
-		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 );
-		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 );
-		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 );
-		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 );
+		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills ogcp1 with values based on calcs on other args.
+		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 ); //fills ogcp2 with values based on calcs on other args.
+		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills fgcp1 based on calcs on other params.
+		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 ); //fills fgcp2 based on calcs on other params.
 		headgapfreq1 = 0.0;
 		headgapfreq2 = 0.0;
 		gapfreq1f[lgth1] = 0.0;
 		gapfreq2f[lgth2] = 0.0;
 	}
 
-	if( legacygapcost == 0 )
+	if( legacygapcost == 0 ) //defined in defs.c. default = 0 and if set from args = 1
 	{
-		gapcountf( gapfreq1f, seq1, icyc, eff1, lgth1 );
-		gapcountf( gapfreq2f, seq2, jcyc, eff2, lgth2 );
+		gapcountf( gapfreq1f, seq1, icyc, eff1, lgth1 ); //defined in mltaln9.c. fill gapfreq1f array with values based on other args calcs.
+		gapcountf( gapfreq2f, seq2, jcyc, eff2, lgth2 ); //fill gapfreq2f array with values based on other args calcs.
 		for( i=0; i<lgth1+1; i++ ) gapfreq1f[i] = 1.0 - gapfreq1f[i];
 		for( i=0; i<lgth2+1; i++ ) gapfreq2f[i] = 1.0 - gapfreq2f[i];
 		headgapfreq1 = 1.0 - headgapfreq1;
@@ -1845,6 +1866,7 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 	fflush( stdout );
 #endif
 
+	//defined here. This method I think calculates distance between seq1 and seq2 based on some calculations. It uses recursion and mseq1 and mse2 are changed based on the algo. used
 	wm = MSalignmm_rec( n_dynamicmtx, icyc, jcyc, eff1, eff2, seq1, seq2, cpmx1, cpmx2, 0, lgth1-1, 0, lgth2-1, alloclen, lgth1, lgth2, mseq1, mseq2, 0, gapinfo, chudanpt, chudanref, chudanres, headgp, tailgp, headgapfreq1, headgapfreq2 );
 #ifdef enablemultithread
 	if( chudanres && *chudanres ) 
@@ -1867,10 +1889,11 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 
 //	fprintf( stderr, "wm = %f\n", wm );
 
-
+	//copy modified sequences to original ones
 	for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	for( i=0; i<jcyc; i++ ) strcpy( seq2[i], mseq2[i] );
 
+	//check updated sequences lengths and if not the same as original, then error and exit
 	if( seqlen( seq1[0] ) != nglen1 )
 	{
 		fprintf( stderr, "bug! hairetsu ga kowareta! (nglen1) seqlen(seq1[0])=%d but nglen1=%d\n", seqlen( seq1[0] ), nglen1 );
@@ -1883,7 +1906,7 @@ double MSalignmm( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1,
 		exit( 1 );
 	}
 
-
+	//defined here. frees allocated memory.
 	freearrays( ogcp1, ogcp2, fgcp1, fgcp2, cpmx1, cpmx2, gapfreq1f, gapfreq2f, gapinfo, mseq1, mseq2 );
 
 	lgth1 = strlen( seq1[0] );
@@ -1926,6 +1949,7 @@ static void fillzero( double *s, int l )
 	while( l-- ) *s++ = 0.0; 
 }
 
+//update mseq1 and mseq2 based on specific algorithm. it returns wm which I think the weight of matches
 static double MSalignmm_tanni_variousdist( double ***matrices, int icyc, int jcyc, char **seq1, char **seq2, double ***cpmx1s, double ***cpmx2s, int ist, int ien, int jst, int jen, int alloclen, int fulllen1, int fulllen2, char **mseq1, char **mseq2, double **gapinfo, int headgp, int tailgp, double headgapfreq1_g, double headgapfreq2_g )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -2040,15 +2064,18 @@ static double MSalignmm_tanni_variousdist( double ***matrices, int icyc, int jcy
 	match_calc( n_dynamicmtx, initverticalw, cpmx2+jst, cpmx1+ist, 0, lgth1, doublework, intwork, 1 );
 	match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, 0, lgth2, doublework, intwork, 1 );
 #else
-	fillzero( initverticalw, lgth1 );
+	fillzero( initverticalw, lgth1 ); //fillzero defined here. fills lgth1 from initverticalw array with 0's
 	for( c=0; c<maxdistclass; c++ )
-		match_calc_add( matrices[c], initverticalw, cpmx2s[c]+jst, cpmx1s[c]+ist, 0, lgth1, doublework[c], intwork[c], 1 );
+		match_calc_add( matrices[c], initverticalw, cpmx2s[c]+jst, cpmx1s[c]+ist, 0, lgth1, doublework[c], intwork[c], 1 ); //defined here
+	//fills initverticalw, doublework[c] and intwork[c] based on calcs on other args.
 
 	fillzero( currentw, lgth2 );
 	for( c=0; c<maxdistclass; c++ )
 		match_calc_add( matrices[c], currentw, cpmx1s[c]+ist, cpmx2s[c]+jst, 0, lgth2, doublework[c], intwork[c], 1 );
+	//fills currentw, doublework[c] and intwork[c] based on calcs on other args.
 #endif
 
+	//then complete initverticalw and currentw filling and updating values
 	if( headgp || ist != 0 )
 	{
 		for( i=1; i<lgth1+1; i++ )
@@ -2086,9 +2113,10 @@ static double MSalignmm_tanni_variousdist( double ***matrices, int icyc, int jcy
 #if 0
 		match_calc( n_dynamicmtx, currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 );
 #else
-		fillzero( currentw, lgth2 );
+		fillzero( currentw, lgth2 ); //fill lgth2 items from currentw array with 0's
 		for( c=0; c<maxdistclass; c++ )
 			match_calc_add( matrices[c], currentw, cpmx1s[c]+ist, cpmx2s[c]+jst, i, lgth2, doublework[c], intwork[c], 0 );
+		//fills currentw, doublework[c] and intwork[c] based on calcs on other args.
 #endif
 		currentw[0] = initverticalw[i];
 
@@ -2165,6 +2193,7 @@ static double MSalignmm_tanni_variousdist( double ***matrices, int icyc, int jcy
 
 //	fprintf( stderr, "wm = %f\n", wm );
 
+	//defined here. updates mseq1, mseq2 and ijp values based on some calculations
 	Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, ist, ien, jst, jen, fulllen1, fulllen2, tailgp );
 #if 0
 	fprintf( stderr, "res in _tanni mseq1[0] = %s\n", mseq1[0] );
@@ -2241,6 +2270,8 @@ static void freearrays_rec1_variousdist(
 #endif
 }
 
+//this method uses recursion technique. It calls itself with some different conditions. I think it returns the weight of matching sequences.
+//mseq1 and mseq2 are modified based on matching algorithm.
 static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc, char **seq1, char **seq2, double ***cpmx1s, double ***cpmx2s, int ist, int ien, int jst, int jen, int alloclen, int fulllen1, int fulllen2, char **mseq1, char **mseq2, int depth, double **gapinfo, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp, double headgapfreq1_g, double headgapfreq2_g )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -2363,7 +2394,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 			mseq2[i][0] = 0;
 			for( j=0; j<lgth1; j++ )
 //				strcat( mseq2[i], "-" );
-				strcat( mseq2[i], newgapstr );
+				strcat( mseq2[i], newgapstr ); //newgapstr defined in defs.c
 		}
 
 //		fprintf( stderr, "==== mseq1[0] (%d) = %s\n", depth, mseq1[0] );
@@ -2372,7 +2403,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 		return( 0.0 );
 	}
 
-#if MEMSAVE
+#if MEMSAVE //defined in the top = 1
 	aseq1 = AllocateCharMtx( icyc, 0 );
 	aseq2 = AllocateCharMtx( jcyc, 0 );
 	for( i=0; i<icyc; i++ ) aseq1[i] = mseq1[i];
@@ -2387,10 +2418,11 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 
 //  if( lgth1 < DPTANNI && lgth2 < DPTANNI ) // & dato lgth ==1 no kanousei ga arunode yokunai 
 //    if( lgth1 < DPTANNI ) // kore mo lgth2 ga mijikasugiru kanousei ari
-    if( lgth1 < DPTANNI || lgth2 < DPTANNI ) // zettai ni anzen ka?
+    if( lgth1 < DPTANNI || lgth2 < DPTANNI ) // zettai ni anzen ka?  //DPTANNI defined here = 100
 	{
 //		fprintf( stderr, "==== Going to _tanni\n" );
 
+    	//defined here. updates aseq1 and aseq2 values based on specific algorithm. it returns wm which I think the weight of matches
 		value = MSalignmm_tanni_variousdist( matrices, icyc, jcyc, seq1, seq2, cpmx1s, cpmx2s, ist, ien, jst, jen, alloclen, fulllen1, fulllen2, aseq1, aseq2, gapinfo, headgp, tailgp, headgapfreq1_g, headgapfreq2_g );	
 
 
@@ -2407,7 +2439,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 
 //		fprintf( stderr, "value = %f\n", value );
 
-		return( value );
+		return( value ); //I think this returns the weight of matching sequences
 	}
 //	fprintf( stderr, "Trying to divide the mtx\n" );
 
@@ -2467,10 +2499,12 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 	fillzero( initverticalw, lgth1 );
 	for( c=0; c<maxdistclass; c++ )
 		match_calc_add( matrices[c], initverticalw, cpmx2s[c]+jst, cpmx1s[c]+ist, 0, lgth1, doublework[c], intwork[c], 1 );
+	//fills initverticalw, doublework[c] and intwork[c] based on calcs on other args.
 
 	fillzero( currentw, lgth2 );
 	for( c=0; c<maxdistclass; c++ )
 		match_calc_add( matrices[c], currentw, cpmx1s[c]+ist, cpmx2s[c]+jst, 0, lgth2, doublework[c], intwork[c], 1 );
+	//fills currentw, doublework[c] and intwork[c] based on calcs on other args.
 #endif
 
 
@@ -2508,7 +2542,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 
 	imid = lgth1 * 0.5;
 
-	jumpi = 0; // atode kawaru.
+	jumpi = 0; // atode kawaru. = I will change later
 	lasti = lgth1+1;
 #if STOREWM
 	for( i=1; i<lasti; i++ )
@@ -2548,6 +2582,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 		fillzero( currentw, lgth2 );
 		for( c=0; c<maxdistclass; c++ )
 			match_calc_add( matrices[c], currentw, cpmx1s[c]+ist, cpmx2s[c]+jst, i, lgth2, doublework[c], intwork[c], 0 );
+		//fills currentw, doublework[c] and intwork[c] based on calcs on other args.
 #endif
 		currentw[0] = initverticalw[i];
 
@@ -2698,10 +2733,12 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 	fillzero( initverticalw, lgth1 );
 	for( c=0; c<maxdistclass; c++ )
 		match_calc_add( matrices[c], initverticalw, cpmx2s[c]+jst, cpmx1s[c]+ist, lgth2-1, lgth1, doublework[c], intwork[c], 1 );
+	//fills initverticalw, doublework[c] and intwork[c] based on calcs on other args.
 
 	fillzero( currentw, lgth2 );
 	for( c=0; c<maxdistclass; c++ )
 		match_calc_add( matrices[c], currentw, cpmx1s[c]+ist, cpmx2s[c]+jst, lgth1-1, lgth2, doublework[c], intwork[c], 1 );
+	//fills currentw, doublework[c] and intwork[c] based on calcs on other args.
 #endif
 
 	for( i=0; i<lgth1-1; i++ )
@@ -2789,6 +2826,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 		fillzero( currentw, lgth2 );
 		for( c=0; c<maxdistclass; c++ )
 			match_calc_add( matrices[c], currentw, cpmx1s[c]+ist, cpmx2s[c]+jst, i, lgth2, doublework[c], intwork[c], 0 );
+		//fills currentw, doublework[c] and intwork[c] based on calcs on other args.
 #endif
 
 		currentw[lgth2-1] = initverticalw[i];
@@ -3142,7 +3180,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 
 
 //	fprintf( stderr, "==== calling myself (first)\n" );
-
+	//call itself - recursion
 	value = MSalignmm_rec_variousdist( matrices, icyc, jcyc, seq1, seq2, cpmx1s, cpmx2s, ist, ist+jumpi, jst, jst+jumpj, alloclen, fulllen1, fulllen2, aseq1, aseq2, depth, gapinfo, NULL, 0, NULL, headgp, tailgp, headgapfreq1_g, headgapfreq2_g ); // chudan mada	
 #if 0
 		fprintf( stderr, "aseq1[0] = %s\n", aseq1[0] );
@@ -3217,7 +3255,7 @@ static double MSalignmm_rec_variousdist( double ***matrices, int icyc, int jcyc,
 	for( i=0; i<icyc; i++ ) aseq1[i] += alnlen;
 	for( i=0; i<jcyc; i++ ) aseq2[i] += alnlen;
 #endif
-
+	//call itself - recursion
 	value += MSalignmm_rec_variousdist( matrices, icyc, jcyc, seq1, seq2, cpmx1s, cpmx2s, ist+imid, ien, jst+jmid, jen, alloclen, fulllen1, fulllen2, aseq1, aseq2, depth, gapinfo, NULL, 0, NULL, headgp, tailgp, headgapfreq1_g, headgapfreq2_g ); // chudan mada
 #if 0
 		fprintf( stderr, "aseq1[0] = %s\n", aseq1[0] );
@@ -3309,7 +3347,7 @@ static void freearrays_variousdist(
 	FreeCharMtx( mseq2 );
 }
 
-
+//passed here before
 double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **dummy_mtx, char **seq1, char **seq2, double *eff1, double *eff2, double **eff1s, double **eff2s, int icyc, int jcyc, int alloclen, char *sgap1, char *sgap2, char *egap1, char *egap2, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -3328,7 +3366,7 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 	double ***cpmx1s;
 	double ***cpmx2s;
 	double **gapinfo;
-	double fpenalty = (double)penalty;
+	double fpenalty = (double)penalty; //penalty is defined in defs.h and set in constants.c
 	double *gapfreq1f;
 	double *gapfreq2f;
 	int nglen1, nglen2;
@@ -3340,8 +3378,9 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 	for( i=0; i<icyc; i++ ) fprintf( stderr, "eff1[%d] = %f\n", i, eff1[i] );
 #endif
 
-	nglen1 = seqlen( seq1[0] );
-	nglen2 = seqlen( seq2[0] );
+	//nglen = no gap length
+	nglen1 = seqlen( seq1[0] ); //defined in mltaln9.c. returns count of chars in seq1[0] without gaps
+	nglen2 = seqlen( seq2[0] ); //returns count of chars in seq2[0] without gaps
 
 #if 0
 	fprintf( stderr, "\n" );
@@ -3366,7 +3405,7 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 	fgcp2 = AllocateFloatVec( ll2+2 );
 
 
-	cpmx1s = AllocateFloatCub( maxdistclass, ll1+2, nalphabets+1 );
+	cpmx1s = AllocateFloatCub( maxdistclass, ll1+2, nalphabets+1 ); //maxdistclass defined in defs.c and set to -1 as default.
 	cpmx2s = AllocateFloatCub( maxdistclass, ll2+2, nalphabets+1 );
 
 	gapfreq1f = AllocateFloatVec( ll1+2 ); // must be filled with 0.0
@@ -3377,7 +3416,7 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 		if( strlen( seq1[i] ) != lgth1 )
 		{
 			fprintf( stderr, "i = %d / %d\n", i, icyc );
-			fprintf( stderr, "bug! hairetsu ga kowareta!\n" );
+			fprintf( stderr, "bug! hairetsu ga kowareta!\n" ); // it means the insurance broke down
 			exit( 1 );
 		}
 	}
@@ -3393,8 +3432,8 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 
 	for( c=0; c<maxdistclass; c++ )
 	{
-		MScpmx_calc_new( seq1, cpmx1s[c], eff1s[c], lgth1, icyc );
-		MScpmx_calc_new( seq2, cpmx2s[c], eff2s[c], lgth2, jcyc );
+		MScpmx_calc_new( seq1, cpmx1s[c], eff1s[c], lgth1, icyc ); //defined in tddis.c. fills cpmx1s based on other params values
+		MScpmx_calc_new( seq2, cpmx2s[c], eff2s[c], lgth2, jcyc ); //fills cpmx2s based on other params values
 	}
 
 
@@ -3402,31 +3441,31 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 
 	if( sgap1 )
 	{
-		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 );
-		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 );
-		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap2 );
-		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 );
-		outgapcount( &headgapfreq1, icyc, sgap1, eff1 );
-		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 );
-		outgapcount( gapfreq1f+lgth1, icyc, egap1, eff1 );
-		outgapcount( gapfreq2f+lgth2, jcyc, egap2, eff2 );
+		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 ); //defined in mltaln9.c. fills ogcp1 array with values based on some calcs on other args.
+		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 );//fills ogcp2 array with values based on some calcs on other args.
+		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap2 ); //defined in mltaln9.c. fills fgcp1 based on some calcs on other arguments
+		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 ); //fills fgcp2 based on some calcs on other arguments
+		outgapcount( &headgapfreq1, icyc, sgap1, eff1 ); //defined in mltaln9.c. sets count of '-' chars in sgap1 to headgapfreq1
+		outgapcount( &headgapfreq2, jcyc, sgap2, eff2 ); //sets count of '-' chars in sgap2 to headgapfreq2
+		outgapcount( gapfreq1f+lgth1, icyc, egap1, eff1 ); //sets count of '-' chars in egap1 to gapfreq1f end
+		outgapcount( gapfreq2f+lgth2, jcyc, egap2, eff2 ); //sets count of '-' chars in egap2 to gapfreq2f end
 	}
 	else
 	{
-		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 );
-		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 );
-		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 );
-		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 );
+		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills ogcp1 with values based on calcs on other args.
+		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 ); //fills ogcp2 with values based on calcs on other args.
+		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills fgcp1 based on calcs on other params
+		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 ); //fills fgcp2 based on calcs on other params
 		headgapfreq1 = 0.0;
 		headgapfreq2 = 0.0;
 		gapfreq1f[lgth1] = 0.0;
 		gapfreq2f[lgth2] = 0.0;
 	}
 
-	if( legacygapcost == 0 )
+	if( legacygapcost == 0 ) //defined in defs.c. default = 0 and if set from args = 1
 	{
-		gapcountf( gapfreq1f, seq1, icyc, eff1, lgth1 );
-		gapcountf( gapfreq2f, seq2, jcyc, eff2, lgth2 );
+		gapcountf( gapfreq1f, seq1, icyc, eff1, lgth1 ); //defined in mltaln9.c. fill gapfreq1f array with values based on other args calcs
+		gapcountf( gapfreq2f, seq2, jcyc, eff2, lgth2 ); //fill gapfreq2f array with values based on other args calcs
 		for( i=0; i<lgth1+1; i++ ) gapfreq1f[i] = 1.0 - gapfreq1f[i];
 		for( i=0; i<lgth2+1; i++ ) gapfreq2f[i] = 1.0 - gapfreq2f[i];
 		headgapfreq1 = 1.0 - headgapfreq1;
@@ -3489,6 +3528,7 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 	fflush( stdout );
 #endif
 
+	//defined here. This method I think calculates distance between seq1 and seq2 based on some calculations. It uses recursion and mseq1 and mse2 are changed based on the algo. used
 	wm = MSalignmm_rec_variousdist( matrices, icyc, jcyc, seq1, seq2, cpmx1s, cpmx2s, 0, lgth1-1, 0, lgth2-1, alloclen, lgth1, lgth2, mseq1, mseq2, 0, gapinfo, chudanpt, chudanref, chudanres, headgp, tailgp, headgapfreq1, headgapfreq2 );
 #ifdef enablemultithread
 	if( chudanres && *chudanres ) 
@@ -3512,9 +3552,11 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 //	fprintf( stderr, "wm = %f\n", wm );
 
 
+	//copy modified sequences to original ones
 	for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	for( i=0; i<jcyc; i++ ) strcpy( seq2[i], mseq2[i] );
 
+	//check updated sequences lengths and if not the same as original, then error and exit
 	if( seqlen( seq1[0] ) != nglen1 )
 	{
 		fprintf( stderr, "bug! hairetsu ga kowareta! (nglen1) seqlen(seq1[0])=%d but nglen1=%d\n", seqlen( seq1[0] ), nglen1 );
@@ -3527,7 +3569,7 @@ double MSalignmm_variousdist( double **pairoffset, double ***matrices, double **
 		exit( 1 );
 	}
 
-
+	//defined here. frees allocated memory
 	freearrays_variousdist( ogcp1, ogcp2, fgcp1, fgcp2, cpmx1s, cpmx2s, gapfreq1f, gapfreq2f, gapinfo, mseq1, mseq2 );
 
 	lgth1 = strlen( seq1[0] );

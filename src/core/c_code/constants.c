@@ -224,7 +224,8 @@ static void generatenuc1pam( double **pam1, int kimuraR, double *freq )
 	}
 }
 
-
+//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 void constants( int nseq, char **seq )
 {
 	int i, j, x;

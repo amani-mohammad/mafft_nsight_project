@@ -89,6 +89,7 @@ static void match_calc_bk( double *match, double **cpmx1, double **cpmx2, int i1
 }
 #endif
 
+//updates mseq1, mseq2 and ijp values based on some calculations on other args
 static double Ltracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -205,7 +206,8 @@ static double Ltracking( double *lasthorizontalw, double *lastverticalw,
 	return( 0.0 );
 }
 
-
+//This methods finds the matchings between seq1 and seq2 and returns the score of matching them.
+//It is similar to G__align11 with some small differences.
 double L__align11( double **n_dynamicmtx, double scoreoffset, char **seq1, char **seq2, int alloclen, int *off1pt, int *off2pt )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -244,9 +246,9 @@ double L__align11( double **n_dynamicmtx, double scoreoffset, char **seq1, char 
 	double localthr2 = -offset + scoreoffset * 600; // 2013/12/13
 //	double localthr = -offset;
 //	double localthr2 = -offset;
-	double fpenalty = (double)penalty;
-	double fpenalty_ex = (double)penalty_ex;
-	double fpenalty_shift = (double)penalty_shift;
+	double fpenalty = (double)penalty; //penalty is defined in defs.h and set in constants.c
+	double fpenalty_ex = (double)penalty_ex; //penalty_ex is defined in defs.h and set in constants.c
+	double fpenalty_shift = (double)penalty_shift; //penalty_shift is defined in defs.h and set in constants.c
 	double fpenalty_tmp; // atode kesu
 
 	int *warpis = NULL;
@@ -265,9 +267,9 @@ double L__align11( double **n_dynamicmtx, double scoreoffset, char **seq1, char 
 
 
 
-	if( seq1 == NULL )
+	if( seq1 == NULL ) //if first sequence is null, free allocated memory and return 0
 	{
-		if( orlgth1 > 0 && orlgth2 > 0 )
+		if( orlgth1 > 0 && orlgth2 > 0 ) //how we check their value > 0 and it is set to 0 and not changed between setting and checking ?!!
 		{
 			orlgth1 = 0;
 			orlgth2 = 0;
@@ -371,20 +373,21 @@ double L__align11( double **n_dynamicmtx, double scoreoffset, char **seq1, char 
 #if DEBUG
 		fprintf( stderr, "succeeded\n" );
 #endif
-		amino_dynamicmtx = AllocateDoubleMtx( 0x100, 0x100 );
+		amino_dynamicmtx = AllocateDoubleMtx( 0x100, 0x100 ); //128 decimal
 		orlgth1 = ll1 - 100;
 		orlgth2 = ll2 - 100;
 	}
 
     for( i=0; i<nalphabets; i++) for( j=0; j<nalphabets; j++ )
 		amino_dynamicmtx[(int)amino[i]][(int)amino[j]] = (double)n_dynamicmtx[i][j];
+    //amino is defined in defs.h.
 
 
 	mseq1[0] = mseq[0];
 	mseq2[0] = mseq[1];
 
 
-	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 )
+	if( orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2 ) //commonAlloc1 and commonAlloc2 defined in defs.c and set to 0 as default.
 	{
 		int ll1, ll2;
 
@@ -400,7 +403,7 @@ double L__align11( double **n_dynamicmtx, double scoreoffset, char **seq1, char 
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -420,8 +423,9 @@ double L__align11( double **n_dynamicmtx, double scoreoffset, char **seq1, char 
 	currentw = w1;
 	previousw = w2;
 
-	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 );
-
+	//fills initverticalw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
+	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //defined here.
+	//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 );
 
 
@@ -473,12 +477,13 @@ fprintf( stderr, "\n" );
 
 	for( i=1; i<lasti; i++ )
 	{
-		wtmp = previousw; 
+		wtmp = previousw; //swap previousw and currentw
 		previousw = currentw;
 		currentw = wtmp;
 
 		previousw[0] = initverticalw[i-1];
 
+		//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 		match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, i, lgth2 );
 #if DEBUG2
 		fprintf( stderr, "%c   ", seq1[0][i] );
@@ -682,9 +687,9 @@ fprintf( stderr, "\n" );
 		lastverticalw[i] = currentw[lgth2-1];
 		if( trywarp )
 		{
-			fltncpy( prevwmrecords, wmrecords, lastj );
-			intncpy( prevwarpi, warpi, lastj );
-			intncpy( prevwarpj, warpj, lastj );
+			fltncpy( prevwmrecords, wmrecords, lastj ); //copy lastj items from wmrecords to prevwmrecords
+			intncpy( prevwarpi, warpi, lastj ); //copy lastj items from warpi to prevwarpi
+			intncpy( prevwarpj, warpj, lastj ); //copy lastj items from warpj to prevwarpj
 		}
 
 	}
@@ -715,19 +720,20 @@ fprintf( stderr, "\n" );
 		return( 0.0 );
 	}
 		
-	Ltracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, off1pt, off2pt, endali, endalj, warpis, warpjs, warpbase );
+	//updates mseq1, mseq2 and ijp values based on some calculations on other args
+	Ltracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, off1pt, off2pt, endali, endalj, warpis, warpjs, warpbase ); //defined here.
 	if( warpis ) free( warpis );
 	if( warpjs ) free( warpjs );
 
 
 	resultlen = strlen( mseq1[0] );
-	if( alloclen < resultlen || resultlen > N )
+	if( alloclen < resultlen || resultlen > N )  //N is constant defined in mltaln.h and = 500,000
 	{
 		fprintf( stderr, "alloclen=%d, resultlen=%d, N=%d\n", alloclen, resultlen, N );
 		ErrorExit( "LENGTH OVER!\n" );
 	}
 
-
+	//copy modified sequences to original ones
 	strcpy( seq1[0], mseq1[0] );
 	strcpy( seq2[0], mseq2[0] );
 
@@ -745,7 +751,8 @@ fprintf( stderr, "\n" );
 	return( maxwm );
 }
 
-
+//This methods finds the matchings between seq1 and seq2 and returns the score of matching them.
+//It is similar to L__align11 with some small differences. It is simpler and doesn't contain warp
 double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 ) //n_dynamicmtx is weight matrix
 // warp mitaiou
 {
@@ -784,8 +791,8 @@ double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 ) //n
 	double localthr2 = -offset;
 //	double localthr = 100;
 //	double localthr2 = 100;
-	double fpenalty = (double)penalty; //penalty value is set in constants.c
-	double fpenalty_ex = (double)penalty_ex; //penalty_ex value is set in constants.c
+	double fpenalty = (double)penalty; //penalty is defined in defs.h and set in constants.c
+	double fpenalty_ex = (double)penalty_ex; //penalty_ex is defined in defs.h and set in constants.c
 
 	if( seq1 == NULL ) //if first sequence is null, free allocated memory and return 0
 	{
@@ -879,6 +886,7 @@ double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 ) //n
 
     for( i=0; i<nalphabets; i++) for( j=0; j<nalphabets; j++ )
 		amino_dynamicmtx[(int)amino[i]][(int)amino[j]] = (double)n_dynamicmtx[i][j];
+    //amino is defined in defs.h.
 
 
 
@@ -922,9 +930,9 @@ double L__align11_noalign( double **n_dynamicmtx, char **seq1, char **seq2 ) //n
 	currentw = w1;
 	previousw = w2;
 
-	//fill initverticalw array
-	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //first char from seq2 and others from seq1
-	//fill currentw array
+	//fills initverticalw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
+	match_calc_mtx( amino_dynamicmtx, initverticalw, seq2, seq1, 0, lgth1 ); //first char from seq2 and others from seq1 //defined here.
+	//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
 	match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, 0, lgth2 ); //first char from seq1 and others from seq2
 
 
@@ -983,7 +991,8 @@ fprintf( stderr, "\n" );
 
 		previousw[0] = initverticalw[i-1];
 
-		match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, i, lgth2 );
+		//fills currentw array with numbers from amino_dynamicmtx based on seq1 and seq2 chars matching
+		match_calc_mtx( amino_dynamicmtx, currentw, seq1, seq2, i, lgth2 ); //defined here
 #if DEBUG2
 		fprintf( stderr, "%c   ", seq1[0][i] );
 		fprintf( stderr, "%5.0f ", currentw[0] );

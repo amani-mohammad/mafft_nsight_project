@@ -91,6 +91,7 @@ static void imp_match_out_vead_tate_gapmap( double *imp, int j1, int lgth1, int 
 }
 #endif
 
+//add values from impmtx to values in imp.
 static void imp_match_out_vead( double *imp, int i1, int lgth2 )
 {
 #if FASTMATCHCALC 
@@ -104,6 +105,8 @@ static void imp_match_out_vead( double *imp, int i1, int lgth2 )
 		*imp++ += pt[j];
 #endif
 }
+
+//add values from impmtx to values in imp.
 static void imp_match_out_vead_tate( double *imp, int j1, int lgth1 )
 {
 	int i;
@@ -116,7 +119,7 @@ void imp_rnaD( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, dou
 	foldrna( nseq1, nseq2, seq1, seq2, eff1, eff2, grouprna1, grouprna2, impmtx, gapmap1, gapmap2, pair );
 }
 
-
+//fills impmtx based on other params values. If params are Null, it frees impmtx and return, else it allocates and fills it
 void imp_match_init_strictD( double *imp, int clus1, int clus2, int lgth1, int lgth2, char **seq1, char **seq2, double *eff1, double *eff2, double *eff1_kozo, double *eff2_kozo, LocalHom ***localhom, char *swaplist, int forscore, int *orinum1, int *orinum2 )
 {
 //	int i, j, k1, k2, tmpint, start1, start2, end1, end2;
@@ -130,7 +133,7 @@ void imp_match_init_strictD( double *imp, int clus1, int clus2, int lgth1, int l
 
 	if( seq1 == NULL )
 	{
-		if( impmtx ) FreeFloatMtx( impmtx );
+		if( impmtx ) FreeFloatMtx( impmtx ); //impmtx is defined here.
 		impmtx = NULL;
 //		if( nocount1 ) free( nocount1 );
 //		nocount1 = NULL;
@@ -140,7 +143,7 @@ void imp_match_init_strictD( double *imp, int clus1, int clus2, int lgth1, int l
 		return;
 	}
 
-	if( impalloclen < lgth1 + 2 || impalloclen < lgth2 + 2 )
+	if( impalloclen < lgth1 + 2 || impalloclen < lgth2 + 2 ) //impalloclen is defined here.
 	{
 		if( impmtx ) FreeFloatMtx( impmtx );
 //		if( nocount1 ) free( nocount1 );
@@ -151,13 +154,14 @@ void imp_match_init_strictD( double *imp, int clus1, int clus2, int lgth1, int l
 //		nocount2 = AllocateCharVec( impalloclen );
 	}
 
+	//defined here. fills impmtx matrix based on other params values.
 	fillimp( impmtx, imp, clus1, clus2, lgth1, lgth2, seq1, seq2, eff1, eff2, eff1_kozo, eff2_kozo, localhom, swaplist, forscore, orinum1, orinum2 );
 }
 
 
 
 
-
+//updates match values based on matrices, eff1 and eff2 values.
 static void match_calc_del( int **which, double ***matrices, double *match, int n1, char **seq1, double *eff1, int n2, char **seq2, double *eff2, int i1, int lgth2, int mid, int nmask, int *mask1, int *mask2 ) 
 {
 // osoi!
@@ -234,15 +238,16 @@ static void match_calc_slow( int **which, double ***matrices, double *match, int
 }
 #endif
 
+//fills s arrays with 0.0 values
 static void fillzero( double *s, int l )
 {
 	while( l-- ) *s++ = 0.0;
 }
 
-
+//fills match, doublework and intwork based on other params values.
 static void match_calc_add( double **scoreingmtx, double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
-#if FASTMATCHCALC
+#if FASTMATCHCALC //defined here and = 1
 //	fprintf( stderr, "\nmatch_calc... %d", i1 );
 	int j, l;
 //	double scarr[26];
@@ -339,6 +344,7 @@ static void match_calc_add( double **scoreingmtx, double *match, double **cpmx1,
 #endif
 }
 
+//update match, doublework and intwork based on other params values
 static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
 #if FASTMATCHCALC
@@ -438,6 +444,7 @@ static void match_calc( double **n_dynamicmtx, double *match, double **cpmx1, do
 #endif
 }
 
+//updates mseq1, mseq2 and ijp values based on some calculations on other args
 static void Atracking_localhom( double *impwmpt, double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -577,6 +584,7 @@ static void Atracking_localhom( double *impwmpt, double *lasthorizontalw, double
 	free( gt2bk );
 }
 
+//updates mseq1, mseq2 and ijp values based on some calculations on other args
 static double Atracking( double *lasthorizontalw, double *lastverticalw, 
 						char **seq1, char **seq2, 
                         char **mseq1, char **mseq2, 
@@ -849,6 +857,7 @@ static void FreeGaplenCub( Gaplen ***cub )
 	cub = NULL;
 }
 
+//I think this counts the number of gaps in seq[i] from end of sequence to the first char.
 static int strralpha( const char *s, const char *first )
 {
 	int v = 0;
@@ -862,6 +871,7 @@ static int strralpha( const char *s, const char *first )
 	return( -1 );
 }
 
+//fill mtx with values based on some conditions.
 static void fillgaplen( Gaplen **mtx, int l )
 {
 	int i, j, n, k, len, pos, idatnext;
@@ -960,14 +970,14 @@ static int gapvariety( int n, int l, char **seq )
 	return( val );
 }
 
-
+//I think it fills mtx with values based on gaps in seq.
 static void gaplencount( int n, int l, Gaplen **mtx, char **seq, double *eff )
 {
 	int i, j, k, gl, *known, nknown;
 	known = calloc( l+1, sizeof( int ) );
 //	for( i=0; i<n; i++ ) reporterr( "seq[%d] = %s\n", i, seq[i] );
 
-	for( j=0; j<=l; j++ )
+	for( j=0; j<=l; j++ ) //I think this loop initializes mtx if not initialized.
 	{
 		if( mtx[j] ) 
 		{
@@ -995,9 +1005,9 @@ static void gaplencount( int n, int l, Gaplen **mtx, char **seq, double *eff )
 		nknown = 0;
 		for( i=0; i<n; i++ )
 		{
-			if( seq[i][j] == '-' ) continue;
+			if( seq[i][j] == '-' ) continue; //go to next iteration
 
-			gl = strralpha( seq[i]+j, seq[i] );
+			gl = strralpha( seq[i]+j, seq[i] ); //defined here. I think this counts the number of gaps in seq[i] from end of sequence to the first char.
 //			reporterr( "gl = %d\n", gl );
 			if( gl > 0 )
 			{
@@ -1036,7 +1046,7 @@ static void gaplencount( int n, int l, Gaplen **mtx, char **seq, double *eff )
 			}
 		}
 	}
-	fillgaplen( mtx, l );
+	fillgaplen( mtx, l ); //defined here. fills mtx with values based on some conditions.
 #if 0
 	reporterr( "Gaplen:\n" );
 	for( i=0; i<=l; i++ )
@@ -1089,6 +1099,7 @@ static void showgaplen( Gaplen **mtx, int seqlen )
 #endif
 
 #if WMCHECK
+//I think this counts no. of gaps between s1 and s2
 static int pairgapcount( char *s1, char *s2 )
 {
 	char **tmpseq;
@@ -1103,7 +1114,7 @@ static int pairgapcount( char *s1, char *s2 )
 	strcpy( tmpseq[0], s1 );
 	strcpy( tmpseq[1], s2 );
 
-	commongappick( 2, tmpseq );
+	commongappick( 2, tmpseq ); //defined in mltaln9.c.
 	len = strlen( tmpseq[0] );
 
 
@@ -1134,6 +1145,7 @@ static int pairgapcount( char *s1, char *s2 )
 }
 #endif
 
+//calculates pfac value based on calculations and values of gaplen1 and gaplen2 and other params.
 static double calcpfac_gap_noidatend( Gaplen **gaplen1, Gaplen **gaplen2, int newgaplen, int i, int j, char *seq1, char *seq2, int disp ) // seq1 to seq2 ha debug you
 {
 #if 1
@@ -1568,6 +1580,7 @@ static double calcpfac( Gaplen **gaplen1, Gaplen **gaplen2, int i, int j, char *
 }
 #endif
 
+//calculates and return value of pfac based on calculations on values of gaplen1, gaplen2 and other params.
 static double calcpfac_gapex_noidatend( Gaplen **gaplen1, Gaplen **gaplen2, int i, int j, int newgaplen, char *seq1, char *seq2, int disp )
 {
 #if 1
@@ -1673,7 +1686,7 @@ static double calcpfac_gapex_noidatend( Gaplen **gaplen1, Gaplen **gaplen2, int 
 #endif
 }
 
-
+//calculates and returns value of pfac based on calculations on values of gaplen1, gaplen2 and other params.
 static double calcpfacnoidatend( Gaplen **gaplen1, Gaplen **gaplen2, int i, int j, char *seq1, char *seq2, int disp ) // seq1 to seq2 ha debug you
 {
 	double pfac, pfac1, pfac2;
@@ -1783,7 +1796,7 @@ static double calcpfacnoidatend( Gaplen **gaplen1, Gaplen **gaplen2, int i, int 
 	return( pfac );
 }
 
-
+//copy orig to cpy
 static void extendgaplencompactx( Gaplen **cpy, Gaplen **orig, int start )
 {
 	Gaplen *opt, *cpt;
@@ -1993,6 +2006,7 @@ static void extendgaplenpartly( Gaplen **cpy, Gaplen **orig, int start, int end 
 }
 #endif
 
+//I think this copy orig to cpy.
 static void duplicategaplencompactx( Gaplen **cpy, Gaplen **orig, int maxlen, int start, int end )
 {
 	int i, l;
@@ -2128,7 +2142,7 @@ static void duplicategaplenpartly( Gaplen **cpy, Gaplen **orig, int start, int e
 }
 #endif
 
-
+//updates cpy values based on some conditions.
 static void gaplenextendnoidatend( Gaplen **cpy, int gapstartpos, int insertionlen )
 {
 	int l, id, idn, pos, len;
@@ -2201,6 +2215,7 @@ static void gaplenextend( Gaplen **cpy, int gapstartpos, int insertionlen )
 }
 #endif
 
+//copy values from orig to cpy based on some conditions
 static void copygaplencompactx( Gaplen **cpy, Gaplen **orig, int seqlen, int gapstartpos, int insertionlen, int posincopy, int posinori )
 {
 	Gaplen *pt, *cpt;
@@ -2249,7 +2264,7 @@ static void copygaplencompactx( Gaplen **cpy, Gaplen **orig, int seqlen, int gap
 
 
 	if( gapstartpos == -1 ) gapstartpos = posincopy;
-	gaplenextendnoidatend( cpy, gapstartpos, insertionlen );
+	gaplenextendnoidatend( cpy, gapstartpos, insertionlen ); //defined here. updates cpy values based on some conditions.
 
 #if DEBUG
 	reporterr( "At the end of copygaplencompactx, cpy=\n" );
@@ -2480,6 +2495,7 @@ static void copygaplenrestricted( Gaplen **cpy, Gaplen **orig, int seqlen, int g
 #endif
 
 #if 1
+//frees mtx memory
 static void freegaplenpartly( Gaplen **mtx, int startpos, int endpos )
 {
 	int i;
@@ -2508,7 +2524,7 @@ static void freegaplenpartly( Gaplen **mtx, int startpos, int endpos )
 }
 #endif
 
-
+//passed here before but needs more accurate analysis.
 double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, double *eff2, int icyc, int jcyc, int alloclen, LocalHom ***localhom, double *impmatch, char *sgap1, char *sgap2, char *egap1, char *egap2, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -2611,7 +2627,8 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 			orlgth1 = 0;
 			orlgth2 = 0;
 
-			imp_match_init_strictD( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL );
+			//frees impmtx and return.
+			imp_match_init_strictD( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL ); //defined here.
 
 			free( mseq1 );
 			free( mseq2 );
@@ -2851,7 +2868,7 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 		gaplen1jprev = (Gaplen ***)calloc( (ll2+2), sizeof( Gaplen **) );
 		gaplen2jprev = (Gaplen ***)calloc( (ll2+2), sizeof( Gaplen **) );
 
-		gaplens = calloc( sizeof( Gaplen ***), 12 );
+		gaplens = calloc( sizeof( Gaplen ***), 12 );  //4D array :D it is a cinema then :D :P
 		gaplens[0] = gaplen1ibestkamo;
 		gaplens[1] = gaplen2ibestkamo;
 		gaplens[2] = gaplen1icurr;
@@ -3041,7 +3058,7 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c.
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -3061,13 +3078,13 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 	}
 #endif
 
-	cpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc );
-	cpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );
+	cpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc ); //defined in tddis.c. fills cpmx1 matrix based on other args values
+	cpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc ); //fills cpmx2 matrix based on other args values
 
 
 //	reporterr( "Counting gaplen\n" );
-	gaplencount( icyc, lgth1, gaplen1, seq1, eff1 );
-	gaplencount( jcyc, lgth2, gaplen2, seq2, eff2 );
+	gaplencount( icyc, lgth1, gaplen1, seq1, eff1 ); //defined here. I think it fills gaplen1 with values based on gaps in seq1.
+	gaplencount( jcyc, lgth2, gaplen2, seq2, eff2 ); //I think it fills gaplen2 with values based on gaps in seq2.
 #if DEBUG
 	reporterr( "group1 = \n" );
 	showgaplen( gaplen1, lgth1 );
@@ -3077,7 +3094,7 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 //	reporterr( "done.\n" );
 
 
-	for( i=0; i<lgth1+1; i++ ) for( j=0; j<lgth2+1; j++ )
+	for( i=0; i<lgth1+1; i++ ) for( j=0; j<lgth2+1; j++ ) //this loop is disabled
 	{
 #if USEGAPLENMTX
 //		duplicategaplen( gaplen1mtx[i][j], gaplen1, lgth1 );
@@ -3125,13 +3142,16 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 //
 //		duplicategaplencompactx( gaplen1icurr[i], gaplen1+i, lgth1-i, 0, lgth1-i ); // half
 		duplicategaplencompactx( gaplen1icurr[i], gaplen1+i, lgth1-i, 0, 1 ); //  0, 1  hitsuyou
+		//defined here. I think this copy gaplen1+i to gaplen1icurr[i].
 
 
 //		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, lgth2 ); // ichiou zenbu
 		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, 0 );
+		//defined here. I think this copy gaplen2 to gaplen2icurr[i].
 
 
 		copygaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, i, 0, 0 ); // -> zurasu -> error?
+		//defined here. copy values from gaplen2 to gaplen2icurr[i] based on some conditions
 
 
 //		duplicategaplencompactx( gaplen1ibestkamo[i], gaplen1, lgth1, 0, 1 );
@@ -3241,13 +3261,15 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 	currentw = w1;
 	previousw = w2;
 
-	match_calc( n_dynamicmtx, initverticalw, cpmx2, cpmx1, 0, lgth1, doublework, intwork, 1 );
+	//update initverticalw, doublework and intwork based on other params values
+	match_calc( n_dynamicmtx, initverticalw, cpmx2, cpmx1, 0, lgth1, doublework, intwork, 1 ); //defined here.
 	if( localhom )
-		imp_match_out_vead_tate( initverticalw, 0, lgth1 ); // 060306
+		imp_match_out_vead_tate( initverticalw, 0, lgth1 ); // 060306   //add values from impmtx to values in initverticalw.
 
+	//update currentw, doublework and intwork based on other params values
 	match_calc( n_dynamicmtx, currentw, cpmx1, cpmx2, 0, lgth2, doublework, intwork, 1 );
 	if( localhom )
-		imp_match_out_vead( currentw, 0, lgth2 ); // 060306
+		imp_match_out_vead( currentw, 0, lgth2 ); // 060306  //add values from impmtx to values in currentw.
 #if 0 // -> tbfast.c
 	if( localhom )
 		imp_match_calc( n_dynamicmtx, currentw, icyc, jcyc, lgth1, lgth2, seq1, seq2, eff1, eff2, localhom, 1, 0 );
@@ -3256,6 +3278,7 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 
 	for( j=1; j<lgth2+1; j++ )
 	{
+		//calculates pfac value based on calculations and values of gaplen1 and gaplen2 and other params.
 		pfac = calcpfac_gap_noidatend( gaplen1, gaplen2, j, 0, j, seq1[0], seq2[0], 0 ); 
 //		reporterr( "computing initial end gap penalty for %c-%c, i=0, j=%d, pfac=%f\n", seq1[0][0], seq2[0][j], j, pfac );
 //		reporterr( "%c-%c, i=0, j=%d, currentw[j]=%f -> ", seq1[0][0], seq2[0][j], j, currentw[j] );
@@ -3264,6 +3287,7 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 	}
 	for( i=1; i<lgth1+1; i++ )
 	{
+		//calculates pfac value based on calculations and values of gaplen1 and gaplen2 and other params.
 		pfac = calcpfac_gap_noidatend( gaplen2, gaplen1, i, 0, i, seq2[0], seq1[0], 0 );
 //		reporterr( "computing initial end gap penalty for %c-%c, i=%d, j=0, pfac=%f\n", seq1[0][i], seq2[0][0], i, pfac );
 		initverticalw[i] += fpenalty * pfac; // tekitou
@@ -3278,7 +3302,8 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 #if ALGZGAP
 		m[j] = currentw[j-1] + ogcp1[1] * gapfreq2[j-1]; mp[j] = 0;;
 #else
-		pfac = calcpfac_gapex_noidatend( gaplen2, gaplen1, j, 1, j, seq2[0], seq1[0], 1 );
+		//calculates and return value of pfac based on calculations on values of gaplen1, gaplen2 and other params.
+		pfac = calcpfac_gapex_noidatend( gaplen2, gaplen1, j, 1, j, seq2[0], seq1[0], 1 ); //defined here.
 #if DEBUG
 		reporterr( "%c-%c, INITIAL jgap extension check, pfac = %f\n\n", seq1[0][j], '=', pfac );
 #endif
@@ -3368,10 +3393,14 @@ double D__align( double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, 
 //		showgaplen( gaplen1, 10 );
 //		reporterr( "i=%d, lgth1=%d, lgth1-i=%d, gaplen+i-1=\n", i, lgth1, lgth1-i );
 //		showgaplen( gaplen1+i-1, 100 );
+
+		//defined here. I think this copy gaplen1+i to gaplen1icurr[i].
 		duplicategaplencompactx( gaplen1icurr[i], gaplen1+i, lgth1-i, 0, 1 ); // half!!
 //		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, lgth2 ); // KOKO
+		//defined here. I think this copy gaplen2 to gaplen2icurr[i].
 		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, 0 ); // test
 		copygaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, i, 0, 0 ); // IRU? TEST
+		//defined here. copy values from gaplen2 to gaplen2icurr[i] based on some conditions
 
 
 
@@ -3410,7 +3439,7 @@ fprintf( stderr, "\n" );
 #if  0
 			imp_match_out_vead( currentw, i, lgth2 );
 #else
-			imp_match_out_vead( currentw, i, lgth2 );
+			imp_match_out_vead( currentw, i, lgth2 ); //add values from impmtx to values in currentw.
 #endif
 		}
 #if XXXXXXX
@@ -3443,6 +3472,7 @@ fprintf( stderr, "\n" );
 #if ALGZGAP
 		mi = previousw[0] + ogcp2[1] * gapfreq1[i-1]; mpi=0;
 #else
+		//calculates and return value of pfac based on calculations on values of gaplen1, gaplen2 and other params.
 		pfac = calcpfac_gapex_noidatend( gaplen1, gaplen2, i, 1, i, seq1[0], seq2[0], 1 );
 #if DEBUG
 		reporterr( "%c-%c, INITIAL igap extension check, pfac = %f\n\n", '=', seq2[0][j], pfac );
@@ -3575,6 +3605,7 @@ fprintf( stderr, "\n" );
 
 //			pfac = calcpfac( gaplen1jprev[j-1], gaplen2jprev[j-1], i, j, seq1[0], seq2[0] );
 //reporterr( "#### COMPACT, i,j=%d,%d\n", i, j );
+			//calculates and returns value of pfac based on calculations on values of other params.
 			pfac = calcpfacnoidatend( gaplen1jprev[j-1], gaplen2jprev[j-1], i, 1, seq1[0], seq2[0]+j, one ); // 1j->full, 2j->half
 #if USEGAPLENMTX
 //reporterr( "#### FULL, i,j=%d,%d\n", i, j );
@@ -3622,6 +3653,7 @@ fprintf( stderr, "\n" );
 
 
 //			pfac = calcpfac_gap_incomplete( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], newgaplen, i, j, seq1[0], seq2[0], 0 ); // i-1
+			//calculates and returns value of pfac based on calculations on values of other params.
 			pfac = calcpfac_gap_noidatend( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], newgaplen, 1, j, seq1[0]+i-1, seq2[0], 0 ); // i-1
 #if USEGAPLENMTX
 			pfactmp = calcpfac_gap_incomplete( gaplen1mtx[i-1][mpi], gaplen2mtx[i-1][mpi], newgaplen, i, j, seq1[0], seq2[0], 1 );
@@ -3717,8 +3749,11 @@ fprintf( stderr, "\n" );
 //				addnewgaplen( gaplen1ibestkamo[i-1], gaplen1jprev[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2ibestkamo[i-1], gaplen2jprev[j-1], gaplen2, lgth2, -1, 0 );
 //				copygaplenrestricted( gaplen1ibestkamo[i-1], gaplen1jprev[j-1], lgth1, -1, 0, i, i ); // i-1, i
+
+				//copy values from gaplen1jprev[j-1] to gaplen1ibestkamo[i-1] based on some conditions
 				copygaplencompactx( gaplen1ibestkamo[i-1], gaplen1jprev[j-1], lgth1, -1, 0, 1, i ); // half
 //				copygaplenrestricted( gaplen2ibestkamo[i-1], gaplen2jprev[j-1], lgth2, -1, 0, j, j ); // mpi, j
+				//copy values from gaplen2jprev[j-1] to gaplen2ibestkamo[i-1] based on some conditions
 				copygaplencompactx( gaplen2ibestkamo[i-1], gaplen2jprev[j-1], lgth2, -1, 0, j, 1 ); //half
 
 
@@ -3740,7 +3775,8 @@ fprintf( stderr, "\n" );
 			pfac = 0.0; // CHUUI!
 #else
 
-//			pfac = calcpfac_gapex( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], i, j, j-mpi, seq1[0], seq2[0], 1 ); // i-1 
+//			pfac = calcpfac_gapex( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], i, j, j-mpi, seq1[0], seq2[0], 1 ); // i-1
+			//calculates and return value of pfac based on calculations on values of other params.
 			pfac = calcpfac_gapex_noidatend( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], 1, j, j-mpi, seq1[0]+i, seq2[0], 1 ); // 1ibest->half, 2ibest->full
 #if USEGAPLENMTX
 			pfactmp = calcpfac_gapex( gaplen1mtx[i-1][mpi], gaplen2mtx[i-1][mpi], i, j, j-mpi, seq1[0], seq2[0], 1 );
@@ -3775,7 +3811,7 @@ fprintf( stderr, "\n" );
 			newgaplen = i-*mpjpt-1;
 //			pfac = calcpfac_gap_incomplete( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], newgaplen, j, i, seq2[0], seq1[0], 0 ); // j-1 deha???
 
-
+			//calculates and return value of pfac based on calculations on values of other params.
 			pfac = calcpfac_gap_noidatend( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], newgaplen, 1, i, seq2[0]+j-1, seq1[0], 1 ); // 2jbestkamo->half, 1jbestkamo->full
 #if USEGAPLENMTX
 			pfactmp = calcpfac_gap_incomplete( gaplen2mtx[*mpjpt][j-1], gaplen1mtx[*mpjpt][j-1], newgaplen, j, i, seq2[0], seq1[0], 1 );
@@ -3867,10 +3903,13 @@ fprintf( stderr, "\n" );
 //				addnewgaplen( gaplen1jbestkamo[j-1], gaplen1jprev[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], gaplen2, lgth2, -1, 0 );
 //				reporterr( "copying gaplen1jbestkamo[%d-1] from galpen1jprev, j=%d, i=%d\n", j, j, i );
+
+				//copy values from gaplen1jprev[j-1] to gaplen1jbestkamo[j-1] based on some conditions
 				copygaplencompactx( gaplen1jbestkamo[j-1], gaplen1jprev[j-1], lgth1, -1, 0, i, i ); // *mpjpt, i
 //				copygaplenrestricted( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], lgth2, -1, 0, j, j ); // j-1, j
 //				copygaplencompactx( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], lgth2, -1, 0, j, 1 ); // half!
 //				reporterr( "copying gaplen2jbestkamo[%d-1] from galpen2jprev\n", j );
+				//copy values from gaplen2jprev[j-1] to gaplen2jbestkamo[j-1] based on some conditions
 				copygaplencompactx( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], lgth2-j, -1, 0, 1, 1 ); // ryouhou half!
 
 
@@ -3896,7 +3935,8 @@ fprintf( stderr, "\n" );
 			pfac = 0.0;
 #else
 
-//			pfactmp = calcpfac_gapex( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], j, i, i-*mpjpt, seq2[0], seq1[0], 0 ); // j-1 
+//			pfactmp = calcpfac_gapex( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], j, i, i-*mpjpt, seq2[0], seq1[0], 0 ); // j-1
+			//calculates and return value of pfac based on calculations on values of other params.
 			pfactmp = calcpfac_gapex_noidatend( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], 1, i, i-*mpjpt, seq2[0]+j, seq1[0], 0 ); // 2jbestkamo->half, 1jbestkamo->full
 #if USEGAPLENMTX
 			pfac = calcpfac_gapex( gaplen2mtx[*mpjpt][j-1], gaplen1mtx[*mpjpt][j-1], j, i, i-*mpjpt, seq2[0], seq1[0], 0 );
@@ -3973,6 +4013,7 @@ fprintf( stderr, "\n" );
 			reporterr( "extention-x 1j???, before extention-x, j=%d\n", j );
 			showgaplen( gaplen1jcurr[j], 100 );
 #endif
+			//copy gaplen1 to gaplen1jcurr[j]
 			extendgaplencompactx( gaplen1jcurr[j], gaplen1, i );
 
 #if DEBUG
@@ -3980,6 +4021,7 @@ fprintf( stderr, "\n" );
 			showgaplen( gaplen1jcurr[j], 100 );
 			reporterr( "extention-x 2j???\n" );
 #endif
+			//copy gaplen2+j to gaplen2jcurr[j]
 			extendgaplencompactx( gaplen2jcurr[j], gaplen2+j, 0 );
 
 
@@ -4002,10 +4044,13 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jcurr[j], gaplen1jprev[j+*ijppt], gaplen1, lgth1, i, -*ijppt-1 );
 //				addnewgaplen( gaplen2jcurr[j], gaplen2jprev[j+*ijppt], gaplen2, lgth2, -1, 0 );
-//				reporterr( "copying gaplen1jcurr from gaplen1jbest, with a %d insertion\n", -*ijppt-1 ); 
+//				reporterr( "copying gaplen1jcurr from gaplen1jbest, with a %d insertion\n", -*ijppt-1 );
+
+				//copy values from gaplen1jprev[j+*ijppt] to gaplen1jcurr[j] based on some coditions
 				copygaplencompactx( gaplen1jcurr[j], gaplen1jprev[j+*ijppt], lgth1, i, -*ijppt-1, i, i ); // scope: i+*ijppt+1, i ?
 //				reporterr( "copy end\n" ); 
 //				copygaplenrestricted( gaplen2jcurr[j], gaplen2jprev[j+*ijppt], lgth2, -1, 0, j, j );
+				//copy values from gaplen2jprev[j+*ijppt] to gaplen2jcurr[j] based on some coditions
 				copygaplencompactx( gaplen2jcurr[j], gaplen2jprev[j+*ijppt], lgth2, -1, 0, 0, -*ijppt ); // half! ryouho zureteru
 			}
 			else if( *ijppt > 0 )
@@ -4026,9 +4071,12 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jcurr[j], gaplen1jbest[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jcurr[j], gaplen2jbest[j-1], gaplen2, lgth2, j, *ijppt-1 );
+
+				//copy values from gaplen1jbest[j-1] to gaplen1jcurr[j] based on some coditions
 				copygaplencompactx( gaplen1jcurr[j], gaplen1jbest[j-1], lgth1, -1, 0, i, i );
 //				copygaplenrestricted( gaplen2jcurr[j], gaplen2jbest[j-1], lgth2, j, *ijppt-1, j, j ); // j-*ijppt+1?
 //				copygaplenrestricted_zurasu( gaplen2jcurr[j], gaplen2jbest[j-1], lgth2, 0, *ijppt-1, 0, 0, j, j ); // 2jcurr->half, but 2jbest->full, imanotokoro
+				//copy values from gaplen2jbest[j-1] to gaplen2jcurr[j] based on some coditions
 				copygaplencompactx( gaplen2jcurr[j], gaplen2jbest[j-1], lgth2, 0, *ijppt-1, 0, 1 ); //ryouhou half
 
 			}
@@ -4051,8 +4099,11 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jcurr[j], gaplen1jprev[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jcurr[j], gaplen2jprev[j-1], gaplen2, lgth2, -1, 0 );
+
+				//copy values from gaplen1jprev[j-1] to gaplen1jcurr[j] based on some coditions
 				copygaplencompactx( gaplen1jcurr[j], gaplen1jprev[j-1], lgth1, -1, 0, i, i );
 //				copygaplenrestricted( gaplen2jcurr[j], gaplen2jprev[j-1], lgth2, -1, 0, j, j );
+				//copy values from gaplen2jprev[j-1] to gaplen2jcurr[j] based on some coditions
 				copygaplencompactx( gaplen2jcurr[j], gaplen2jprev[j-1], lgth2, -1, 0, 0, 1 ); // half
 			}
 
@@ -4152,12 +4203,13 @@ fprintf( stderr, "\n" );
 	for( i=0; i<icyc; i++ ) strcpy( mseq1[i], seq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( mseq2[j], seq2[j] );
 	*/
+	//updates mseq1, mseq2 and ijp values based on some calculations on other args
 	if( localhom )
 	{
-		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase );
+		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase ); //defined here.
 	}
 	else
-		Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, tailgp, warpis, warpjs, warpbase );
+		Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, tailgp, warpis, warpjs, warpbase ); //defined here.
 
 	if( warpis ) free( warpis );
 	if( warpjs ) free( warpjs );
@@ -4172,6 +4224,7 @@ fprintf( stderr, "\n" );
 	}
 
 
+	//copy mseq to seq
 	for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( seq2[j], mseq2[j] );
 #if 0
@@ -4182,7 +4235,7 @@ fprintf( stderr, "\n" );
 #endif
 
 //	reporterr( "clearing\n" );
-	cleargaplens( gaplens );
+	cleargaplens( gaplens ); //defined here. clears gaplens memory.
 
 #if USEGAPLENMTX
 /* maikai free */
@@ -4252,7 +4305,7 @@ fprintf( stderr, "\n" );
 	int kenzan = 0;
 	for( i=0; i<icyc; i++ ) for( j=0; j<jcyc; j++ )
 	{
-		kenzan += pairgapcount( mseq1[i], mseq2[j] );
+		kenzan += pairgapcount( mseq1[i], mseq2[j] ); //defined here. I think this counts no. of gaps between mseq1[i] and mseq2[j]
 	}
 
 
@@ -4266,8 +4319,9 @@ fprintf( stderr, "\n" );
 	{
 		strcpy( pseq[0], seq1[i] );
 		strcpy( pseq[1], seq2[j] );
-		commongappick( 2, pseq );
-		pairscore += eff1[i] * eff2[j] * naivepairscore11_dynmtx( n_dynamicmtx, pseq[0], pseq[1], penalty );
+		commongappick( 2, pseq ); //defined in mltaln9.c. I think it modifies pseq based on gaps positions.
+		//I think this method calculates the score of matching pseq[0] and pseq[1]
+		pairscore += eff1[i] * eff2[j] * naivepairscore11_dynmtx( n_dynamicmtx, pseq[0], pseq[1], penalty ); //defined in mltaln9.c.
 		nogappairscore += eff1[i] * eff2[j] * naivepairscore11_dynmtx( n_dynamicmtx, pseq[0], pseq[1], 0 );
 	}
 
@@ -4348,7 +4402,7 @@ double D__align_gapmap( char **seq1, char **seq2, double *eff1, double *eff2, in
 	exit( 1 );
 }
 
-
+//passed here before but needs more accurate analysis.
 double D__align_variousdist( int **which, double ***matrices, double **n_dynamicmtx, char **seq1, char **seq2, double *eff1, double *eff2, double **eff1s, double **eff2s, int icyc, int jcyc, int alloclen, LocalHom ***localhom, double *impmatch, char *sgap1, char *sgap2, char *egap1, char *egap2, int *chudanpt, int chudanref, int *chudanres, int headgp, int tailgp )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -4396,7 +4450,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 #endif
 	static TLS Gaplen **gaplen1 = NULL; // NULL ga iru to omou.
 	static TLS Gaplen **gaplen2 = NULL; // NULL ga iru to omou.
-	static TLS Gaplen ***gaplen1jprev = NULL;
+	static TLS Gaplen ***gaplen1jprev = NULL; //Gaplen is a structure defined here
 	static TLS Gaplen ***gaplen2jprev = NULL;
 	static TLS Gaplen ***gaplen1jcurr = NULL;
 	static TLS Gaplen ***gaplen2jcurr = NULL;
@@ -4449,7 +4503,8 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 			orlgth1 = 0;
 			orlgth2 = 0;
 
-			imp_match_init_strictD( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL );
+			//frees impmtx and return.
+			imp_match_init_strictD( NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL ); //defined here.
 
 			free( mseq1 );
 			free( mseq2 );
@@ -4501,7 +4556,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 #if SLOW
 	nmask = calloc( maxdistclass, sizeof( int ) );
 #else
-	masklist1 = AllocateIntMtx( maxdistclass, 0 );
+	masklist1 = AllocateIntMtx( maxdistclass, 0 ); //maxdistclass defined in defs.c.
 	masklist2 = AllocateIntMtx( maxdistclass, 0 );
 	nmask = calloc( maxdistclass, sizeof( int ) );
 
@@ -4715,7 +4770,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 		gaplen1jprev = (Gaplen ***)calloc( (ll2+2), sizeof( Gaplen **) );
 		gaplen2jprev = (Gaplen ***)calloc( (ll2+2), sizeof( Gaplen **) );
 
-		gaplens = calloc( sizeof( Gaplen ***), 12 );
+		gaplens = calloc( sizeof( Gaplen ***), 12 ); //4D array :D it is a cinema then :D :P
 		gaplens[0] = gaplen1ibestkamo;
 		gaplens[1] = gaplen2ibestkamo;
 		gaplens[2] = gaplen1icurr;
@@ -4905,7 +4960,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 		fprintf( stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1+1, ll2+1 );
 #endif
 
-		commonIP = AllocateIntMtx( ll1+10, ll2+10 );
+		commonIP = AllocateIntMtx( ll1+10, ll2+10 ); //commonIP defined in defs.c.
 
 #if DEBUG
 		fprintf( stderr, "succeeded\n\n" );
@@ -4932,15 +4987,15 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 //	cpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );
 	for( c=0; c<maxdistclass; c++ )
 	{
-		cpmx_calc_new( seq1, cpmx1s[c], eff1s[c], lgth1, icyc );
-		cpmx_calc_new( seq2, cpmx2s[c], eff2s[c], lgth2, jcyc );
+		cpmx_calc_new( seq1, cpmx1s[c], eff1s[c], lgth1, icyc ); //defined in tddis.c. fills cpmx1s[c] matrix based on other args values
+		cpmx_calc_new( seq2, cpmx2s[c], eff2s[c], lgth2, jcyc ); //fills cpmx2s[c] matrix based on other args values
 	}
 #endif
 
 
 //	reporterr( "Counting gaplen\n" );
-	gaplencount( icyc, lgth1, gaplen1, seq1, eff1 );
-	gaplencount( jcyc, lgth2, gaplen2, seq2, eff2 );
+	gaplencount( icyc, lgth1, gaplen1, seq1, eff1 ); //defined here. I think it fills gaplen1 with values based on gaps in seq1.
+	gaplencount( jcyc, lgth2, gaplen2, seq2, eff2 ); //I think it fills gaplen2 with values based on gaps in seq2.
 #if DEBUG
 	reporterr( "group1 = \n" );
 	showgaplen( gaplen1, lgth1 );
@@ -4950,7 +5005,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 //	reporterr( "done.\n" );
 
 
-	for( i=0; i<lgth1+1; i++ ) for( j=0; j<lgth2+1; j++ )
+	for( i=0; i<lgth1+1; i++ ) for( j=0; j<lgth2+1; j++ ) //this loop is disabled
 	{
 #if USEGAPLENMTX
 //		duplicategaplen( gaplen1mtx[i][j], gaplen1, lgth1 );
@@ -4998,13 +5053,14 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 //
 //		duplicategaplencompactx( gaplen1icurr[i], gaplen1+i, lgth1-i, 0, lgth1-i ); // half
 		duplicategaplencompactx( gaplen1icurr[i], gaplen1+i, lgth1-i, 0, 1 ); //  0, 1  hitsuyou
-
+		//defined here. I think this copy gaplen1+i to gaplen1icurr[i].
 
 //		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, lgth2 ); // ichiou zenbu
 		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, 0 );
-
+		//defined here. I think this copy gaplen2 to gaplen2icurr[i].
 
 		copygaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, i, 0, 0 ); // -> zurasu -> error?
+		//defined here. copy values from gaplen2 to gaplen2icurr[i] based on some conditions
 
 
 //		duplicategaplencompactx( gaplen1ibestkamo[i], gaplen1, lgth1, 0, 1 );
@@ -5119,16 +5175,19 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 	match_calc_slow( which, matrices, initverticalw, jcyc, seq2, eff2, icyc, seq1, eff1, 0, lgth1, *doublework, *intwork, 1, 1 );
 //	for( i=0; i<lgth1; i++ ) fprintf( stderr, "%d - %f\n", i, initverticalw[i] );
 #else
-	fillzero( initverticalw, lgth1 );
-	for( c=0; c<maxdistclass; c++ )
+	fillzero( initverticalw, lgth1 ); //defined here. fills initverticalw array with 0.0 values
+	for( c=0; c<maxdistclass; c++ ) //maxdistclass defined in defs.c
 	{
 //		fprintf( stderr, "c=%d matrices[c][W][W] = %f\n", c, matrices[c][amino_n['W']][amino_n['W']] );
 //		for( i=0; i<lgth1; i++ ) fprintf( stderr, "seq1[i] = %c, cpmx1s[c][3][%d] = %f\n", seq1[0][i], i, cpmx1s[c][3][i] );
 //		for( i=0; i<lgth2; i++ ) fprintf( stderr, "seq2[i] = %c, cpmx2s[c][3][%d] = %f\n", seq2[0][i], i, cpmx2s[c][3][i] );
-		match_calc_add( matrices[c], initverticalw, cpmx2s[c], cpmx1s[c], 0, lgth1, doublework[c], intwork[c], 1 );
+
+		//fills initverticalw, doublework[c] and intwork[c] based on other params values.
+		match_calc_add( matrices[c], initverticalw, cpmx2s[c], cpmx1s[c], 0, lgth1, doublework[c], intwork[c], 1 ); //defined here
 //		for( i=0; i<lgth1; i++ ) fprintf( stderr, "c=%d, %d - %f\n", c, i, initverticalw[i] );
 
-		if( nmask[c] ) match_calc_del( which, matrices, initverticalw, jcyc, seq2, eff2, icyc, seq1, eff1, 0, lgth1, c, nmask[c], masklist2[c], masklist1[c] );
+		if( nmask[c] ) match_calc_del( which, matrices, initverticalw, jcyc, seq2, eff2, icyc, seq1, eff1, 0, lgth1, c, nmask[c], masklist2[c], masklist1[c] ); //defined here.
+		//updates initverticalw values based on matrices, eff1 and eff2 values.
 	}
 #endif
 //	reporterr( "initverticalw = \n" );
@@ -5136,7 +5195,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 
 
 	if( localhom )
-		imp_match_out_vead_tate( initverticalw, 0, lgth1 ); // 060306
+		imp_match_out_vead_tate( initverticalw, 0, lgth1 ); // 060306 //defined here. add values from impmtx to values in initverticalw.
 
 //	match_calc( n_dynamicmtx, currentw, cpmx1, cpmx2, 0, lgth2, doublework, intwork, 1 );
 #if SLOW
@@ -5144,11 +5203,13 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 //	for( i=0; i<lgth2; i++ ) fprintf( stderr, "%d - %f\n", i, currentw[i] );
 //	exit( 1 );
 #else
-	fillzero( currentw, lgth2 );
+	fillzero( currentw, lgth2 ); //fills currentw array with 0.0 values
 	for( c=0; c<maxdistclass; c++ )
 	{
-		match_calc_add( matrices[c], currentw, cpmx1s[c], cpmx2s[c], 0, lgth2, doublework[c], intwork[c], 1 );
+		//fills currentw, doublework[c] and intwork[c] based on other params values.
+		match_calc_add( matrices[c], currentw, cpmx1s[c], cpmx2s[c], 0, lgth2, doublework[c], intwork[c], 1 ); //defined here
 		if( nmask[c] ) match_calc_del( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, 0, lgth2, c, nmask[c], masklist1[c], masklist2[c] );
+		//updates currentw values based on matrices, eff1 and eff2 values.
 	}
 #endif
 //	reporterr( "currentw = \n" );
@@ -5162,7 +5223,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 
 
 	if( localhom )
-		imp_match_out_vead( currentw, 0, lgth2 ); // 060306
+		imp_match_out_vead( currentw, 0, lgth2 ); // 060306 //defined here. add values from impmtx to values in currentw.
 #if 0 // -> tbfast.c
 	if( localhom )
 		imp_match_calc( n_dynamicmtx, currentw, icyc, jcyc, lgth1, lgth2, seq1, seq2, eff1, eff2, localhom, 1, 0 );
@@ -5171,7 +5232,8 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 
 	for( j=1; j<lgth2+1; j++ )
 	{
-		pfac = calcpfac_gap_noidatend( gaplen1, gaplen2, j, 0, j, seq1[0], seq2[0], 0 ); 
+		//calculates pfac value based on calculations and values of gaplen1 and gaplen2 and other params.
+		pfac = calcpfac_gap_noidatend( gaplen1, gaplen2, j, 0, j, seq1[0], seq2[0], 0 ); //defined here
 //		reporterr( "computing initial end gap penalty for %c-%c, i=0, j=%d, pfac=%f\n", seq1[0][0], seq2[0][j], j, pfac );
 //		reporterr( "%c-%c, i=0, j=%d, currentw[j]=%f -> ", seq1[0][0], seq2[0][j], j, currentw[j] );
 		currentw[j] += fpenalty * pfac; // tekitou
@@ -5179,6 +5241,7 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 	}
 	for( i=1; i<lgth1+1; i++ )
 	{
+		//calculates pfac value based on calculations and values of gaplen1 and gaplen2 and other params.
 		pfac = calcpfac_gap_noidatend( gaplen2, gaplen1, i, 0, i, seq2[0], seq1[0], 0 );
 //		reporterr( "computing initial end gap penalty for %c-%c, i=%d, j=0, pfac=%f\n", seq1[0][i], seq2[0][0], i, pfac );
 		initverticalw[i] += fpenalty * pfac; // tekitou
@@ -5193,7 +5256,8 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 #if ALGZGAP
 		m[j] = currentw[j-1] + ogcp1[1] * gapfreq2[j-1]; mp[j] = 0;;
 #else
-		pfac = calcpfac_gapex_noidatend( gaplen2, gaplen1, j, 1, j, seq2[0], seq1[0], 1 );
+		//calculates and return value of pfac based on calculations on values of gaplen1, gaplen2 and other params.
+		pfac = calcpfac_gapex_noidatend( gaplen2, gaplen1, j, 1, j, seq2[0], seq1[0], 1 ); //defined here.
 #if DEBUG
 		reporterr( "%c-%c, INITIAL jgap extension check, pfac = %f\n\n", seq1[0][j], '=', pfac );
 #endif
@@ -5286,10 +5350,14 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 //		showgaplen( gaplen1, 10 );
 //		reporterr( "i=%d, lgth1=%d, lgth1-i=%d, gaplen+i-1=\n", i, lgth1, lgth1-i );
 //		showgaplen( gaplen1+i-1, 100 );
+
+		//defined here. I think this copy gaplen1+i to gaplen1icurr[i].
 		duplicategaplencompactx( gaplen1icurr[i], gaplen1+i, lgth1-i, 0, 1 ); // half!!
 //		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, lgth2 ); // KOKO
+		//defined here. I think this copy gaplen2 to gaplen2icurr[i].
 		duplicategaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, 0 ); // test
 		copygaplencompactx( gaplen2icurr[i], gaplen2, lgth2, 0, i, 0, 0 ); // IRU? TEST
+		//defined here. copy values from gaplen2 to gaplen2icurr[i] based on some conditions
 
 
 
@@ -5301,13 +5369,16 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 		copygaplencompactx( gaplen2ibestkamo[i], gaplen2, lgth2, 0, i, 0, 0 ); // IRU? // TEST
 
 		extendgaplencompactx( gaplen1jprev[0], gaplen1, i ); // ???
-
+		//copy gaplen1 to gaplen1jprev[0]
 
 //		addnewgaplen( gaplen1jprev[0], gaplen1icurr[i-1], gaplen1, lgth1, -1, 0 );
 //		addnewgaplen( gaplen2jprev[0], gaplen2icurr[i-1], gaplen2, lgth2, -1, 0 );
 //		copygaplenrestricted( gaplen1jprev[0], gaplen1icurr[i-1], lgth1, -1, 0, i, i ); // i-1, i da to omou.
+
+		//copy values from gaplen1icurr[i-1] to gaplen1jprev[0] based on some conditions
 		copygaplencompactx( gaplen1jprev[0], gaplen1icurr[i-1], lgth1-i, -1, 0, i, 1 ); // half? lgth1-i?
 //		copygaplenrestricted( gaplen2jprev[0], gaplen2icurr[i-1], lgth2, -1, 0, 0, 0 );
+		//copy values from gaplen2icurr[i-1] to gaplen2jprev[0] based on some conditions
 		copygaplencompactx( gaplen2jprev[0], gaplen2icurr[i-1], lgth2-j, -1, 0, 0, 0 ); // half?? lgth2-j?
 
 
@@ -5315,11 +5386,13 @@ double D__align_variousdist( int **which, double ***matrices, double **n_dynamic
 #if SLOW
 		match_calc_slow( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, i, lgth2, *doublework, *intwork, 0, 0 );
 #else
-		fillzero( currentw, lgth2 );
+		fillzero( currentw, lgth2 ); //fill currentw with 0.0
 		for( c=0; c<maxdistclass; c++ )
 		{
+			//fills currentw, doublework[c] and intwork[c] based on other params values.
 			match_calc_add( matrices[c], currentw, cpmx1s[c], cpmx2s[c], i, lgth2, doublework[c], intwork[c], 0 );
 			if( nmask[c] ) match_calc_del( which, matrices, currentw, icyc, seq1, eff1, jcyc, seq2, eff2, i, lgth2, c, nmask[c], masklist1[c], masklist2[c] );
+			//updates currentw values based on matrices, eff1 and eff2 values.
 		}
 #endif
 
@@ -5340,7 +5413,7 @@ fprintf( stderr, "\n" );
 #if  0
 			imp_match_out_vead( currentw, i, lgth2 );
 #else
-			imp_match_out_vead( currentw, i, lgth2 );
+			imp_match_out_vead( currentw, i, lgth2 ); //add values from impmtx to values in currentw.
 #endif
 		}
 #if XXXXXXX
@@ -5373,6 +5446,7 @@ fprintf( stderr, "\n" );
 #if ALGZGAP
 		mi = previousw[0] + ogcp2[1] * gapfreq1[i-1]; mpi=0;
 #else
+		//calculates and return value of pfac based on calculations on values of gaplen1, gaplen2 and other params.
 		pfac = calcpfac_gapex_noidatend( gaplen1, gaplen2, i, 1, i, seq1[0], seq2[0], 1 );
 #if DEBUG
 		reporterr( "%c-%c, INITIAL igap extension check, pfac = %f\n\n", '=', seq2[0][j], pfac );
@@ -5508,6 +5582,7 @@ fprintf( stderr, "\n" );
 
 //			pfac = calcpfac( gaplen1jprev[j-1], gaplen2jprev[j-1], i, j, seq1[0], seq2[0] );
 //reporterr( "#### COMPACT, i,j=%d,%d\n", i, j );
+			//calculates and returns value of pfac based on calculations on values of other params.
 			pfac = calcpfacnoidatend( gaplen1jprev[j-1], gaplen2jprev[j-1], i, 1, seq1[0], seq2[0]+j, one ); // 1j->full, 2j->half
 #if USEGAPLENMTX
 //reporterr( "#### FULL, i,j=%d,%d\n", i, j );
@@ -5555,6 +5630,7 @@ fprintf( stderr, "\n" );
 
 
 //			pfac = calcpfac_gap_incomplete( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], newgaplen, i, j, seq1[0], seq2[0], 0 ); // i-1
+			//calculates and returns value of pfac based on calculations on values of other params.
 			pfac = calcpfac_gap_noidatend( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], newgaplen, 1, j, seq1[0]+i-1, seq2[0], 0 ); // i-1
 #if USEGAPLENMTX
 			pfactmp = calcpfac_gap_incomplete( gaplen1mtx[i-1][mpi], gaplen2mtx[i-1][mpi], newgaplen, i, j, seq1[0], seq2[0], 1 );
@@ -5637,7 +5713,7 @@ fprintf( stderr, "\n" );
 
 #if FREEFREQUENTLY
 //				freegaplenpartly( gaplen1ibestkamo[i-1], 0, i-1 );
-				freegaplenpartly( gaplen2ibestkamo[i-1], j-3, j-2 );
+				freegaplenpartly( gaplen2ibestkamo[i-1], j-3, j-2 ); //frees gaplen2ibestkamo[i-1] memory
 #endif
 //				freegaplenpartly( gaplen1jprev[mpibk], 0, lgth2 ); // full
 //				freegaplenpartly( gaplen2jprev[mpibk], 0, lgth2-mpibk ); // half
@@ -5650,8 +5726,11 @@ fprintf( stderr, "\n" );
 //				addnewgaplen( gaplen1ibestkamo[i-1], gaplen1jprev[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2ibestkamo[i-1], gaplen2jprev[j-1], gaplen2, lgth2, -1, 0 );
 //				copygaplenrestricted( gaplen1ibestkamo[i-1], gaplen1jprev[j-1], lgth1, -1, 0, i, i ); // i-1, i
+
+				//copy values from gaplen1jprev[j-1] to gaplen1ibestkamo[i-1] based on some conditions
 				copygaplencompactx( gaplen1ibestkamo[i-1], gaplen1jprev[j-1], lgth1, -1, 0, 1, i ); // half
 //				copygaplenrestricted( gaplen2ibestkamo[i-1], gaplen2jprev[j-1], lgth2, -1, 0, j, j ); // mpi, j
+				//copy values from gaplen2jprev[j-1] to gaplen2ibestkamo[i-1] based on some conditions
 				copygaplencompactx( gaplen2ibestkamo[i-1], gaplen2jprev[j-1], lgth2, -1, 0, j, 1 ); //half
 
 
@@ -5673,7 +5752,8 @@ fprintf( stderr, "\n" );
 			pfac = 0.0; // CHUUI!
 #else
 
-//			pfac = calcpfac_gapex( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], i, j, j-mpi, seq1[0], seq2[0], 1 ); // i-1 
+//			pfac = calcpfac_gapex( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], i, j, j-mpi, seq1[0], seq2[0], 1 ); // i-1
+			//calculates and return value of pfac based on calculations on values of other params.
 			pfac = calcpfac_gapex_noidatend( gaplen1ibestkamo[i-1], gaplen2ibestkamo[i-1], 1, j, j-mpi, seq1[0]+i, seq2[0], 1 ); // 1ibest->half, 2ibest->full
 #if USEGAPLENMTX
 			pfactmp = calcpfac_gapex( gaplen1mtx[i-1][mpi], gaplen2mtx[i-1][mpi], i, j, j-mpi, seq1[0], seq2[0], 1 );
@@ -5708,7 +5788,7 @@ fprintf( stderr, "\n" );
 			newgaplen = i-*mpjpt-1;
 //			pfac = calcpfac_gap_incomplete( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], newgaplen, j, i, seq2[0], seq1[0], 0 ); // j-1 deha???
 
-
+			//calculates and return value of pfac based on calculations on values of other params.
 			pfac = calcpfac_gap_noidatend( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], newgaplen, 1, i, seq2[0]+j-1, seq1[0], 1 ); // 2jbestkamo->half, 1jbestkamo->full
 #if USEGAPLENMTX
 			pfactmp = calcpfac_gap_incomplete( gaplen2mtx[*mpjpt][j-1], gaplen1mtx[*mpjpt][j-1], newgaplen, j, i, seq2[0], seq1[0], 1 );
@@ -5736,6 +5816,7 @@ fprintf( stderr, "\n" );
 
 
 #if FREEFREQUENTLY
+				//free gaplen1jbest[j-1] memory
 				freegaplenpartly( gaplen1jbest[j-1], i-3, i-2 );
 //				freegaplenpartly( gaplen2jbest[j-1], j-3, j-2 );
 #endif
@@ -5747,8 +5828,11 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jbest[j-1], gaplen1jbestkamo[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jbest[j-1], gaplen2jbestkamo[j-1], gaplen2, lgth2, -1, 0 );
+
+				//copy values from gaplen1jbestkamo[j-1] to gaplen1jbest[i-1] based on some conditions
 				copygaplencompactx( gaplen1jbest[j-1], gaplen1jbestkamo[j-1], lgth1, -1, 0, i, i );// *mpjpt, i
 //				copygaplenrestricted( gaplen2jbest[j-1], gaplen2jbestkamo[j-1], lgth2, -1, 0, j, j ); // j-1, j
+				//copy values from gaplen2jbestkamo[j-1] to gaplen2jbest[i-1] based on some conditions
 				copygaplencompactx( gaplen2jbest[j-1], gaplen2jbestkamo[j-1], lgth2, -1, 0, 1, 1 ); // half!
 
 
@@ -5792,6 +5876,7 @@ fprintf( stderr, "\n" );
 
 
 #if FREEFREQUENTLY
+				//free gaplen1jbestkamo[j-1] memory
 				freegaplenpartly( gaplen1jbestkamo[j-1], i-3, i-2 );
 //				freegaplenpartly( gaplen2jbestkamo[j-1], j-3, j-2 );
 #endif
@@ -5800,10 +5885,13 @@ fprintf( stderr, "\n" );
 //				addnewgaplen( gaplen1jbestkamo[j-1], gaplen1jprev[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], gaplen2, lgth2, -1, 0 );
 //				reporterr( "copying gaplen1jbestkamo[%d-1] from galpen1jprev, j=%d, i=%d\n", j, j, i );
+
+				//copy values from gaplen1jprev[j-1] to gaplen1jbestkamo[j-1] based on some conditions
 				copygaplencompactx( gaplen1jbestkamo[j-1], gaplen1jprev[j-1], lgth1, -1, 0, i, i ); // *mpjpt, i
 //				copygaplenrestricted( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], lgth2, -1, 0, j, j ); // j-1, j
 //				copygaplencompactx( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], lgth2, -1, 0, j, 1 ); // half!
 //				reporterr( "copying gaplen2jbestkamo[%d-1] from galpen2jprev\n", j );
+				//copy values from gaplen2jprev[j-1] to gaplen2jbestkamo[j-1] based on some conditions
 				copygaplencompactx( gaplen2jbestkamo[j-1], gaplen2jprev[j-1], lgth2-j, -1, 0, 1, 1 ); // ryouhou half!
 
 
@@ -5829,7 +5917,8 @@ fprintf( stderr, "\n" );
 			pfac = 0.0;
 #else
 
-//			pfactmp = calcpfac_gapex( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], j, i, i-*mpjpt, seq2[0], seq1[0], 0 ); // j-1 
+//			pfactmp = calcpfac_gapex( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], j, i, i-*mpjpt, seq2[0], seq1[0], 0 ); // j-1
+			//calculates and return value of pfac based on calculations on values of other params.
 			pfactmp = calcpfac_gapex_noidatend( gaplen2jbestkamo[j-1], gaplen1jbestkamo[j-1], 1, i, i-*mpjpt, seq2[0]+j, seq1[0], 0 ); // 2jbestkamo->half, 1jbestkamo->full
 #if USEGAPLENMTX
 			pfac = calcpfac_gapex( gaplen2mtx[*mpjpt][j-1], gaplen1mtx[*mpjpt][j-1], j, i, i-*mpjpt, seq2[0], seq1[0], 0 );
@@ -5906,6 +5995,7 @@ fprintf( stderr, "\n" );
 			reporterr( "extention-x 1j???, before extention-x, j=%d\n", j );
 			showgaplen( gaplen1jcurr[j], 100 );
 #endif
+			//copy gaplen1 to gaplen1jcurr[j]
 			extendgaplencompactx( gaplen1jcurr[j], gaplen1, i );
 
 #if DEBUG
@@ -5913,6 +6003,7 @@ fprintf( stderr, "\n" );
 			showgaplen( gaplen1jcurr[j], 100 );
 			reporterr( "extention-x 2j???\n" );
 #endif
+			//copy gaplen2+j to gaplen2jcurr[j]
 			extendgaplencompactx( gaplen2jcurr[j], gaplen2+j, 0 );
 
 
@@ -5935,10 +6026,14 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jcurr[j], gaplen1jprev[j+*ijppt], gaplen1, lgth1, i, -*ijppt-1 );
 //				addnewgaplen( gaplen2jcurr[j], gaplen2jprev[j+*ijppt], gaplen2, lgth2, -1, 0 );
-//				reporterr( "copying gaplen1jcurr from gaplen1jbest, with a %d insertion\n", -*ijppt-1 ); 
+//				reporterr( "copying gaplen1jcurr from gaplen1jbest, with a %d insertion\n", -*ijppt-1 );
+
+				//copy values from gaplen1jprev[j+*ijppt] to gaplen1jcurr[j] based on some coditions
 				copygaplencompactx( gaplen1jcurr[j], gaplen1jprev[j+*ijppt], lgth1, i, -*ijppt-1, i, i ); // scope: i+*ijppt+1, i ?
 //				reporterr( "copy end\n" ); 
 //				copygaplenrestricted( gaplen2jcurr[j], gaplen2jprev[j+*ijppt], lgth2, -1, 0, j, j );
+
+				//copy values from gaplen2jprev[j+*ijppt] to gaplen2jcurr[j] based on some coditions
 				copygaplencompactx( gaplen2jcurr[j], gaplen2jprev[j+*ijppt], lgth2, -1, 0, 0, -*ijppt ); // half! ryouho zureteru
 			}
 			else if( *ijppt > 0 )
@@ -5959,9 +6054,13 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jcurr[j], gaplen1jbest[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jcurr[j], gaplen2jbest[j-1], gaplen2, lgth2, j, *ijppt-1 );
+
+				//copy values from gaplen1jbest[j-1] to gaplen1jcurr[j] based on some coditions
 				copygaplencompactx( gaplen1jcurr[j], gaplen1jbest[j-1], lgth1, -1, 0, i, i );
 //				copygaplenrestricted( gaplen2jcurr[j], gaplen2jbest[j-1], lgth2, j, *ijppt-1, j, j ); // j-*ijppt+1?
 //				copygaplenrestricted_zurasu( gaplen2jcurr[j], gaplen2jbest[j-1], lgth2, 0, *ijppt-1, 0, 0, j, j ); // 2jcurr->half, but 2jbest->full, imanotokoro
+
+				//copy values from gaplen2jbest[j-1] to gaplen2jcurr[j] based on some coditions
 				copygaplencompactx( gaplen2jcurr[j], gaplen2jbest[j-1], lgth2, 0, *ijppt-1, 0, 1 ); //ryouhou half
 
 			}
@@ -5984,8 +6083,12 @@ fprintf( stderr, "\n" );
 #endif
 //				addnewgaplen( gaplen1jcurr[j], gaplen1jprev[j-1], gaplen1, lgth1, -1, 0 );
 //				addnewgaplen( gaplen2jcurr[j], gaplen2jprev[j-1], gaplen2, lgth2, -1, 0 );
+
+				//copy values from gaplen1jprev[j-1] to gaplen1jcurr[j] based on some coditions
 				copygaplencompactx( gaplen1jcurr[j], gaplen1jprev[j-1], lgth1, -1, 0, i, i );
 //				copygaplenrestricted( gaplen2jcurr[j], gaplen2jprev[j-1], lgth2, -1, 0, j, j );
+
+				//copy values from gaplen2jprev[j-1] to gaplen2jcurr[j] based on some coditions
 				copygaplencompactx( gaplen2jcurr[j], gaplen2jprev[j-1], lgth2, -1, 0, 0, 1 ); // half
 			}
 
@@ -6043,9 +6146,10 @@ fprintf( stderr, "\n" );
 
 		if( trywarp )
 		{
-			fltncpy( prevwmrecords, wmrecords, lastj );
-			intncpy( prevwarpi, warpi, lastj );
-			intncpy( prevwarpj, warpj, lastj );
+			//copy lastj items from wmrecords to prevwmrecords
+			fltncpy( prevwmrecords, wmrecords, lastj ); //defined in mltaln9.c.
+			intncpy( prevwarpi, warpi, lastj ); //copy lastj items from warpi to prevwarpi
+			intncpy( prevwarpj, warpj, lastj ); //copy lastj items from warpj to prevwarpj
 		}
 #if 0
 		fprintf( stderr, "i=%d, %15.5f \n", i, wm );
@@ -6085,12 +6189,14 @@ fprintf( stderr, "\n" );
 	for( i=0; i<icyc; i++ ) strcpy( mseq1[i], seq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( mseq2[j], seq2[j] );
 	*/
+
+	//updates mseq1, mseq2 and ijp values based on some calculations on other args
 	if( localhom )
 	{
-		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase );
+		Atracking_localhom( impmatch, currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, warpis, warpjs, warpbase ); //defined here.
 	}
 	else
-		Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, tailgp, warpis, warpjs, warpbase );
+		Atracking( currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp, icyc, jcyc, tailgp, warpis, warpjs, warpbase ); //defined here.
 
 	if( warpis ) free( warpis );
 	if( warpjs ) free( warpjs );
@@ -6105,6 +6211,7 @@ fprintf( stderr, "\n" );
 	}
 
 
+	//copy mseq to seq
 	for( i=0; i<icyc; i++ ) strcpy( seq1[i], mseq1[i] );
 	for( j=0; j<jcyc; j++ ) strcpy( seq2[j], mseq2[j] );
 #if 0
@@ -6115,7 +6222,7 @@ fprintf( stderr, "\n" );
 #endif
 
 //	reporterr( "clearing\n" );
-	cleargaplens( gaplens );
+	cleargaplens( gaplens ); //defined here. clears gaplens memory.
 	if( masklist1 ) FreeIntMtx( masklist1 ); masklist1 = NULL;
 	if( masklist2 ) FreeIntMtx( masklist2 ); masklist2 = NULL;
 	if( nmask ) free( nmask ); nmask = NULL;
@@ -6188,7 +6295,7 @@ fprintf( stderr, "\n" );
 	int kenzan = 0;
 	for( i=0; i<icyc; i++ ) for( j=0; j<jcyc; j++ )
 	{
-		kenzan += pairgapcount( mseq1[i], mseq2[j] );
+		kenzan += pairgapcount( mseq1[i], mseq2[j] ); //defined here. I think this counts no. of gaps between mseq1[i] and mseq2[j]
 	}
 
 
@@ -6203,9 +6310,10 @@ fprintf( stderr, "\n" );
 	{
 		strcpy( pseq[0], seq1[i] );
 		strcpy( pseq[1], seq2[j] );
-		commongappick( 2, pseq );
+		commongappick( 2, pseq ); //defined in mltaln9.c. I think it modifies pseq based on gaps positions.
 		c = which[i][j];
-		pairscore += eff1[i] * eff2[j] * naivepairscore11_dynmtx( matrices[c], pseq[0], pseq[1], penalty );
+		//I think this method calculates the score of matching pseq[0] and pseq[1]
+		pairscore += eff1[i] * eff2[j] * naivepairscore11_dynmtx( matrices[c], pseq[0], pseq[1], penalty ); //defined in mltaln9.c.
 		nogappairscore += eff1[i] * eff2[j] * naivepairscore11_dynmtx( matrices[c], pseq[0], pseq[1], 0 );
 	}
 #else
