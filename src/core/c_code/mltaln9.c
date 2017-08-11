@@ -43,6 +43,7 @@ int intlen( int *num )
 	while( *num++ != -1 ) value++;
 	return( value );
 }
+
 //check sequence characters and report error if unusual character is found
 char seqcheck( char **seq )
 {
@@ -74,6 +75,7 @@ char seqcheck( char **seq )
 	}
 	return( 0 );
 }
+
 //concatenate two integers arrays
 void intcat( int *s1, int *s2 )
 {
@@ -85,6 +87,7 @@ void intcat( int *s1, int *s2 )
 	}
 	*s1 = -1;
 }
+
 //copy integer s2 into s1
 void intcpy( int *s1, int *s2 )
 {

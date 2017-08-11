@@ -1669,6 +1669,7 @@ int copydatafromgui( char **namegui, char **seqgui, char **name, int *nlen, char
 	return( 0 );
 }
 
+//It reads sequences and their names from fp file into seq, name and nlen arrays.
 void readData_pointer( FILE *fp, char **name, int *nlen, char **seq )
 {
 	int i; 
@@ -2436,6 +2437,7 @@ void getnumlen_nogap_outallreg_web( FILE *fp, FILE *ofp, int *nlenminpt, int *is
 
 }
 
+//Finds sequences count, max length and dna or protein from fp file
 void getnumlen( FILE *fp )
 {
 	int total;
@@ -2466,7 +2468,7 @@ void getnumlen( FILE *fp )
 
 	atgcfreq = (double)atgcnum / total;
 //	fprintf( stderr, "##### atgcfreq = %f\n", atgcfreq );
-	if( dorp == NOTSPECIFIED )
+	if( dorp == NOTSPECIFIED ) //dorp defined in defs.c
 	{
 		if( atgcfreq > 0.75 ) 	
 		{
@@ -2948,7 +2950,7 @@ void WriteHat2_part_pointer( FILE *hat2p, int locnjob, int nadd, char **name, do
 	}
 }
 
-//write number of sequences, max distance value and mtx values to hat2 file
+//write number of sequences, max distance value, mtx values and sequences names to hat2 file
 void WriteHat2_pointer( FILE *hat2p, int locnjob, char **name, double **mtx )
 {
 	int i, j;

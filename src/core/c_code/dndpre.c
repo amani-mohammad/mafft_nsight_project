@@ -195,22 +195,22 @@ void dndpreArguments( int argc, char *argv[] )
 {
     int c;
 
-	nadd = 0;
-	nthread = 1;
-	alg = 'X';
-	fmodel = 0;
-	treeout = 0;
-	scoremtx = 1;
-	nblosum = 62;
-	dorp = NOTSPECIFIED;
-	inputfile = NULL;
-	ppenalty = NOTSPECIFIED; //?
-	ppenalty_ex = NOTSPECIFIED; //?
-	poffset = NOTSPECIFIED; //?
-	kimuraR = NOTSPECIFIED;
-	pamN = NOTSPECIFIED;
-	usenaivescoreinsteadofalignmentscore = 0;
-	nwildcard = 0;
+	nadd = 0; //defined here
+	nthread = 1; //defined in defs.c.
+	alg = 'X'; //defined in defs.h.
+	fmodel = 0; //defined in defs.h.
+	treeout = 0; //defined here.
+	scoremtx = 1; //defined in defs.h.
+	nblosum = 62; //defined in defs.h.
+	dorp = NOTSPECIFIED; //defined in defs.c.
+	inputfile = NULL; //defined in defs.h.
+	ppenalty = NOTSPECIFIED; //?    //defined in defs.h.
+	ppenalty_ex = NOTSPECIFIED; //?   //defined in defs.h.
+	poffset = NOTSPECIFIED; //?   //defined in defs.h.
+	kimuraR = NOTSPECIFIED;   //defined in defs.h.
+	pamN = NOTSPECIFIED;  //defined in defs.h.
+	usenaivescoreinsteadofalignmentscore = 0; //defined here. use naive score instead of alignment score
+	nwildcard = 0;  //defined in defs.c.
 
     while( --argc > 0 && (*++argv)[0] == '-' )
 	{
@@ -308,6 +308,8 @@ void dndpreArguments( int argc, char *argv[] )
 	}
 }
 
+//this method reads sequences from input file and fill distance matrix between chars in sequences based on some simple calculations
+//then write this data to hat2 file
 int dndpre_main( int argc, char **argv )
 {
 	int i, j, ilim;
@@ -324,14 +326,14 @@ int dndpre_main( int argc, char **argv )
 	char c;
 
 
-	dndpreArguments( argc, argv );
+	dndpreArguments( argc, argv ); //parse arguments
 #ifndef enablemultithread
 	nthread = 0;
 #endif
 
 	if( inputfile )
 	{
-		infp = fopen( inputfile, "r" );
+		infp = fopen( inputfile, "r" ); //open input file for reading
 		if( !infp )
 		{
 			fprintf( stderr, "Cannot open %s\n", inputfile );
@@ -344,7 +346,7 @@ int dndpre_main( int argc, char **argv )
 #if 0
 	PreRead( stdin, &njob, &nlenmax );
 #else
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. Finds sequences count, max length and dna or protein from input file
 #endif
 	rewind( infp );
 
@@ -360,11 +362,11 @@ int dndpre_main( int argc, char **argv )
 #if 0
 	FRead( stdin, name, nlen, seq );
 #else
-	readData_pointer( infp, name, nlen, seq );
+	readData_pointer( infp, name, nlen, seq ); //defined in io.c. It reads sequences and their names from infp file into seq, name and nlen arrays.
 #endif
 	fclose( infp );
 
-
+	//make sure that all sequences are equal length
 	for( i=1; i<njob; i++ )
 	{
 		if( nlen[i] != nlen[0] )
@@ -374,9 +376,11 @@ int dndpre_main( int argc, char **argv )
 		}
 	}
 
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
-	c = seqcheck( seq );
+	c = seqcheck( seq ); //defined in mltaln9.c. Check sequence characters and report error if unusual character is found
 	if( c )
 	{
 		reporterr(       "Illegal character %c\n", c );
@@ -392,13 +396,14 @@ int dndpre_main( int argc, char **argv )
 //			fprintf( stderr, "i=%d,j=%d, l=%d &&&  %f\n", i, j, nlen[0], mtx[i][j] );
 	}
 #else // 061003
-	for( i=0; i<njob; i++ )
+	for( i=0; i<njob; i++ ) //calculate score between each character and itself in seq - i.e. diagonal items -
 	{
-		selfscore[i] = (double)naivepairscore11( seq[i], seq[i], penalty );
+		selfscore[i] = (double)naivepairscore11( seq[i], seq[i], penalty ); //defined in mltaln9.c.
+		//calculates score between seq[i] and seq[i] based on penalty and amino_dis values
 	}
 
 	skiptable = AllocateIntMtx( njob, 0 );
-	makeskiptable( njob, skiptable, seq ); // allocate suru.
+	makeskiptable( njob, skiptable, seq ); // allocate suru.  //defined in mltaln9.c. fill skiptable matrix with values based on gaps in seq
 
 #ifdef enablemultithread
 	if( nthread > 0 )
@@ -453,7 +458,9 @@ int dndpre_main( int argc, char **argv )
 				{
 //					reporterr( "usenaivescoreinsteadofalignmentscore = %d\n", usenaivescoreinsteadofalignmentscore );
 					if( usenaivescoreinsteadofalignmentscore ) // osoi.
-						mtxv = maxdist * ( 1.0 - (double)naivepairscorefast( seq[i], seq[j], skiptable[i], skiptable[j], 0.0 ) / bunbo );
+						//I think this fills skiptable[i] and skiptable[j] with counters based on gaps matching in seq[i] and seq[j]
+						//and returns score value based on seq[i] and seq[j] chars matching and amino_dis saved values.
+						mtxv = maxdist * ( 1.0 - (double)naivepairscorefast( seq[i], seq[j], skiptable[i], skiptable[j], 0.0 ) / bunbo ); //defined in mltaln9.c.
 					else
 						mtxv = maxdist * ( 1.0 - (double)naivepairscorefast( seq[i], seq[j], skiptable[i], skiptable[j], penalty ) / bunbo );
 //					mtxv = maxdist * ( 1.0 - (double)naivepairscore11( seq[i], seq[j], penalty ) / bunbo );
@@ -495,8 +502,8 @@ int dndpre_main( int argc, char **argv )
 		fprintf( stdout, "i=%d, j=%d, mtx[][] = %f\n", i, j, mtx[i][j] );
 #endif
 
-	fp = fopen( "hat2", "w" );
-	WriteHat2_pointer( fp, njob, name, mtx );
+	fp = fopen( "hat2", "w" ); //open hat2 file for writing
+	WriteHat2_pointer( fp, njob, name, mtx ); //defined in io.c. Write number of sequences, max distance value, mtx values and sequences names to hat2 file
 	fclose( fp );
 #if 0
 	if( treeout )
