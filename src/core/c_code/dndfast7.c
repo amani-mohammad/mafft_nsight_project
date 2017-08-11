@@ -201,7 +201,7 @@ int dndfast7_main( int argc, char *argv[] )
 	WriteForFasta( hat2p, njob, name1, nlen1, seq ); //defined in io.c. Write sequences - names and chars - to data file
 	fclose( hat2p );
 
-	for( i=0; i<njob; i++ ) 
+	for( i=0; i<njob; i++ )
 	{
 //		fprintf( stderr, "###  i = %d\n", i );
 		hat2p = fopen( datafile, "w" ); //open data file

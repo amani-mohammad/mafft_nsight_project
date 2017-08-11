@@ -124,6 +124,8 @@ void profilealignment2( int n0, int n2, char **aln0, char **aln2, int alloclen, 
 	free( allgap2 );
 }
 
+//aligns aln0 and aln2 based on alg type - M or A - and performs some other calculations before and after this.
+//it also changes the values in aln1 based on some conditions after the alignment call
 static void profilealignment( int n0, int n1, int n2, char **aln0, char **aln1, char **aln2, int alloclen, char alg ) // n1 ha allgap
 {
 	int i, j, newlen;
@@ -143,8 +145,8 @@ static void profilealignment( int n0, int n1, int n2, char **aln0, char **aln1, 
 //	reporterr( "In profilealignment(), strlen( aln0[0] ) %d\n", strlen( aln0[0] ) );
 //	reporterr( "In profilealignment(), strlen( aln2[0] ) %d\n", strlen( aln2[0] ) );
 
-	commongappick( n0, aln0 );
-	commongappick( n2, aln2 );
+	commongappick( n0, aln0 ); //defined in mltaln9.c. update aln0 values based on gaps positions in it and n0 value
+	commongappick( n2, aln2 ); //update aln2 values based on gaps positions in it and n2 value
 
 //	reporterr( "after commongappick, strlen( aln0[0] ) %d\n", strlen( aln0[0] ) );
 //	reporterr( "after commongappick, strlen( aln2[0] ) %d\n", strlen( aln2[0] ) );
@@ -209,8 +211,12 @@ static void profilealignment( int n0, int n1, int n2, char **aln0, char **aln1, 
 
 	newgapstr = "-";
 	if( alg == 'M' )
+		//defined in MSalignmm.c.
+		//Calculates distance between aln0 and aln2 based on specific algo.
 		MSalignmm( n_dis_consweight_multi, aln0, aln2, effarr0, effarr2, n0, n2, alloclen, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, 1 ); //outgap=1, 2014/Dec/1
 	else
+		//defined in Salignmm.c.
+		//Calculates distance between aln0 and aln2 based on specific algo.
 		A__align( n_dis_consweight_multi, aln0, aln2, effarr0, effarr2, n0, n2, alloclen, NULL, &dumdb, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, 1, -1, -1 ); //outgap=1, 2014/Dec/1
 
 	newlen = strlen( aln0[0] );
@@ -324,6 +330,7 @@ static void plus2gapchar( char *s, char gapchar ) //replace '+' with gapchar
 	}
 }
 
+//update gaplen based on seq and rep values
 void findnewgaps( int n, int rep, char **seq, int *gaplen )
 {
 	int i, pos, len, len1;
@@ -384,6 +391,7 @@ void findcommongaps( int n, char **seq, int *gapmap )
 #endif
 }
 
+//update gapmap values based on seq chars
 void adjustgapmap( int newlen, int *gapmap, char *seq )
 {
 	int j;
@@ -419,7 +427,7 @@ void adjustgapmap( int newlen, int *gapmap, char *seq )
 #endif
 }
 
-
+//i think this counts the number of non-gap indices in gaplen
 static int countnogaplen( int *gaplen, int *term )
 {
 	int v = 0;
@@ -443,6 +451,8 @@ static int countgapmap( int *gapmap, int *term )
 	return( v );
 }
 
+//calls profilealignment after extracting sequences from seq based on some conditions using alreadyaligned, ex1, ex2
+//and updates the values of seq based on the results of profile alignments and alg selected
 void insertnewgaps( int njob, int *alreadyaligned, char **seq, int *ex1, int *ex2, int *gaplen, int *gapmap, int alloclen, char alg, char gapchar )
 {
 	int *mar;
@@ -462,6 +472,7 @@ void insertnewgaps( int njob, int *alreadyaligned, char **seq, int *ex1, int *ex
 	list1 = calloc( njob, sizeof( int ) );
 	list2 = calloc( njob, sizeof( int ) );
 
+	//fill mar array
 	for( i=0; i<njob; i++ ) mar[i] = 0;
 	for( i=0; i<njob; i++ ) 
 	{
@@ -478,6 +489,7 @@ void insertnewgaps( int njob, int *alreadyaligned, char **seq, int *ex1, int *ex
 //		fprintf( stderr, "excluding %d\n", ex2[i] );
 	}
 
+	//fill list0, list1, list2 arrays. and set ngroup0, ngroup1, ngroup2
 	ngroup2 = ngroup1 = ngroup0 = 0;
 	for( i=0; i<njob; i++ )
 	{
@@ -557,7 +569,7 @@ void insertnewgaps( int njob, int *alreadyaligned, char **seq, int *ex1, int *ex
 			*cptr = 0;
 			gapshift = gaplen[j];
 
-			for( i=0; i<ngroup0; i++ ) strncpy0( mseq0[i]+mlen0, gaps, gapshift );
+			for( i=0; i<ngroup0; i++ ) strncpy0( mseq0[i]+mlen0, gaps, gapshift ); //defined here. copy string gaps to mseq0[i]+mlen0 with length gapshift
 			for( i=0; i<ngroup1; i++ ) strncpy0( mseq1[i]+mlen1, seq[list1[i]]+posin12, gapshift );
 			for( i=0; i<ngroup2; i++ ) strncpy0( mseq2[i]+mlen2, seq[list2[i]]+posin12, gapshift );
 			posin12 += gapshift;
@@ -581,11 +593,13 @@ void insertnewgaps( int njob, int *alreadyaligned, char **seq, int *ex1, int *ex
 			for( i=0; i<ngroup2; i++ ) fprintf( stderr, "### mseq2[%d] = %s\n", i, mseq2[i] );
 #endif
 
-			if( gapshift ) 
+			if( gapshift ) //if gapshift != 0
 			{
 //				reporterr( "profilealignment (j=%d)!!!\n", j );
 
-				profilealignment( ngroup0, ngroup1, ngroup2, mseq0, mseq1, mseq2, alloclen, alg );
+				//aligns mseq0 and mseq2 based on alg type - M or A - and performs some other calculations before and after this.
+				//it also changes the values in mseq1 based on some conditions after the alignment call
+				profilealignment( ngroup0, ngroup1, ngroup2, mseq0, mseq1, mseq2, alloclen, alg ); //defined here.
 			}
 
 			j += gapshift;
@@ -598,7 +612,7 @@ void insertnewgaps( int njob, int *alreadyaligned, char **seq, int *ex1, int *ex
 
 //			fprintf( stderr, "gapshift = %d\n", gapshift );
 		}
-		blocklen = 1 + countnogaplen( gaplen+j+1, gaplen+len0 );
+		blocklen = 1 + countnogaplen( gaplen+j+1, gaplen+len0 ); //defined here. I think this counts the number of non-gap indices in gaplen.
 //		fprintf( stderr, "\nj=%d, blocklen=%d, len0=%d\n", j, blocklen, len0 );
 //		blocklen = 1;
 
@@ -1451,6 +1465,7 @@ void restorecommongapssmoothly( int njob, int n0, char **seq, int *ex1, int *ex2
 	free( tmpgapmap );
 }
 
+//update seq chars - gaps - based on gapmap values
 void restorecommongaps( int njob, int n0, char **seq, int *ex1, int *ex2, int *gapmap, int alloclen, char gapchar )
 {
 	int *mem;
@@ -1521,6 +1536,7 @@ void restorecommongaps( int njob, int n0, char **seq, int *ex1, int *ex2, int *g
 	free( tmpgapmap );
 }
 
+//update oseq, aseq and deletelist values based on oseq, aseq and other args conditions
 int deletenewinsertions_whole_eq( int on, int an, char **oseq, char **aseq, int **deletelist )
 {
 	int i, j, p, q, allgap, ndel;

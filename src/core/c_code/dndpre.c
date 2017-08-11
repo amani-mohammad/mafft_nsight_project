@@ -1,4 +1,4 @@
-//what is dnd? this files contains methods to deal with threads
+//what is dnd? this file contains methods to deal with threads
 #include "mltaln.h"
 
 #define TEST 0

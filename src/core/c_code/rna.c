@@ -96,7 +96,7 @@ static double pairedribosumscore35( int n1, int n2, char **s1, char **s2, double
 }
 #endif
 
-
+//fill pairprob with values based on single, sgapmap and eff values
 static void mccaskillextract( char **seq, char **nogap, int nseq, RNApair **pairprob, RNApair ***single, int **sgapmap, double *eff )
 {
 	int lgth;
@@ -181,7 +181,7 @@ static void mccaskillextract( char **seq, char **nogap, int nseq, RNApair **pair
 
 }
 
-
+//fill pairprob matrix with values resulted from rna ali fold command
 void rnaalifoldcall( char **seq, int nseq, RNApair **pairprob )
 {
 	int lgth;
@@ -198,7 +198,7 @@ void rnaalifoldcall( char **seq, int nseq, RNApair **pairprob )
 	static TLS int *pairnum;
 
 	lgth = strlen( seq[0] );
-	if( order == NULL )
+	if( order == NULL ) //fill name and order arrays
 	{
 		pid = (int)getpid();
 		sprintf( fnamein, "/tmp/_rnaalifoldin.%d", pid );
@@ -213,19 +213,19 @@ void rnaalifoldcall( char **seq, int nseq, RNApair **pairprob )
 	pairnum = calloc( lgth, sizeof( int ) );
 	for( i=0; i<lgth; i++ ) pairnum[i] = 0;
 
-	fp = fopen( fnamein, "w" );
+	fp = fopen( fnamein, "w" ); //open rnaalifoldin file which is in tmp directory
 	if( !fp )
 	{
 		fprintf( stderr, "Cannot open /tmp/_rnaalifoldin\n" );
 		exit( 1 );
 	}
-	clustalout_pointer( fp, nseq, lgth, seq, name, NULL, NULL, order, 15 );
+	clustalout_pointer( fp, nseq, lgth, seq, name, NULL, NULL, order, 15 ); //defined in io.c. write seq, name, namelen, mark and comment to fp file
 	fclose( fp );
 
-	sprintf( cmd, "RNAalifold -p %s", fnamein );
+	sprintf( cmd, "RNAalifold -p %s", fnamein ); //run rna ali fold command on data in rnaalifold file
 	system( cmd );
 
-	fp = fopen( "alifold.out", "r" );
+	fp = fopen( "alifold.out", "r" ); //open alifold out file for reading
 	if( !fp )
 	{
 		fprintf( stderr, "Cannot open /tmp/_rnaalifoldin\n" );
@@ -243,14 +243,14 @@ void rnaalifoldcall( char **seq, int nseq, RNApair **pairprob )
 
 	while( 1 )
 	{
-		fgets( gett, 999, fp );
+		fgets( gett, 999, fp ); //read line from alifold out file
 		if( gett[0] == '(' ) break;
 		if( gett[0] == '{' ) break;
 		if( gett[0] == '.' ) break;
 		if( gett[0] == ',' ) break;
 		if( gett[0] != ' ' ) continue;
 
-		sscanf( gett, "%d %d %d %lf", &left, &right, &dumm, &prob );
+		sscanf( gett, "%d %d %d %lf", &left, &right, &dumm, &prob ); //read these values from the line
 		left--;
 		right--;
 
@@ -282,7 +282,7 @@ void rnaalifoldcall( char **seq, int nseq, RNApair **pairprob )
 		}
 	}
 	fclose( fp );
-	sprintf( cmd, "rm -f %s", fnamein );
+	sprintf( cmd, "rm -f %s", fnamein ); //remove ali fold temp file
 	system( cmd ); 
 
 	for( i=0; i<lgth; i++ )
@@ -308,7 +308,7 @@ void rnaalifoldcall( char **seq, int nseq, RNApair **pairprob )
 	free( pairnum );
 }
 
-
+//convert each u in s to t
 static void utot( int n, int l, char **s )
 {
 	int i, j;
@@ -327,7 +327,7 @@ static void utot( int n, int l, char **s )
 	}
 }
 
-
+//fill impmtx with values based on results from rnaalifold command and map matrix resulted from Lalignmm_hmout
 void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, double *eff2, RNApair ***grouprna1, RNApair ***grouprna2, double **impmtx, int *gapmap1, int *gapmap2, RNApair *additionalpair )
 {
 	int i, j;
@@ -367,14 +367,18 @@ void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 	impmtx2 = AllocateFloatMtx( lgth1, lgth2 );
 	tbppmtx = AllocateFloatMtx( lgth1, lgth2 );
 
+	//copy seq1 and seq2 to useq1, useq2 and oseq1, oseq2
 	for( i=0; i<nseq1; i++ ) strcpy( useq1[i], seq1[i] );
 	for( i=0; i<nseq2; i++ ) strcpy( useq2[i], seq2[i] );
 	for( i=0; i<nseq1; i++ ) strcpy( oseq1[i], seq1[i] );
 	for( i=0; i<nseq2; i++ ) strcpy( oseq2[i], seq2[i] );
 
-	for( i=0; i<nseq1; i++ ) commongappick_record( 1, useq1+i, sgapmap1[i] );
-	for( i=0; i<nseq2; i++ ) commongappick_record( 1, useq2+i, sgapmap2[i] );
+	for( i=0; i<nseq1; i++ ) commongappick_record( 1, useq1+i, sgapmap1[i] ); //defined in mltaln9.c. //at end of this method, useq1+i contains all chars in useq1+i filled in sequentially without gaps and other remaining chars at the end
+	//also, sgapmap1[i] contains indices of chars in useq1+i
+	for( i=0; i<nseq2; i++ ) commongappick_record( 1, useq2+i, sgapmap2[i] ); //at end of this method, useq2+i contains all chars in useq2+i filled in sequentially without gaps and other remaining chars at the end
+	//also, sgapmap2[i] contains indices of chars in useq2+i
 
+	//initialize pairprob1 and pairprob2
 	for( i=0; i<lgth1; i++ )
 	{
 		pairprob1[i] = (RNApair *)calloc( 1, sizeof( RNApair ) );
@@ -388,17 +392,17 @@ void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 		pairprob2[i][0].bestscore = -1;
 	}
 
-	utot( nseq1, lgth1, oseq1 );
-	utot( nseq2, lgth2, oseq2 );
+	utot( nseq1, lgth1, oseq1 ); //defined here. convert each u in oseq1 to t
+	utot( nseq2, lgth2, oseq2 ); //defined here. convert each u in oseq2 to t
 
 //	fprintf( stderr, "folding group1\n" );
 //	rnalocal( oseq1, useq1, eff1, eff1, nseq1, nseq1, lgth1+10, pair1 );
 
 /* base-pairing probability of group 1 */
 	if( rnaprediction == 'r' )
-		rnaalifoldcall( oseq1, nseq1, pairprob1 );
+		rnaalifoldcall( oseq1, nseq1, pairprob1 ); //defined here. fill pairprob1 matrix with values resulted from rna ali fold command
 	else
-		mccaskillextract( oseq1, useq1, nseq1, pairprob1, grouprna1, sgapmap1, eff1 );
+		mccaskillextract( oseq1, useq1, nseq1, pairprob1, grouprna1, sgapmap1, eff1 ); //defined here. fill pairprob1 with values based on grouprna1, sgapmap1 and eff1 values
 
 
 //	fprintf( stderr, "folding group2\n" );
@@ -406,9 +410,9 @@ void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 
 /* base-pairing probability of group 2 */
 	if( rnaprediction == 'r' )
-		rnaalifoldcall( oseq2, nseq2, pairprob2 );
+		rnaalifoldcall( oseq2, nseq2, pairprob2 ); //defined here. fill pairprob2 matrix with values resulted from rna ali fold command
 	else
-		mccaskillextract( oseq2, useq2, nseq2, pairprob2, grouprna2, sgapmap2, eff2 );
+		mccaskillextract( oseq2, useq2, nseq2, pairprob2, grouprna2, sgapmap2, eff2 ); //defined here. fill pairprob2 with values based on grouprna2, sgapmap2 and eff2 values
 
 
 
@@ -426,7 +430,9 @@ void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 #endif
 
 /* similarity score */
-	Lalignmm_hmout( oseq1, oseq2, eff1, eff2, nseq1, nseq2, 10000, NULL, NULL, NULL, NULL, map );
+	//fill map array with values based on many complex calculations and operations on all other arguments, sepcially eff1 and eff2
+	//the value returned is = 0 - most probably -
+	Lalignmm_hmout( oseq1, oseq2, eff1, eff2, nseq1, nseq2, 10000, NULL, NULL, NULL, NULL, map ); //defined in Lalignmm.c.
 
 	if( 1 )
 	{
@@ -446,6 +452,7 @@ void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 
 /* four-way consistency */
 
+		//fill impmtx2 with values based on map, pairpt1->bestpos, pairpt2->bestpos, pairpt1->bestpos and pairpt2->bestpos values
 		for( i=0; i<lgth1; i++ ) for( pairpt1=pairprob1[i]; pairpt1->bestpos!=-1; pairpt1++ )
 		{
 
@@ -480,7 +487,7 @@ void foldrna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, doub
 
 			}
 		}
-		for( i=0; i<lgth1; i++ ) for( j=0; j<lgth2; j++ )
+		for( i=0; i<lgth1; i++ ) for( j=0; j<lgth2; j++ ) //fill impmtx with values from impmtx2
 		{
 			impmtx[i][j] += impmtx2[i][j];
 //			fprintf( stderr, "fastathreshold=%f, consweight_multi=%f, consweight_rna=%f\n", fastathreshold, consweight_multi, consweight_rna );

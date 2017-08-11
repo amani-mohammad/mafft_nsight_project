@@ -74,7 +74,7 @@ char seqcheck( char **seq )
 	}
 	return( 0 );
 }
-//concatenate two integers
+//concatenate two integers arrays
 void intcat( int *s1, int *s2 )
 {
 	while( *s1 != -1 ) s1++;
@@ -162,6 +162,7 @@ void exitall( char arr[] )
 	exit( 1 );
 }
 
+//displays seq chars to canvas
 void display( char **seq, int nseq )
 {
 	int i, imax;
@@ -1533,12 +1534,13 @@ static void loadtreeoneline( int *ar, double *len, FILE *fp )
 //	reporterr(       "len[0] = %f, len[1] = %f\n", len[0], len[1] );
 }
 
+//fill topol, len and dep based on values read from guidetree file and values in mtx
 void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, int *nlen, Treedep *dep )
 {
 	int i, j, k, minijm, maxijm;
 	int *intpt, *intpt2;
 	int *hist = NULL;
-	Bchain *ac = NULL;
+	Bchain *ac = NULL; //Bchain is a structure defined in mltaln.h.
 	int im = -1, jm = -1;
 	Bchain *acjmnext, *acjmprev;
 	int prevnode;
@@ -1555,7 +1557,7 @@ void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, i
 	double clusterdist;
 	int mpair, mi, mj;
 
-	fp = fopen( "_guidetree", "r" );
+	fp = fopen( "_guidetree", "r" ); //open _guidetree file for reading
 	if( !fp )
 	{
 		reporterr(       "cannot open _guidetree\n" );
@@ -1578,7 +1580,7 @@ void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, i
 	for( i=0; i<nseq; i++ )
 	{
 		for( j=0; j<999; j++ ) nametmp[j] = 0;
-		for( j=0; j<999; j++ ) 
+		for( j=0; j<999; j++ ) //copy name chars to nametmp
 		{
 			namec = name[i][j];
 			if( namec == 0 )
@@ -1603,7 +1605,7 @@ void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, i
 			reporterr(       "Cannot allocate tree!\n" );
 			exit( 1 );
 		}
-		sprintf( tree[i], "\n%d_%.900s\n", i+1, nameptr );
+		sprintf( tree[i], "\n%d_%.900s\n", i+1, nameptr ); //copy name in nameptr to tree
 	}
 
 
@@ -1645,7 +1647,7 @@ void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, i
 		}
 #else
 		len[k][0] = len[k][1] = -1.0;
-		loadtreeoneline( node, len[k], fp );
+		loadtreeoneline( node, len[k], fp ); //defiend here. read line from fp - which is a guide tree -, and fill node and len[k] with it
 		im = node[0];
 		jm = node[1];
 
@@ -1819,10 +1821,10 @@ void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, i
 
 
     }
-	fclose( fp );
-	fp = fopen( "infile.tree", "w" );
-		fprintf( fp, "%s\n", treetmp );
-		fprintf( fp, "#by loadtop\n" );
+	fclose( fp ); //close guidetree file
+	fp = fopen( "infile.tree", "w" ); //open infile.tree for writing
+	fprintf( fp, "%s\n", treetmp ); //write treetmp to it
+	fprintf( fp, "#by loadtop\n" );
 	fclose( fp );
 
 	FreeCharMtx( tree );
@@ -9007,6 +9009,8 @@ printf( "\n" );
 */
 }
 
+//at end of this method, seq[i] contains all chars in seq filled in sequentially without gaps and other remaining chars at the end
+//also, map contains indices of chars in seq
 void commongappick_record( int nseq, char **seq, int *map )
 {
 	int i, j, count;
@@ -9944,6 +9948,7 @@ void dontcalcimportance( int nseq, double *eff, char **seq, LocalHom **localhom 
 	free( nogaplen );
 }
 
+//update importance value of localhom items based on some calculations on opt value from localhom
 void dontcalcimportance_firstone( int nseq, double *eff, char **seq, LocalHom **localhom )
 {
 	int i, j, nseq1;
@@ -10444,6 +10449,7 @@ exit( 1 );
 	free( ieff );
 }
 
+//update localhom->importance based on other arguments values
 void calcimportance( int nseq, double *eff, char **seq, LocalHom **localhom )
 {
 	int i, j, pos, len;
@@ -12310,7 +12316,8 @@ double plainscore( int nseq, char **s )
 	return( v );
 }
 
-
+//update topolc, lenc, iscorec and addtree based on topol, dep, treeout, iadd, alnleninnode, nogaplen and noalign values and some conditions and calculations
+//and returns value called 'neighbor', which I think related to tree structure. It needs more detailed study
 int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int ***topol, double **len, Treedep *dep, int treeout, Addtree *addtree, int iadd, char **name, int *alnleninnode, int *nogaplen, int noalign )
 {
 	int i, j, mem0, mem1, posinnew, m;
@@ -12322,7 +12329,7 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 	int *leaf2node;
 	int *additionaltopol;
 //	double (*clusterfuncpt[1])(double,double);
-	Bchain *ac, *acpt, *acori, *acnext, *acprev;
+	Bchain *ac, *acpt, *acori, *acnext, *acprev; //structure defined in mltaln.h.
 	int neighbor;
 	char *neighborlist;
 	char *npt;
@@ -12507,14 +12514,14 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 
 				topolc[posinnew][0] = (int *)realloc( topolc[posinnew][0], ( ( countmem( topol[nearestnode][0] ) + countmem( topol[nearestnode][1] ) + 1 ) * sizeof( int ) ) );
 //				reporterr(       "leaf2node[%d] = %d\n", nearest, leaf2node[nearest] );
-				intcpy( topolc[posinnew][0], topol[nearestnode][0] );
-				intcat( topolc[posinnew][0], topol[nearestnode][1] );
+				intcpy( topolc[posinnew][0], topol[nearestnode][0] ); //defined here. copy integer topol[nearestnode][0] into topolc[posinnew][0]
+				intcat( topolc[posinnew][0], topol[nearestnode][1] ); //copy integer topol[nearestnode][1] into topolc[posinnew][0]
 //				addedlen = lenc[posinnew][0] = minscore / 2 - len[nearestnode][0]; // bug!!
 				addedlen = lenc[posinnew][0] = dep[i].distfromtip - minscore / 2; // 2014/06/10
 //				fprintf( stderr, "addedlen = %f, dep[i].distfromtip = %f, len[nearestnode][0] = %f, minscore/2 = %f, lenc[posinnew][0] = %f\n", addedlen, dep[i].distfromtip, len[nearestnode][0], minscore/2, lenc[posinnew][0] );
 
 			}
-			neighbor = lastmem( topolc[posinnew][0] );
+			neighbor = lastmem( topolc[posinnew][0] ); //defined here. get last character in topolc[posinnew][0]
 
 			if( treeout )
 			{
@@ -12625,8 +12632,8 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 		if( topol[i][0][0] == repnorg )
 		{
 			topolc[posinnew][0] = (int *)realloc( topolc[posinnew][0], ( countmem( topol[i][0] ) + 2 ) * sizeof( int ) );
-			intcpy( topolc[posinnew][0], topol[i][0] );
-			intcat( topolc[posinnew][0], additionaltopol );
+			intcpy( topolc[posinnew][0], topol[i][0] ); //defined here. copy integer topol[i][0] into topolc[posinnew][0]
+			intcat( topolc[posinnew][0], additionaltopol ); //defined here. concatenate two integers arrays
 			lenc[posinnew][0] = len[i][0] - addedlen; // 2014/6/10
 //			fprintf( stderr, "i=%d, dep[i].distfromtip=%f\n", i, dep[i].distfromtip );
 //			fprintf( stderr, "addedlen=%f, len[i][0]=%f, lenc[][0]=%f\n", addedlen, len[i][0], lenc[posinnew][0] );
@@ -12636,15 +12643,15 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 		else
 		{
 			topolc[posinnew][0] = (int *)realloc( topolc[posinnew][0], ( countmem( topol[i][0] ) + 1 ) * sizeof( int ) );
-			intcpy( topolc[posinnew][0], topol[i][0] );
+			intcpy( topolc[posinnew][0], topol[i][0] ); //defined here. copy integer topol[i][0] into topolc[posinnew][0]
 			lenc[posinnew][0] = len[i][0];
 		}
 
 		if( topol[i][1][0] == repnorg )
 		{
 			topolc[posinnew][1] = (int *)realloc( topolc[posinnew][1], ( countmem( topol[i][1] ) + 2 ) * sizeof( int ) );
-			intcpy( topolc[posinnew][1], topol[i][1] );
-			intcat( topolc[posinnew][1], additionaltopol );
+			intcpy( topolc[posinnew][1], topol[i][1] ); //defined here. copy integer topol[i][1] into topolc[posinnew][1]
+			intcat( topolc[posinnew][1], additionaltopol ); //defined here. concatenate two integers arrays
 			lenc[posinnew][1] = len[i][1] - addedlen; // 2014/6/10
 //			fprintf( stderr, "i=%d, dep[i].distfromtip=%f\n", i, dep[i].distfromtip );
 //			fprintf( stderr, "addedlen=%f, len[i][1]=%f, lenc[][1]=%f\n", addedlen, len[i][1], lenc[posinnew][1] );
@@ -12656,7 +12663,7 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 		else
 		{
 			topolc[posinnew][1] = (int *)realloc( topolc[posinnew][1], ( countmem( topol[i][1] ) + 1 ) * sizeof( int ) );
-			intcpy( topolc[posinnew][1], topol[i][1] );
+			intcpy( topolc[posinnew][1], topol[i][1] ); //defined here. copy integer topol[i][1] into topolc[posinnew][1]
 			lenc[posinnew][1] = len[i][1];
 		}
 
@@ -12715,8 +12722,8 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 //		intcpy( topolc[posinnew][0], topol[i][0] );
 //		intcat( topolc[posinnew][0], topol[i][1] );
 		topolc[posinnew][0] = (int *)realloc( topolc[posinnew][0], ( countmem( topolo0 ) + countmem( topolo1 ) + 1 ) * sizeof( int ) );
-		intcpy( topolc[posinnew][0], topolo0 );
-		intcat( topolc[posinnew][0], topolo1 );
+		intcpy( topolc[posinnew][0], topolo0 ); //defined here. copy integer topolo0 into topolc[posinnew][0]
+		intcat( topolc[posinnew][0], topolo1 ); //defined here. concatenate two integers arrays
 //		lenc[posinnew][0] = len[i][0] + len[i][1] - minscore / 2; // BUG!! 2014/06/07 ni hakken
 		if( nstep )
 			lenc[posinnew][0] = minscore / 2 - dep[nstep-1].distfromtip; // only when nstep>0, 2014/11/21
@@ -12727,7 +12734,7 @@ int addonetip( int njobc, int ***topolc, double **lenc, double **iscorec, int **
 //		reporterr( "lenc[][0] = %f\n", lenc[posinnew][0] );
 
 		topolc[posinnew][1] = (int *)realloc( topolc[posinnew][1],  2  * sizeof( int ) );
-		intcpy( topolc[posinnew][1], additionaltopol );
+		intcpy( topolc[posinnew][1], additionaltopol ); //defined here. copy integer additionaltopol into topolc[posinnew][1]
 		lenc[posinnew][1] = minscore / 2;
 
 //		neighbor = lastmem( topolc[posinnew][0] );
@@ -13252,6 +13259,7 @@ double sumofpairsscore( int nseq, char **seq )
 	return( v );
 }
 
+//return value based on table and pointt values comparison
 int commonsextet_p( int *table, int *pointt )
 {
 	int value = 0;

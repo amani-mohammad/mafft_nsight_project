@@ -30,9 +30,9 @@ void dndblastArguments( int argc, char *argv[] )
 {
 	int c;
 
-	inputfile = NULL;
-	disopt = 0;
-	divpairscore = 0;
+	inputfile = NULL; //defined in defs.h
+	disopt = 0; //defined in defs.h
+	divpairscore = 0; //defined in defs.h
 
     while( --argc > 0 && (*++argv)[0] == '-' )
 	{
@@ -76,11 +76,11 @@ int dndblast_main( int argc, char *argv[] )
 	char **seq1;
 	static char **name;
 	static char **name1;
-	static int nlen1[M];
+	static int nlen1[M]; //M is constant in mltaln.h and = 500,000
 	double **mtx;
 	double **mtx2;
 	static int nlen[M];
-	char b[B];
+	char b[B]; //B is constant in mltaln.h and = 256
 	double max;
 	char com[1000];
 	int opt[M];
@@ -90,8 +90,8 @@ int dndblast_main( int argc, char *argv[] )
 	char datafile[B];
 	char fastafile[B];
 	char hat2file[B];
-	int pid = (int)getpid();
-	LocalHom **localhomtable, *tmpptr;
+	int pid = (int)getpid(); //returns the process ID of the current process. (This is often used by routines that generate unique temporary filenames.)
+	LocalHom **localhomtable, *tmpptr; //LocalHom is a structure defined in mltaln.
 #if 1
 	home = getenv( "HOME" );
 #else /* $HOME wo tsukau to fasta ni watasu hikisuu ga afureru */ 
@@ -102,7 +102,7 @@ int dndblast_main( int argc, char *argv[] )
 	if( home ) fprintf( stderr, "home = %s\n", home );
 #endif
 	if( !home ) home = "";
-	sprintf( queryfile, "%s/tmp/query-%d", home, pid );
+	sprintf( queryfile, "%s/tmp/query-%d", home, pid ); //sprintf sends formatted output to first parameter string
 	sprintf( datafile, "%s/tmp/data-%d", home, pid );
 	sprintf( fastafile, "%s/tmp/fasta-%d", home, pid );
 	sprintf( hat2file, "hat2-%d", pid );
@@ -125,22 +125,24 @@ int dndblast_main( int argc, char *argv[] )
 	PreRead( infp, &njob, &nlenmax );
 #else
 	dorp = NOTSPECIFIED;
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. Finds sequences count, max length and dna or protein from input file
 #endif
 
 	if( dorp == 'd' )
 	{
-		scoremtx = -1;
-		pamN = NOTSPECIFIED;
+		scoremtx = -1; //defined in defs.h
+		pamN = NOTSPECIFIED; //defined in defs.h
 	}
 	else
 	{
-		nblosum = 62;
-		scoremtx = 1;
+		nblosum = 62; //defined in defs.h
+		scoremtx = 1; //defined in defs.h
 	}
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
-	rewind( infp );
+	rewind( infp ); //set the file position to the beginning of the infp
 
 	name = AllocateCharMtx( njob, B+1 );
 	name1 = AllocateCharMtx( njob, B+1 );
@@ -149,7 +151,7 @@ int dndblast_main( int argc, char *argv[] )
 	mtx = AllocateDoubleMtx( njob, njob );
 	mtx2 = AllocateDoubleMtx( njob, njob );
 	localhomtable = (LocalHom **)calloc( njob, sizeof( LocalHom *) );
-	for( i=0; i<njob; i++)
+	for( i=0; i<njob; i++) //initialize localhomtable
 	{
 		localhomtable[i] = (LocalHom *)calloc( njob, sizeof( LocalHom ) );
 		for( j=0; j<njob; j++) 
@@ -167,17 +169,17 @@ int dndblast_main( int argc, char *argv[] )
 #if 0
 	FRead( infp, name, nlen, seq );
 #else
-	readData_pointer( infp, name, nlen, seq );
+	readData_pointer( infp, name, nlen, seq ); //defined in io.c. It reads sequences and their names in seq, name and nlen arrays.
 #endif
 	fclose( infp );
 	
-	if( scoremtx == -1 ) ktuple = 6;
-	else                 ktuple = 1;
+	if( scoremtx == -1 ) ktuple = 6; //if DNA
+	else                 ktuple = 1; //if protein
 
 	for( i=0; i<njob; i++ )
 	{
-		gappick0( seq1[0], seq[i] ); 
-		strcpy( seq[i], seq1[0] );
+		gappick0( seq1[0], seq[i] ); //copy 'seq[i]' chars to 'seq1[0]' without gaps chars
+		strcpy( seq[i], seq1[0] ); //copy seq1[0] to seq[i]
 	}
 	for( j=0; j<njob; j++ )
 	{
@@ -185,44 +187,45 @@ int dndblast_main( int argc, char *argv[] )
 		nlen1[j] = nlen[j];
 	}
 
-	for( i=0; i<njob; i++ ) 
+	for( i=0; i<njob; i++ ) //here
 	{
 //		fprintf( stderr, "###  i = %d\n", i );
 
 		if( i % 10 == 0 )
 		{
 			fprintf( stderr, "formatting .. " );
-			hat2p = fopen( datafile, "w" );
-			if( !hat2p ) ErrorExit( "Cannot open datafile." );
-			WriteForFasta( hat2p, njob-i, name1+i, nlen1+i, seq+i );
+			hat2p = fopen( datafile, "w" ); //open data file
+			if( !hat2p ) ErrorExit( "Cannot open datafile." ); //ErrorExit defined in io.c. Print error message to stderr then exit.
+			WriteForFasta( hat2p, njob-i, name1+i, nlen1+i, seq+i ); //defined in io.c. Write njob-i sequences - names and chars - to data file
 			fclose( hat2p );
 		
-			if( scoremtx == -1 )
+			if( scoremtx == -1 ) //DNA
 				sprintf( com, "formatdb  -p f -i %s -o F", datafile );
-			else
+			else //protein
 				sprintf( com, "formatdb  -i %s -o F", datafile );
-			system( com );
+			system( com ); //execute 'com' command.
 			fprintf( stderr, "done.\n" );
 		}
 
-		hat2p = fopen( queryfile, "w" );
+		hat2p = fopen( queryfile, "w" ); //open query file
 		if( !hat2p ) ErrorExit( "Cannot open queryfile." );
-		WriteForFasta( hat2p, 1, name1+i, nlen+i, seq+i ); 
+		WriteForFasta( hat2p, 1, name1+i, nlen+i, seq+i ); //defined in io.c. Write one sequence - name and char - to query file
 		fclose( hat2p );
 
 
-		if( scoremtx == -1 )
+		if( scoremtx == -1 ) //DNA
 			sprintf( com, "blastall -e 1e10 -p blastn -m 7  -i %s -d %s >  %s", queryfile, datafile, fastafile );
-		else
+		else //protein
 			sprintf( com, "blastall -G 10 -E 1 -e 1e10 -p blastp -m 7  -i %s -d %s >  %s", queryfile, datafile, fastafile );
-		res = system( com );
+		res = system( com ); //execute 'com' command, which I think executes blast command.
 		if( res ) ErrorExit( "error in fasta" );
 
 
-		hat2p = fopen( fastafile, "r" );
+		hat2p = fopen( fastafile, "r" ); //open fasta file
 		if( hat2p == NULL ) 
 			ErrorExit( "file 'fasta.$$' does not exist\n" );
-		res = ReadBlastm7( hat2p, mtx[i], i, name1, localhomtable[i] );
+		res = ReadBlastm7( hat2p, mtx[i], i, name1, localhomtable[i] ); //defined in io.c.
+		//this method reads data from fasta file and get some values from it, then fill in localhomtable with values based on read data.
 		fclose( hat2p );
 
 #if 0
@@ -236,7 +239,7 @@ int dndblast_main( int argc, char *argv[] )
 		}
 #endif
 
-		if( res < njob-i+i%10 )
+		if( res < njob-i+i%10 ) //there is an error - missing sequences -
 		{
 			fprintf( stderr, "WARNING: count (blast) = %d < %d\n", res, njob-i+i%10 );
 		}
@@ -264,19 +267,20 @@ int dndblast_main( int argc, char *argv[] )
 		if( mtx[j][i] > mtx[i][j] ) continue;
 		for( tmpptr=localhomtable[i]+j; tmpptr; tmpptr=tmpptr->next )
 		{
-			if( tmpptr->opt == -1.0 ) continue;
+			if( tmpptr->opt == -1.0 ) continue; //go to next iteration
+			//write localhomtable data to hat3 file
 			fprintf( hat3p, "%d %d %d %6.3f %d %d %d %d %p\n", i, j, tmpptr->overlapaa, tmpptr->opt, tmpptr->start1, tmpptr->end1, tmpptr->start2, tmpptr->end2, (void *)tmpptr->next );
 		}
 	}
 	fclose( hat3p );
 #endif
 
-	for( i=0; i<njob; i++ ) 
+	for( i=0; i<njob; i++ )
 	{
 //		fprintf( stderr, "###  i = %d\n", i );
-		hat2p = fopen( datafile, "w" );
+		hat2p = fopen( datafile, "w" ); //open datafile for write
 		if( !hat2p ) ErrorExit( "Cannot open datafile." );
-		WriteForFasta( hat2p, njob-i, name1+i, nlen1+i, seq+i );
+		WriteForFasta( hat2p, njob-i, name1+i, nlen1+i, seq+i ); //defined in io.c. Write njob-i sequences - name and char - to data file
 		fclose( hat2p );
 
 //		seq1[0] = seq[i];
@@ -284,7 +288,7 @@ int dndblast_main( int argc, char *argv[] )
 
 		hat2p = fopen( queryfile, "w" );
 		if( !hat2p ) ErrorExit( "Cannot open queryfile." );
-		WriteForFasta( hat2p, 1, name1+i, nlen+i, seq+i ); 
+		WriteForFasta( hat2p, 1, name1+i, nlen+i, seq+i ); //defined in io.c. Write one sequence - name and char - to data file
 		fclose( hat2p );
 
 
@@ -292,14 +296,15 @@ int dndblast_main( int argc, char *argv[] )
 			sprintf( com, "fasta34 -z3 -m10  -n -Q  -b%d -E%d -d%d %s %s %d > %s", M, M, 0, queryfile, datafile, ktuple, fastafile );
 		else
 			sprintf( com, "fasta34 -z3 -m10  -Q  -b%d -E%d -d%d %s %s %d > %s", M, M, 0, queryfile, datafile, ktuple, fastafile );
-		res = system( com );
+		res = system( com ); //execute fasta34 command on query file, data file, ktuple and fasta file
 		if( res ) ErrorExit( "error in fasta" );
 
 
 		hat2p = fopen( fastafile, "r" );
 		if( hat2p == NULL ) 
 			ErrorExit( "file 'fasta.$$' does not exist\n" );
-		res = ReadFasta34noalign( hat2p, mtx[i], i, name1, localhomtable[i] );
+		res = ReadFasta34noalign( hat2p, mtx[i], i, name1, localhomtable[i] ); //defined in io.c.
+		//fill mtx[i] with values read from fasta file and returns count of sequences - i think - from the file
 		fclose( hat2p );
 		if( res < njob - i )
 		{
@@ -358,7 +363,7 @@ int dndblast_main( int argc, char *argv[] )
 
 	for( i=0; i<njob; i++ ) name[i][0] = '=';
 
-	if( disopt )
+	if( disopt ) //update name array content with some additional info
 	{
 		strcpy( b, name[0] );
 		sprintf( name[0], "=query====lgth=%04d-%04d %.*s", nlen[0], dndblast_howmanyx( seq[0] ), B-30, b );
@@ -375,13 +380,13 @@ int dndblast_main( int argc, char *argv[] )
 		}
 	}
 
-	hat2p = fopen( hat2file, "w" );
+	hat2p = fopen( hat2file, "w" ); //open hat2file for write
 	if( !hat2p ) ErrorExit( "Cannot open hat2." );
-	WriteHat2_pointer( hat2p, njob, name, mtx2 );
+	WriteHat2_pointer( hat2p, njob, name, mtx2 ); //defined in io.c. write number of sequences, max distance value and mtx values to hat2 file
 	fclose( hat2p );
 
 
-	sprintf( com, "/bin/rm %s %s %s", queryfile, datafile, fastafile );
+	sprintf( com, "/bin/rm %s %s %s", queryfile, datafile, fastafile ); //remove temporary files
 	system( com );
 
 #if 0
@@ -390,9 +395,12 @@ int dndblast_main( int argc, char *argv[] )
 	if( res ) ErrorExit( "error in spgsdl" );
 #endif
 
-	sprintf( com, "mv %s hat2", hat2file );
+	sprintf( com, "mv %s hat2", hat2file ); //copy hat2 file
 	res = system( com );
 	if( res ) ErrorExit( "error in mv" );
+
+	//so this file reads input file sequences, then apply blast and fasta programs on them and calculate distance between each sequence and the others.
+	//then write this data in hat2 and hat3 files
 
 	SHOWVERSION;
 	exit( 0 );

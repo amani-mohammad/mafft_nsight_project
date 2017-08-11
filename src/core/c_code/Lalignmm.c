@@ -54,7 +54,7 @@ static void match_ribosum( double *match, double **cpmx1, double **cpmx2, int i1
 			scarr[l] += ribosumdis[k][l] * cpmx1[i1][k];
 		}
 	}
-#if 0 /* これを使うときはdoubleworkのアロケートを逆にする */
+#if 0 /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申doublework鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 	{
 		double *fpt, **fptpt, *fpt2;
 		int *ipt, **iptpt;
@@ -92,6 +92,7 @@ static void match_ribosum( double *match, double **cpmx1, double **cpmx2, int i1
 #endif
 }
 
+//fill match based on n_dis and cpmx1 values and also doublework and intwork values - which are updated based on cpmx2 if initialize = 1 -
 static void match_calc( double *match, double **cpmx1, double **cpmx2, int i1, int lgth2, double **doublework, int **intwork, int initialize )
 {
 	int j, k, l;
@@ -124,15 +125,15 @@ static void match_calc( double *match, double **cpmx1, double **cpmx2, int i1, i
 		}
 	}
 
-	for( l=0; l<nalphabets; l++ )
+	for( l=0; l<nalphabets; l++ ) //nalphabets defined in defs.c and = 26.
 	{
 		scarr[l] = 0.0;
 		for( k=0; k<nalphabets; k++ )
 		{
-			scarr[l] += (n_dis[k][l]-RNAthr) * cpmx1[i1][k];
+			scarr[l] += (n_dis[k][l]-RNAthr) * cpmx1[i1][k]; //n_dis and RNAthr are defined in defs.h.
 		}
 	}
-#if 0 /* これを使うときはdoubleworkのアロケートを逆にする */
+#if 0 /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申doublework鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 	{
 		double *fpt, **fptpt, *fpt2;
 		int *ipt, **iptpt;
@@ -211,7 +212,7 @@ static void match_add( double *match, double **cpmx1, double **cpmx2, int i1, in
 			scarr[l] += n_dis[k][l] * cpmx1[i1][k];
 		}
 	}
-#if 0 /* これを使うときはdoubleworkのアロケートを逆にする */
+#if 0 /* 鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申doublework鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申鐃緒申 */
 	{
 		double *fpt, **fptpt, *fpt2;
 		int *ipt, **iptpt;
@@ -1244,6 +1245,10 @@ static double MSalign2m2m_rec( int icyc, int jcyc, double *eff1, double *eff2, c
 	return( value );
 
 }
+
+//fill map array with values based on many complex calculations and operations on all other arguments, sepcially cpmx1 and cpmx2
+//note: eff1, eff2 and alloclen is not used in the method, and depth is only incremented by one
+//also the value returned is = 0 - most probably -
 static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, char **seq1, char **seq2, double **cpmx1, double **cpmx2, int ist, int ien, int jst, int jen, int alloclen, char **mseq1, char **mseq2, int depth, double **gapinfo, double **map )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -1312,7 +1317,7 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 	fgcp2 = gapinfo[3] + jst;
 
 	depth++;
-	reccycle++;
+	reccycle++; //defined here.
 
 	lgth1 = ien-ist+1;
 	lgth2 = jen-jst+1;
@@ -1338,14 +1343,14 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 //		exit( 1 );
 		for( i=0; i<icyc; i++ ) 
 		{
-			strncpy( mseq1[i], seq1[i]+ist, lgth1 );
+			strncpy( mseq1[i], seq1[i]+ist, lgth1 ); //copy lgth1 chars from seq1[i]+ist to mseq1[i]
 			mseq1[i][lgth1] = 0;
 		}
 		for( i=0; i<jcyc; i++ ) 
 		{
 			mseq2[i][0] = 0;
 			for( j=0; j<lgth1; j++ )
-				strcat( mseq2[i], "-" );
+				strcat( mseq2[i], "-" ); //append '-' to the end of mseq2[i]
 		}
 
 //		fprintf( stderr, "==== mseq1[0] (%d) = %s\n", depth, mseq1[0] );
@@ -1366,7 +1371,7 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 
 //  if( lgth1 < DPTANNI && lgth2 < DPTANNI ) // & dato lgth ==1 no kanousei ga arunode yokunai 
 //    if( lgth1 < DPTANNI ) // kore mo lgth2 ga mijikasugiru kanousei ari
-    if( lgth1 < DPTANNI || lgth2 < DPTANNI ) // zettai ni anzen ka?
+    if( lgth1 < DPTANNI || lgth2 < DPTANNI ) // zettai ni anzen ka?    //DPTANNI defined here and = 10.
 	{
 //		fprintf( stderr, "==== Going to _tanni\n" );
 
@@ -1386,11 +1391,11 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 
 //		fprintf( stderr, "value = %f\n", value );
 
-		return( value );
+		return( value ); //value = 0
 	}
 //	fprintf( stderr, "Trying to divide the mtx\n" );
 
-	ll1 = ( (int)(lgth1) ) + 100;
+	ll1 = ( (int)(lgth1) ) + 100; //I need to understand this 100 that is added to each sequence length
 	ll2 = ( (int)(lgth2) ) + 100;
 
 //	fprintf( stderr, "ll1,ll2=%d,%d\n", ll1, ll2 );
@@ -1439,10 +1444,13 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 	currentw = w1;
 	previousw = w2;
 
-	match_calc( initverticalw, cpmx2+jst, cpmx1+ist, 0, lgth1, doublework, intwork, 1 );
+	//fill initverticalw based on n_dis and cpmx2+jst values and also doublework and intwork values - which are updated based on cpmx1+ist if initialize = 1 -
+	match_calc( initverticalw, cpmx2+jst, cpmx1+ist, 0, lgth1, doublework, intwork, 1 ); //defined here.
 
+	//fill currentw based on n_dis and cpmx1+ist values and also doublework and intwork values - which are updated based on cpmx2+jst if initialize = 1 -
 	match_calc( currentw, cpmx1+ist, cpmx2+jst, 0, lgth2, doublework, intwork, 1 );
 
+	//then update initverticalw and currentw values based on ogcp1, fgcp1, ogcp2 and fgcp2
 	for( i=1; i<lgth1+1; i++ )
 	{
 		initverticalw[i] += ( ogcp1[0] + fgcp1[i-1] );
@@ -1452,7 +1460,7 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 		currentw[j] += ( ogcp2[0] + fgcp2[j-1] );
 	}
 
-#if STOREWM
+#if STOREWM //fill WMMTX from initverticalw and currentw values
 	WMMTX[0][0] = initverticalw[0];
 	for( i=1; i<lgth1+1; i++ )
 	{
@@ -1465,7 +1473,7 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 #endif
 
 
-	for( j=1; j<lgth2+1; ++j ) 
+	for( j=1; j<lgth2+1; ++j ) //fille m and mp
 	{
 		m[j] = currentw[j-1] + ogcp1[1];
 //		m[j] = currentw[j-1];
@@ -1484,13 +1492,15 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 	for( i=1; i<=imid; i++ )
 #endif
 	{
+		//swap previousw and currentw
 		wtmp = previousw; 
 		previousw = currentw;
 		currentw = wtmp;
 
 		previousw[0] = initverticalw[i-1];
 
-		match_calc( currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 );
+		//fill currentw based on n_dis and cpmx1+ist values and also doublework and intwork values - which are updated based on cpmx2+jst if initialize = 1 -
+		match_calc( currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 ); //defined here.
 		currentw[0] = initverticalw[i];
 
 		m[0] = ogcp1[i];
@@ -1641,7 +1651,9 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 
 // gyakudp
 
-	match_calc( initverticalw, cpmx2+jst, cpmx1+ist, lgth2-1, lgth1, doublework, intwork, 1 );
+	//fill initverticalw based on n_dis and cpmx2+jst values and also doublework and intwork values - which are updated based on cpmx1+ist if initialize = 1 -
+	match_calc( initverticalw, cpmx2+jst, cpmx1+ist, lgth2-1, lgth1, doublework, intwork, 1 ); //defined here.
+	//fill currentw based on n_dis and cpmx1+ist values and also doublework and intwork values - which are updated based on cpmx2+jst if initialize = 1 -
 	match_calc( currentw, cpmx1+ist, cpmx2+jst, lgth1-1, lgth2, doublework, intwork, 1 );
 
 	for( i=0; i<lgth1-1; i++ )
@@ -1687,14 +1699,15 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 //	for( i=lgth1-2; i>=imid; i-- )
 	firstm = -9999999.9;
 	firstmp = lgth1-1;
-	for( i=lgth1-2; i>-1; i-- )
+	for( i=lgth1-2; i>-1; i-- ) //may be this is the reverse matching loop, and the previous one was the forward one
 	{
 		wtmp = previousw;
 		previousw = currentw;
 		currentw = wtmp;
 		previousw[lgth2-1] = initverticalw[i+1];
 //		match_calc( currentw, seq1, seq2, i, lgth2 );
-		match_calc( currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 );
+		//fill currentw based on n_dis and cpmx1+ist values and also doublework and intwork values - which are updated based on cpmx2+jst if initialize = 1 -
+		match_calc( currentw, cpmx1+ist, cpmx2+jst, i, lgth2, doublework, intwork, 0 ); //defined here.
 
 		currentw[lgth2-1] = initverticalw[i];
 
@@ -2153,11 +2166,12 @@ static double MSalignmm_rec( int icyc, int jcyc, double *eff1, double *eff2, cha
 	FreeCharMtx( aseq2 );
 #endif
 	
-	return( value );
+	return( value ); //this value is not changed in the whole method
 }
 
 
-
+//fill map array with values based on many complex calculations and operations on all other arguments, sepcially eff1 and eff2
+//the value returned is = 0 - most probably -
 double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int icyc, int jcyc, int alloclen, char *sgap1, char *sgap2, char *egap1, char *egap2, double **map )
 /* score no keisan no sai motokaraaru gap no atukai ni mondai ga aru */
 {
@@ -2177,7 +2191,7 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 	double **cpmx2;
 	double **gapinfo;
 //	double fpenalty;
-	double fpenalty = (double)RNApenalty;
+	double fpenalty = (double)RNApenalty; //RNApenalty defined in defs.h.
 	int nglen1, nglen2;
 
 
@@ -2189,8 +2203,8 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 	for( i=0; i<icyc; i++ ) fprintf( stderr, "eff1[%d] = %f\n", i, eff1[i] );
 #endif
 
-	nglen1 = seqlen( seq1[0] );
-	nglen2 = seqlen( seq2[0] );
+	nglen1 = seqlen( seq1[0] ); //defined in mltaln9.c. this method returns the count of chars in seq1[0] without gaps (both - or any other defined gap char)
+	nglen2 = seqlen( seq2[0] ); //this method returns the count of chars in seq2s[0] without gaps (both - or any other defined gap char)
 
 	lgth1 = strlen( seq1[0] );
 	lgth2 = strlen( seq2[0] );
@@ -2211,6 +2225,7 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 	cpmx1 = AllocateFloatMtx( ll1+2, nalphabets+1 );
 	cpmx2 = AllocateFloatMtx( ll2+2, nalphabets+1 );
 
+	//these two loops confirms that the sequences are aligned and have the same length
 	for( i=0; i<icyc; i++ ) 
 	{
 		if( strlen( seq1[i] ) != lgth1 )
@@ -2230,28 +2245,28 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 		}
 	}
 
-	MScpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc );
-	MScpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc );
+	MScpmx_calc_new( seq1, cpmx1, eff1, lgth1, icyc ); //defined in tddis.c. fill cpmx1 with values from eff1 based on chars in seq1 and amino_n indices
+	MScpmx_calc_new( seq2, cpmx2, eff2, lgth2, jcyc ); //fill cpmx2 with values from eff2 based on chars in seq2 and amino_n indices
 
 
 #if 1
 
 	if( sgap1 )
 	{
-		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 );
-		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 );
-		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap2 );
-		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 );
+		new_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1, sgap1 ); //defined in mltaln9.c. fill ogcp1 array with values based on some calcs.
+		new_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2, sgap2 ); //fill ogcp2 array with values based on some calcs.
+		new_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1, egap2 ); //defined in mltaln9.c. fills fgcp1 based on some calcs on other arguments
+		new_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2, egap2 ); //fills fgcp2 based on some calcs on other arguments
 	}
 	else
 	{
-		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 );
-		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 );
-		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 );
-		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 );
+		st_OpeningGapCount( ogcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fills ogcp1 with values based on calcs on other args.
+		st_OpeningGapCount( ogcp2, jcyc, seq2, eff2, lgth2 ); //fills ogcp2 with values based on calcs on other args.
+		st_FinalGapCount( fgcp1, icyc, seq1, eff1, lgth1 ); //defined in mltaln9.c. fill fgcp1 based on calcs on other params
+		st_FinalGapCount( fgcp2, jcyc, seq2, eff2, lgth2 ); //fill fgcp2 based on calcs on other params
 	}
 
-#if 1
+#if 1 //these two loops modifies the values in ogcp1 and fgcp1 based on fpenalty value and some calculations on it.
 	for( i=0; i<lgth1; i++ ) 
 	{
 		ogcp1[i] = 0.5 * ( 1.0 - ogcp1[i] ) * fpenalty;
@@ -2277,6 +2292,7 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 	}
 #endif
 
+	//save all gap info in gapinfo
 	gapinfo[0] = ogcp1;
 	gapinfo[1] = fgcp1;
 	gapinfo[2] = ogcp2;
@@ -2298,7 +2314,10 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 	fflush( stdout );
 #endif
 
-	wm = MSalignmm_rec( icyc, jcyc, eff1, eff2, seq1, seq2, cpmx1, cpmx2, 0, lgth1-1, 0, lgth2-1, alloclen, mseq1, mseq2, 0, gapinfo, map );
+	//fill map array with values based on many complex calculations and operations on all other arguments, sepcially cpmx1 and cpmx2
+	//note: eff1, eff2 and alloclen is not used in the method, and depth - which is passed as 0 - is only incremented by one
+	//also the value returned is = 0 - most probably -
+	wm = MSalignmm_rec( icyc, jcyc, eff1, eff2, seq1, seq2, cpmx1, cpmx2, 0, lgth1-1, 0, lgth2-1, alloclen, mseq1, mseq2, 0, gapinfo, map ); //defined here.
 #if DEBUG
 		fprintf( stderr, " seq1[0] = %s\n", seq1[0] );
 		fprintf( stderr, " seq2[0] = %s\n", seq2[0] );
@@ -2339,6 +2358,8 @@ double Lalignmm_hmout( char **seq1, char **seq2, double *eff1, double *eff2, int
 
 	lgth1 = strlen( seq1[0] );
 	lgth2 = strlen( seq2[0] );
+
+	//these two loops confirms that the sequences are aligned and have the same length
 	for( i=0; i<icyc; i++ ) 
 	{
 		if( strlen( seq1[i] ) != lgth1 )

@@ -210,6 +210,8 @@ void cpmx_calc_new( char **seq, double **cpmx, double *eff, int lgth, int clus )
 		}
 	}
 }
+
+//fill cpmx with values from eff based on chars in seq and amino_n indices
 void MScpmx_calc_new( char **seq, double **cpmx, double *eff, int lgth, int clus ) // summ eff must be 1.0
 {
 	int  i, j, k;
@@ -222,7 +224,7 @@ void MScpmx_calc_new( char **seq, double **cpmx, double *eff, int lgth, int clus
 	while( j-- )
 	{
 		cpmxpt = *cpmxptpt++;
-		i = nalphabets;
+		i = nalphabets; //nalphabets defined in defs.c and = 26.
 		while( i-- )
 			*cpmxpt++ = 0.0;
 	}
@@ -1000,6 +1002,8 @@ int msshrinklocalhom_fast( int *memlist1, int *memlist2, LocalHom **localhom, Lo
 	}
 	return( 0 );
 }
+
+//fill localhomshrink with values based on localhom values and other args
 int fastshrinklocalhom_one( int *mem1, int *mem2, int norg, LocalHom **localhom, LocalHom ***localhomshrink )
 {
 	int k1, k2;
@@ -1024,6 +1028,7 @@ int fastshrinklocalhom_one( int *mem1, int *mem2, int norg, LocalHom **localhom,
 	return( 0 );
 }
 
+//fill localhomshrink with values based on localhom values and other args
 int fastshrinklocalhom( int *mem1, int *mem2, LocalHom **localhom, LocalHom ***localhomshrink )
 {
 	int k1, k2;

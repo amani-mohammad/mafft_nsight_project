@@ -1652,8 +1652,9 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
 
 
-
-
+//this method aligns seq1 and seq2 based on FFT and algorithm selected
+//it is nearly identical to Falign except some small details about the algorithm calculations, and also it supports only M algorithm
+//unlike Falign which supports  a, M, d and A
 
 /*
 sakujo wo kentou (2010/10/05)
@@ -1683,15 +1684,15 @@ double Falign_udpari_long(
 	static TLS char **rndseq1 = NULL;
 	static TLS char **rndseq2 = NULL;
 #endif
-	static TLS Fukusosuu **seqVector1 = NULL;
+	static TLS Fukusosuu **seqVector1 = NULL; //Fukusosuu is a structure defined in mltaln.h. It means complex number.
 	static TLS Fukusosuu **seqVector2 = NULL;
-	static TLS Fukusosuu **naiseki = NULL;   
-	static TLS Fukusosuu *naisekiNoWa = NULL; 
+	static TLS Fukusosuu **naiseki = NULL; //naiseki = inner product
+	static TLS Fukusosuu *naisekiNoWa = NULL; //naisekiNoWa = sum of inner products
 	static TLS double *soukan = NULL;
 	static TLS double **crossscore = NULL;
 	int nlentmp;
 	static TLS int *kouho = NULL;
-	static TLS Segment *segment = NULL;
+	static TLS Segment *segment = NULL; //Segment is a structure defined in mltaln.h
 	static TLS Segment *segment1 = NULL;
 	static TLS Segment *segment2 = NULL;
 	static TLS Segment **sortedseg1 = NULL;
@@ -1710,7 +1711,7 @@ double Falign_udpari_long(
 	int headgp, tailgp;
 //	double dumfl = 0.0;
 
-	if( seq1 == NULL )
+	if( seq1 == NULL ) //I think this if condition frees all allocated memory that was reserved in previous calls to Falign_udpari_long
 	{
 		if( result1 ) 
 		{
@@ -1769,10 +1770,10 @@ double Falign_udpari_long(
 
 	len1 = strlen( seq1[0] );
 	len2 = strlen( seq2[0] );
-	nlentmp = MAX( len1, len2 );
+	nlentmp = MAX( len1, len2 ); //max length between first two sequences in the sequences matrix
 
 	nlen = 1;
-	while( nlentmp >= nlen ) nlen <<= 1;
+	while( nlentmp >= nlen ) nlen <<= 1; //<<= is bitwise left shift
 #if 0
 	fprintf( stderr, "###   nlen    = %d\n", nlen );
 #endif
@@ -1801,14 +1802,14 @@ double Falign_udpari_long(
 		prevalloclen = alloclen;
 	}
 
-	if( !localalloclen )
+	if( !localalloclen ) //if localalloclen == 0
 	{
 		sgap1 = AllocateCharVec( njob );
 		egap1 = AllocateCharVec( njob );
 		sgap2 = AllocateCharVec( njob );
 		egap2 = AllocateCharVec( njob );
-		kouho = AllocateIntVec( NKOUHO_LONG );
-		cut1 = AllocateIntVec( MAXSEG );
+		kouho = AllocateIntVec( NKOUHO_LONG ); //NKOUHO_LONG is an int constant defined in fft.h and = 500
+		cut1 = AllocateIntVec( MAXSEG ); //MAXSEG is a constant defined in mltaln.h and = 100,000
 		cut2 = AllocateIntVec( MAXSEG );
 		tmpptr1 = AllocateCharMtx( njob, 0 );
 		tmpptr2 = AllocateCharMtx( njob, 0 );
@@ -1820,18 +1821,18 @@ double Falign_udpari_long(
 		if( !( segment && segment1 && segment2 && sortedseg1 && sortedseg2 ) )
 			ErrorExit( "Allocation error\n" );
 
-		if     ( scoremtx == -1 ) n20or4or2 = 1;
-		else if( fftscore )       n20or4or2 = 1;
+		if     ( scoremtx == -1 ) n20or4or2 = 1; //scoremtx is defined in defs.h and set as default to 1 or from argument value
+		else if( fftscore )       n20or4or2 = 1; //n20or4or2 defined here and fftscore defined in defs.h and its default is 1, else 0
 		else                      n20or4or2 = 20;
 	}
 	if( localalloclen < nlen )
 	{
-		if( localalloclen )
+		if( localalloclen ) //if localalloclen != 0
 		{
 #if 1
-			if( !kobetsubunkatsu )
+			if( !kobetsubunkatsu ) //if kobetsubunkatsu == 0 //kobetsubunkatsu defined in defs.h. It is set in pairlocalalign to 0
 			{
-				FreeFukusosuuMtx ( seqVector1 );
+				FreeFukusosuuMtx ( seqVector1 ); //FreeFukusosuuMtx defined in fftFunctions.c
 				FreeFukusosuuMtx ( seqVector2 );
 				FreeFukusosuuVec( naisekiNoWa );
 				FreeFukusosuuMtx( naiseki );
@@ -1849,9 +1850,9 @@ double Falign_udpari_long(
 
 		tmpseq1 = AllocateCharMtx( njob, nlen );
 		tmpseq2 = AllocateCharMtx( njob, nlen );
-		if( !kobetsubunkatsu )
+		if( !kobetsubunkatsu ) //if kobetsubunkatsu == 0
 		{
-			naisekiNoWa = AllocateFukusosuuVec( nlen );
+			naisekiNoWa = AllocateFukusosuuVec( nlen ); //defined in fftFunctions.c
 			naiseki = AllocateFukusosuuMtx( n20or4or2, nlen );
 			seqVector1 = AllocateFukusosuuMtx( n20or4or2, nlen+1 );
 			seqVector2 = AllocateFukusosuuMtx( n20or4or2, nlen+1 );
@@ -1869,8 +1870,8 @@ double Falign_udpari_long(
 		localalloclen = nlen;
 	}
 	
-	for( j=0; j<clus1; j++ ) strcpy( tmpseq1[j], seq1[j] );
-	for( j=0; j<clus2; j++ ) strcpy( tmpseq2[j], seq2[j] );
+	for( j=0; j<clus1; j++ ) strcpy( tmpseq1[j], seq1[j] ); //clus1 in parilocalalign is set to 1
+	for( j=0; j<clus2; j++ ) strcpy( tmpseq2[j], seq2[j] ); //clus2 in parilocalalign is set to 1
 
 #if 0
 fftfp = fopen( "input_of_Falign", "w" );
@@ -1884,15 +1885,15 @@ for( i=0; i<clus2; i++ )
 fclose( fftfp );
 system( "less input_of_Falign < /dev/tty > /dev/tty" );
 #endif
-	if( !kobetsubunkatsu )
+	if( !kobetsubunkatsu ) //if kobetsubunkatsu == 0
 	{
 		fprintf( stderr,  " FFT ... " );
 
-		for( j=0; j<n20or4or2; j++ ) vec_init( seqVector1[j], nlen );
-		if( scoremtx == -1 )
+		for( j=0; j<n20or4or2; j++ ) vec_init( seqVector1[j], nlen ); //vec_init defined here. it initializes seqVector1[j]
+		if( scoremtx == -1 ) //scoremtx is defined in defs.h and set as default to 1 or from argument value
 		{
 			for( i=0; i<clus1; i++ )
-				seq_vec_4( seqVector1[0], eff1[i], tmpseq1[i] );
+				seq_vec_4( seqVector1[0], eff1[i], tmpseq1[i] ); //defined here. fills seqVector1[0] based on other params values
 		}
 		else if( fftscore )
 		{
@@ -1902,14 +1903,14 @@ system( "less input_of_Falign < /dev/tty > /dev/tty" );
 				seq_vec_2( seqVector1[0], polarity, eff1[i], tmpseq1[i] );
 				seq_vec_2( seqVector1[1], volume,   eff1[i], tmpseq1[i] );
 #else
-				seq_vec_5( seqVector1[0], polarity, volume, eff1[i], tmpseq1[i] );
+				seq_vec_5( seqVector1[0], polarity, volume, eff1[i], tmpseq1[i] ); //defined here. fills seqVector1[0] based on other params values
 #endif
 			}
 		}
 		else
 		{
 			for( i=0; i<clus1; i++ )
-				seq_vec_3( seqVector1, eff1[i], tmpseq1[i] );
+				seq_vec_3( seqVector1, eff1[i], tmpseq1[i] ); //defined here. fill seqVector1 based on eff1[i] and tmpseq1[i] values
 		}
 #if RND
 		for( i=0; i<clus1; i++ )
@@ -1931,11 +1932,11 @@ fclose( fftfp );
 system( "less seqVec < /dev/tty > /dev/tty" );
 #endif
 
-		for( j=0; j<n20or4or2; j++ ) vec_init( seqVector2[j], nlen );
-		if( scoremtx == -1 )
+		for( j=0; j<n20or4or2; j++ ) vec_init( seqVector2[j], nlen ); //vec_init defined here. it initializes seqVector2[j]
+		if( scoremtx == -1 ) //scoremtx is defined in defs.h and set as default to 1 or from argument value
 		{
 			for( i=0; i<clus2; i++ )
-				seq_vec_4( seqVector2[0], eff2[i], tmpseq2[i] );
+				seq_vec_4( seqVector2[0], eff2[i], tmpseq2[i] ); //defined here. fills seqVector2[0] based on other params values
 		}
 		else if( fftscore )
 		{
@@ -1945,14 +1946,14 @@ system( "less seqVec < /dev/tty > /dev/tty" );
 				seq_vec_2( seqVector2[0], polarity, eff2[i], tmpseq2[i] );
 				seq_vec_2( seqVector2[1], volume,   eff2[i], tmpseq2[i] );
 #else
-				seq_vec_5( seqVector2[0], polarity, volume, eff2[i], tmpseq2[i] );
+				seq_vec_5( seqVector2[0], polarity, volume, eff2[i], tmpseq2[i] ); //defined here. fills seqVector2[0] based on other params values
 #endif
 			}
 		}
 		else
 		{
 			for( i=0; i<clus2; i++ )
-				seq_vec_3( seqVector2, eff2[i], tmpseq2[i] );
+				seq_vec_3( seqVector2, eff2[i], tmpseq2[i] ); //defined here. fill seqVector2 based on eff2[i] and tmpseq2[i] values
 		}
 #if RND
 		for( i=0; i<clus2; i++ )
@@ -1976,8 +1977,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
 		for( j=0; j<n20or4or2; j++ )
 		{
-			fft( nlen, seqVector2[j], 0 );
-			fft( nlen, seqVector1[j], 0 );
+			fft( nlen, seqVector2[j], 0 ); //defined in fft.c.
+			fft( nlen, seqVector1[j], 0 ); //apply FFT on seqVector1[j] and seqVector2[j]
 		}
 #if 0
 fftfp = fopen( "seqVec2", "w" );
@@ -1995,7 +1996,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		for( k=0; k<n20or4or2; k++ ) 
 		{
 			for( l=0; l<nlen; l++ ) 
-				calcNaiseki( naiseki[k]+l, seqVector1[k]+l, seqVector2[k]+l );
+				calcNaiseki( naiseki[k]+l, seqVector1[k]+l, seqVector2[k]+l ); //defined in fftFunctions.c.
+				//calculates the inner product of two complex numbers: seqVector1[k]+l and seqVector2[k]+l in naiseki[k]+l
 		}
 		for( l=0; l<nlen; l++ ) 
 		{
@@ -2006,7 +2008,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 				naisekiNoWa[l].R += naiseki[k][l].R;
 				naisekiNoWa[l].I += naiseki[k][l].I;
 			}
-		}
+		} //save sum of inner products in naiseki into naisekiNoWa
 	
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -2017,8 +2019,9 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	system( "less naisekiNoWa < /dev/tty > /dev/tty " );
 #endif
 
-		fft( -nlen, naisekiNoWa, 0 );
+		fft( -nlen, naisekiNoWa, 0 ); //this call works on the inverse version. it calculates FFT for naisekiNoWa
 	
+		//these two loops fill in soukan. but I need to know what is soukan ?!!
 		for( m=0; m<=nlen2; m++ ) 
 			soukan[m] = naisekiNoWa[nlen2-m].R;
 		for( m=nlen2+1; m<nlen; m++ ) 
@@ -2048,7 +2051,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
 
-		nkouho = getKouho( kouho, NKOUHO_LONG, soukan, nlen );
+		nkouho = getKouho( kouho, NKOUHO_LONG, soukan, nlen ); //defined in fftFunctions.c //kouho = candidate (may be)
+		//I think this method finds the max value from soukan array and its index. //soukan = correlation (may be)
 
 #if 0
 		for( i=0; i<nkouho; i++ )
@@ -2083,9 +2087,9 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	for( k=0; k<maxk; k++ ) 
 	{
 		lag = kouho[k];
-		if( lag <= -len1 || len2 <= lag ) continue;
+		if( lag <= -len1 || len2 <= lag ) continue; //go to next iteration
 //		fprintf( stderr, "k=%d, lag=%d\n", k, lag );
-		zurasu2( lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2 );
+		zurasu2( lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2 ); //defined in fftFunctions. copy seq1 and seq2 to tmpptr1 and tmpptr2 based on lag value
 #if CAND
 		fftfp = fopen( "cand", "a" );
 		fprintf( fftfp, ">Candidate No.%d lag = %d\n", k+1, lag );
@@ -2097,7 +2101,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
 //		fprintf( stderr, "lag = %d\n", lag );
-		tmpint = alignableReagion( clus1, clus2, tmpptr1, tmpptr2, eff1, eff2, segment+count );
+		tmpint = alignableReagion( clus1, clus2, tmpptr1, tmpptr2, eff1, eff2, segment+count ); //defined in fftFunctions.
+		//I think this method extracts alignable region between tmpptr1 and tmpptr2. and return number of alignable segments - may be -
 //		fprintf( stderr, "lag = %d, %d found\n", lag, tmpint );
 
 //		if( lag == -50 ) exit( 1 );
@@ -2106,7 +2111,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
 //		fprintf( stderr, "##### k=%d / %d\n", k, maxk );
 //		if( tmpint == 0 ) break; // 060430 iinoka ? // 090530 yameta
-		while( tmpint-- > 0 )
+		while( tmpint-- > 0 ) //for each alignable segment, fill segment1 and segment2
 		{
 #if 0
 			if( segment[count].end - segment[count].start < fftWinSize )
@@ -2157,8 +2162,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	if( !kobetsubunkatsu )
 		fprintf( stderr, "done. (%d anchors) ", count );
 #endif
-	if( !count && fftNoAnchStop )
-		ErrorExit( "Cannot detect anchor!" );
+	if( !count && fftNoAnchStop ) //fftNoAnchStop defined in defs.h and set to 0 in pairlocalalign
+		ErrorExit( "Cannot detect anchor!" ); //if count == 0 and fftNoAnchStop != 0, error and exit
 #if 0
 	fprintf( stderr, "RESULT before sort:\n" );
 	for( l=0; l<count+1; l++ )
@@ -2168,7 +2173,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	}
 #endif
 
-	for( i=0; i<count; i++ )
+	for( i=0; i<count; i++ ) //I think this loop lets each index in sortedseg points to each index in segment
 	{
 		sortedseg1[i] = &segment1[i];
 		sortedseg2[i] = &segment2[i];
@@ -2179,7 +2184,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	qsort( sortedseg1, count, sizeof( Segment * ), segcmp );
 	qsort( sortedseg2, count, sizeof( Segment * ), segcmp );
 #else
-	mymergesort( 0, count-1, sortedseg1 ); 
+	mymergesort( 0, count-1, sortedseg1 ); //defined here. sort both sortedseg1 and sortedseg2 by merge sort algorithm
 	mymergesort( 0, count-1, sortedseg2 ); 
 #endif
 	for( i=0; i<count; i++ ) sortedseg1[i]->number = i;
@@ -2203,7 +2208,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
 	else
 	{
-		if( count < 5000 )
+		if( count < 5000 ) //why 5000 ?!!
 		{
 			if( crossscoresize < count+2 )
 			{
@@ -2245,7 +2250,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			count0 = count;
 		
 //			fprintf( stderr, "\n\n\ncalling blockAlign2\n\n\n\n" );
-			blockAlign2( cut1, cut2, sortedseg1, sortedseg2, crossscore, &count );
+			blockAlign2( cut1, cut2, sortedseg1, sortedseg2, crossscore, &count ); //defined in fftFunctions.
+			//it fills cut1, cut2 and count with values based on some calculations and conditions - I didn't dive into details.
 	
 //			if( count-count0 )
 //				fprintf( stderr, "%d unused anchors\n", count0-count );
@@ -2348,14 +2354,14 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	for( i=0; i<count-1; i++ )
 	{
 		*fftlog += 1;
-		if( i == 0 ) headgp = outgap; else headgp = 1;
+		if( i == 0 ) headgp = outgap; else headgp = 1; //outgap is defined in defs.c and = 1.
 		if( i == count-2 ) tailgp = outgap; else tailgp = 1;
 
 		if( cut1[i] )
 		{
 //			getkyokaigap( sgap1, seq1, cut1[i]-1, clus1 );
 //			getkyokaigap( sgap2, seq2, cut2[i]-1, clus2 );
-			getkyokaigap( sgap1, tmpres1, nlen-1, clus1 );
+			getkyokaigap( sgap1, tmpres1, nlen-1, clus1 ); //defined in mltaln9.c. copy chars at clus1 (nlen-1) indices from tmpres1 to sgap1
 			getkyokaigap( sgap2, tmpres2, nlen-1, clus2 );
 		}
 		else
@@ -2386,6 +2392,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			tmpres1[j][cut1[i+1]-cut1[i]] = 0;
 		}
 		if( kobetsubunkatsu && fftkeika ) commongappick( clus1, tmpres1 ); //dvtditr に呼ばれたとき fftkeika=1
+		//commongappick defined in mltaln9.c. it changes tmpres1 items based on some calculations - not dived into yet -.
 //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
 		for( j=0; j<clus2; j++ )
 		{
@@ -2432,12 +2439,15 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		}
 		fflush( stdout );
 #endif
-		switch( alg )
+		switch( alg ) //defined in defs.h. I need to know M stands for ?
 		{
 			case( 'M' ):
-					if( scoringmatrices ) // called by tditeration.c
+					if( scoringmatrices ) // called by tditeration.c. Calculates distance between tmpres1 and tmpres2
 						totalscore += MSalignmm_variousdist( NULL, scoringmatrices, NULL, tmpres1, tmpres2, eff1, eff2, eff1s, eff2s, clus1, clus2, alloclen, sgap1, sgap2, egap1, egap2, NULL, 0, NULL, headgp, tailgp );
 					else
+						//Calculates distance between tmpres1 and tmpres2 based on specific algo.
+						//It is similar to MSalignmm_variousdist with the difference that this one
+						//doesn't use various distances technique. It uses 2d matrix while various distance uses 3d one.
 						totalscore += MSalignmm( n_dynamicmtx, tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, sgap1, sgap2, egap1, egap2, NULL, 0, NULL, headgp, tailgp );
 				break;
 			default:
@@ -2452,8 +2462,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen, nlen, alloclen );
 			ErrorExit( "LENGTH OVER in Falign\n " );
 		}
-		for( j=0; j<clus1; j++ ) strcat( result1[j], tmpres1[j] );
-		for( j=0; j<clus2; j++ ) strcat( result2[j], tmpres2[j] );
+		for( j=0; j<clus1; j++ ) strcat( result1[j], tmpres1[j] ); //append tmpres1[j] to the end of result1[j]
+		for( j=0; j<clus2; j++ ) strcat( result2[j], tmpres2[j] ); //append tmpres2[j] to the end of result2[j]
 		totallen += nlen;
 #if 0
 		fprintf( stderr, "i=%d", i );
@@ -2474,8 +2484,8 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	fprintf( stderr, "DP ... done   \n" );
 #endif
 
-	for( j=0; j<clus1; j++ ) strcpy( seq1[j], result1[j] );
-	for( j=0; j<clus2; j++ ) strcpy( seq2[j], result2[j] );
+	for( j=0; j<clus1; j++ ) strcpy( seq1[j], result1[j] ); //copy result1[j] to seq1[j]
+	for( j=0; j<clus2; j++ ) strcpy( seq2[j], result2[j] ); //copy result2[j] to seq2[j]
 #if 0
 	for( j=0; j<clus1; j++ ) 
 	{

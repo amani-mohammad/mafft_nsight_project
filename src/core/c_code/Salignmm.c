@@ -73,7 +73,8 @@ static void imp_match_out_vead_tate( double *imp, int j1, int lgth1 )
 
 void imp_rna( int nseq1, int nseq2, char **seq1, char **seq2, double *eff1, double *eff2, RNApair ***grouprna1, RNApair ***grouprna2, int *gapmap1, int *gapmap2, RNApair *pair )
 {
-	foldrna( nseq1, nseq2, seq1, seq2, eff1, eff2, grouprna1, grouprna2, impmtx, gapmap1, gapmap2, pair );
+	//fill impmtx - which is defined here - with values based on results from rnaalifold command and map matrix resulted from Lalignmm_hmout
+	foldrna( nseq1, nseq2, seq1, seq2, eff1, eff2, grouprna1, grouprna2, impmtx, gapmap1, gapmap2, pair ); //defined in rna.c
 }
 
 //fills impmtx matrix based on other params values

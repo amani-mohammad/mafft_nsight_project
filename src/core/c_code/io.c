@@ -216,8 +216,8 @@ static int addlocalhom2( char *al1, char *al2, LocalHom *localhompt, int off1, i
 
 #endif
 
-
-
+//I think this method scans the two sequences al1 and al2 and saves score and other alignment info in localhomtable
+//what i need to understand now is LocalHom mechanism and how it works exactly
 static int addlocalhom_r( char *al1, char *al2, LocalHom *localhompt, int off1, int off2, int opt, int overlapaa, int skip, char korh )
 {
 	int pos1, pos2, start1, start2, end1, end2;
@@ -225,7 +225,7 @@ static int addlocalhom_r( char *al1, char *al2, LocalHom *localhompt, int off1, 
 	double score;
 	double sumscore;
 	int sumoverlap;
-	LocalHom *tmppt = NULL; // by D.Mathog, a guess
+	LocalHom *tmppt = NULL; // by D.Mathog, a guess  //LocalHom is a structure defined in mltaln.h.
 	int st;
 	int nlocalhom = 0;
 	pt1 = al1; pt2 = al2;
@@ -255,7 +255,7 @@ static int addlocalhom_r( char *al1, char *al2, LocalHom *localhompt, int off1, 
 
 	st = 0;
 	score = 0.0;
-	while( *pt1 != 0 )
+	while( *pt1 != 0 ) //while first sequence contains chars
 	{
 		fprintf( stderr, "In in while loop\n" );
 		fprintf( stderr, "pt = %c, %c, st=%d\n", *pt1, *pt2, st );
@@ -298,9 +298,7 @@ static int addlocalhom_r( char *al1, char *al2, LocalHom *localhompt, int off1, 
 		{
 			if( st == 0 )
 			{
-				start1 = pos1; start2 = pos2;
-				st = 1;
-			}
+			//n_dis and amino_n are defined in defs and initialized in constants.c (before this method is called)}
 			score += (double)n_dis[(int)amino_n[(unsigned char)*pt1]][(int)amino_n[(unsigned char)*pt2]];
 //			fprintf( stderr, "%c-%c, score(0) = %f\n", *pt1, *pt2, score );
 		}
@@ -2613,24 +2611,26 @@ void write1seq( FILE *fp, char *aseq )
 		fprintf( fp, "%.*s\n", C, aseq+j );
 }
 
+//read values from fp and fill mtx with them
 void readhat2_doublehalf_part_pointer( FILE *fp, int nseq, int nadd, char **name, double **mtx )
 {
     int i, j, nseq0, norg;
     char b[B];
 
-    fgets( b, B, fp );
-    fgets( b, B, fp ); b[5] = 0; nseq0 = atoi( b ); if( nseq != nseq0 ) 
+    fgets( b, B, fp ); //read first line
+    fgets( b, B, fp ); b[5] = 0; nseq0 = atoi( b ); if( nseq != nseq0 ) //then read value from second line and if != number of sequences, return error and exit
 	{
 		fprintf( stderr, "%d != %d\n", nseq, nseq0 );
 		ErrorExit( "hat2 is wrong." );
 	}
-    fgets( b, B, fp );
+    fgets( b, B, fp ); //read third line
     for( i=0; i<nseq; i++ )
     {
 #if 0
         getaline_fp_eof( b, B, fp ); 
 #else
-		myfgets( b, B-2, fp );
+        //what i understand till now is that this reads first line of each sequence(seq. name) into char sequence
+		myfgets( b, B-2, fp ); //defined here.
 #endif
 #if 0
 		j = MIN( strlen( b+6 ), 10 );
@@ -2643,9 +2643,9 @@ void readhat2_doublehalf_part_pointer( FILE *fp, int nseq, int nadd, char **name
 #endif
     }
 	norg = nseq-nadd;
-    for( i=0; i<norg; i++ ) for( j=0; j<nadd; j++ )
+    for( i=0; i<norg; i++ ) for( j=0; j<nadd; j++ ) //for each sequence pair
     {
-        mtx[i][j] = ( input_new( fp, D ) );
+        mtx[i][j] = ( input_new( fp, D ) ); //input_new defined here. read float value from fp and return it
     }
 }
 
@@ -2948,6 +2948,7 @@ void WriteHat2_part_pointer( FILE *hat2p, int locnjob, int nadd, char **name, do
 	}
 }
 
+//write number of sequences, max distance value and mtx values to hat2 file
 void WriteHat2_pointer( FILE *hat2p, int locnjob, char **name, double **mtx )
 {
 	int i, j;
@@ -3320,16 +3321,17 @@ int ReadBlastm7_scoreonly( FILE *fp, double *dis, int nin )
     return count;
 }
 
+//this method reads data from fasta file and get some values from it, then fill in localhomtable with values based on read data.
 int ReadBlastm7( FILE *fp, double *dis, int qmem, char **name, LocalHom *localhomlist )
 {
     int count=0;
-    char b[B];
+    char b[B]; //B is constant in mltaln.h and = 256
 	char *pt;
-    static int junban[M];
+    static int junban[M]; //M is constant in mltaln.h and = 500,000
 	int overlapaa;
 	double score, sumscore;
 	int qstart, qend, tstart, tend;
-	static char qal[N], tal[N], al[N];
+	static char qal[N], tal[N], al[N]; //N is constant in mltaln.h and = 5,000,000
 	int nlocalhom;
 
 
@@ -3343,14 +3345,14 @@ int ReadBlastm7( FILE *fp, double *dis, int qmem, char **name, LocalHom *localho
 
 		if( feof( fp ) ) break;
 
-		while( fgets( b, B-1, fp ) )
+		while( fgets( b, B-1, fp ) ) //read line from fp to b with max B-1 chars
 		{
 			if( !strncmp( "          <Hit_def>", b, 19 ) || !strncmp( "              <Hsp_num>", b, 23 ) ) break;
 		}
 
 		if( !strncmp( "          <Hit_def>", b, 19 ) )
 		{
-			junban[count] = atoi( b+31 );
+			junban[count] = atoi( b+31 ); //read sequence index into junban[count]
 			nlocalhom = 0;
 		}
 
@@ -3365,31 +3367,31 @@ int ReadBlastm7( FILE *fp, double *dis, int qmem, char **name, LocalHom *localho
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "              <Hsp_query-from>", b, 30 ) ) break;
 		pt = b + 30;
-		qstart = atoi( pt ) - 1;
+		qstart = atoi( pt ) - 1; //set qstart value
 
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "              <Hsp_query-to>", b, 28 ) ) break;
 		pt = b + 28;
-		qend = atoi( pt ) - 1;
+		qend = atoi( pt ) - 1; //set qend value
 
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "              <Hsp_hit-from>", b, 28 ) ) break;
 		pt = b + 28;
-		tstart = atoi( pt ) - 1;
+		tstart = atoi( pt ) - 1; //set tstart value
 
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "              <Hsp_hit-to>", b, 26 ) ) break;
 		pt = b + 26;
-		tend = atoi( pt ) - 1;
+		tend = atoi( pt ) - 1; //set tend value
 
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "              <Hsp_align-len>", b, 29 ) ) break;
 		pt = b + 29;
-		overlapaa = atoi( pt );
+		overlapaa = atoi( pt ); //set overlapaa value
 
 
 		while( fgets( al, N-100, fp ) )
@@ -3414,7 +3416,9 @@ int ReadBlastm7( FILE *fp, double *dis, int qmem, char **name, LocalHom *localho
 
 //		fprintf( stderr, "t=%d, score = %f, qstart=%d, qend=%d, tstart=%d, tend=%d, overlapaa=%d\n", junban[count], score, qstart, qend, tstart, tend, overlapaa );
 
-		nlocalhom += addlocalhom_r( qal, tal, localhomlist+junban[count], qstart, tstart, score, overlapaa, nlocalhom, 'h' );
+		nlocalhom += addlocalhom_r( qal, tal, localhomlist+junban[count], qstart, tstart, score, overlapaa, nlocalhom, 'h' ); //defined here.
+		//I think this method scans the two sequences al1 and al2 and saves score and other alignment info in localhomtable
+		//what i need to understand now is LocalHom mechanism and how it works exactly
 
 		while( fgets( b, B-1, fp ) )
 			if( !strncmp( "            </Hsp>:", b, 18 ) ) break;
@@ -3435,12 +3439,13 @@ int ReadBlastm7( FILE *fp, double *dis, int qmem, char **name, LocalHom *localho
     return count;
 }
 
+//fill dis with values read from fp and returns count of sequences - i think - from the file
 int ReadFasta34noalign( FILE *fp, double *dis, int qmem, char **name, LocalHom *localhomlist )
 {
     int count=0;
-    char b[B];
+    char b[B]; //B is constant in mltaln.h and = 256
 	char *pt;
-    static int junban[M];
+    static int junban[M]; //M is constant in mltaln.h and = 500,000
 	int opt;
 	double z, bits;
 
@@ -3452,14 +3457,14 @@ int ReadFasta34noalign( FILE *fp, double *dis, int qmem, char **name, LocalHom *
     while( !feof( fp ) )
 #endif
     {
-        fgets( b, B-1, fp );
-        if( !strncmp( "+==========+", b, 12 ) )
+        fgets( b, B-1, fp ); //read line from fp to b with max B-1 chars
+        if( !strncmp( "+==========+", b, 12 ) ) //strncmp compares at most the first 12 bytes of two strings
         {
-            junban[count] = atoi( b+12 );
+            junban[count] = atoi( b+12 ); //read sequence index into junban[count]
 
-			pt = strchr( b, ')' ) + 1;
-			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); 
-            dis[junban[count]] = (double)opt;
+			pt = strchr( b, ')' ) + 1; //find first occurrence of ')' in b and point to next char
+			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); //read formatted input from pt string
+            dis[junban[count]] = (double)opt; //set opt value in dis[seq. index]
             count++;
 
         }
@@ -3467,12 +3472,15 @@ int ReadFasta34noalign( FILE *fp, double *dis, int qmem, char **name, LocalHom *
 
     return count;
 }
+
+//Returns count of sequences - i think - from fastafile
+//this method reads data from fastafile and get some values from it, then fill in localhomtable with values based on read data.
 int ReadFasta34m10_nuc( FILE *fp, double *dis, int qmem, char **name, LocalHom *localhomlist )
 {
     int count=0;
     char b[B]; //B is constant in mltaln.h and = 256
 	char *pt;
-    static int junban[M]; //B is constant in mltaln.h and = 500,000
+    static int junban[M]; //M is constant in mltaln.h and = 500,000
 	int overlapaa;
 	int opt, qstart, qend, tstart, tend;
 	double z, bits;
@@ -4240,7 +4248,7 @@ void closeFiles( void )
 	fclose( trap_g );
 }
 
-
+//write name and aseq to fp file
 void WriteForFasta( FILE *fp, int locnjob, char **name, int nlen[M], char **aseq )
 {
     static char b[N]; //N is constant defined in mltaln9.h and = 5,000,000
@@ -4651,6 +4659,9 @@ void readlocalhomtable_half( FILE*fp, int njob, LocalHom **localhomtable, char *
 }
 #endif
 
+//fill localhomtable with values read from fp
+//the difference between this method and readlocalhomtable_one is that this method fills both directions of localhomtable
+//whereas readlocalhomtable_one fills only one direction
 void readlocalhomtable( FILE*fp, int njob, LocalHom **localhomtable, char *kozoarivec )
 {
 	double opt;
@@ -4663,10 +4674,10 @@ void readlocalhomtable( FILE*fp, int njob, LocalHom **localhomtable, char *kozoa
 	nlocalhom = AllocateIntMtx( njob, njob );
 	for( i=0; i<njob; i++ ) for( j=0; j<njob; j++ ) nlocalhom[i][j] = 0;
 
-	while ( NULL != fgets( buff, B-1, fp ) )
+	while ( NULL != fgets( buff, B-1, fp ) ) //read line from fp to buff
 	{
 //		fprintf( stderr, "\n" );
-		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor );
+		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor ); //set all these variables values from buff
 		if( *infor == 'k' ) kozoarivec[i] = kozoarivec[j] = 1;
 
 #if 0
@@ -4821,6 +4832,7 @@ void readlocalhomtable_two( FILE*fp, int norg, int nadd, LocalHom **localhomtabl
 	FreeIntMtx( nlocalhomx );
 }
 
+//fill localhomtable with values read from fp
 void readlocalhomtable_one( FILE*fp, int norg, int nadd, LocalHom **localhomtable, char *kozoarivec ) // for test only
 {
 	double opt;
@@ -4833,10 +4845,10 @@ void readlocalhomtable_one( FILE*fp, int norg, int nadd, LocalHom **localhomtabl
 	nlocalhom = AllocateIntMtx( norg, nadd );
 	for( i=0; i<norg; i++ ) for( j=0; j<nadd; j++ ) nlocalhom[i][j] = 0;
 
-	while ( NULL != fgets( buff, B-1, fp ) )
+	while ( NULL != fgets( buff, B-1, fp ) ) //read line from fp into buff
 	{
 //		fprintf( stderr, "\n" );
-		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor );
+		sscanf( buff, "%d %d %d %lf %d %d %d %d %s",  &i, &j, &overlapaa, &opt, &start1, &end1, &start2, &end2, infor ); //read all these values from buff
 		if( *infor == 'k' ) 
 		{
 			fprintf( stderr, "Not supported!\n" );
@@ -4854,13 +4866,13 @@ void readlocalhomtable_one( FILE*fp, int norg, int nadd, LocalHom **localhomtabl
 			if( nlocalhom[i][j]++ > 0 )
 			{
 //				fprintf( stderr, "reallocating, nlocalhom[%d][%d] = %d\n", i, j, nlocalhom[i][j] );
-				tmpptr1->next = (LocalHom *)calloc( 1, sizeof( LocalHom ) );
+				tmpptr1->next = (LocalHom *)calloc( 1, sizeof( LocalHom ) ); //i think this for indecies other than the first one
 				tmpptr1 = tmpptr1->next;
 				tmpptr1->next = NULL;
 			}
 			else
 			{
-				tmpptr1 = localhomtable[i]+j;
+				tmpptr1 = localhomtable[i]+j; //i think this for first index
 //				fprintf( stderr, "nlocalhom[%d][%d] = %d\n", i, j, nlocalhom[i][j] );
 			}
 	
@@ -5258,6 +5270,7 @@ void phylipout_pointer( FILE *fp, int nseq, int maxlen, char **seq, char **name,
 	}
 }
 
+//write seq, name, namelen, mark and comment to fp file
 void clustalout_pointer( FILE *fp, int nseq, int maxlen, char **seq, char **name, char *mark, char *comment, int *order, int namelen )
 {
 	int pos, j;

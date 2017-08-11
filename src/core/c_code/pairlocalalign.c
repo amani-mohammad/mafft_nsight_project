@@ -264,7 +264,7 @@ static double recallpairfoldalign( char **mseq1, char **mseq2, int m1, int m2, i
 	//fill aln1 and aln2 based on alignment values read from fold align file and processed using other args and some calcs.
 	readpairfoldalign( fp, *mseq1, *mseq2, aln1, aln2, m1, m2, &of1tmp, &of2tmp, alloclen ); //defined in io.c.
 
-	if( strstr( foldalignopt, "-global") ) //i think this choose between local or global alignment
+	if( strstr( foldalignopt, "-global") ) //i think this choose between local or global alignment - yeaaaa right :D, this argument is set to '-global' from command
 	{
 		fprintf( stderr, "Calling G__align11\n" );
 		//Calculates distance between mseq1 and mseq2 based on specific algo.
