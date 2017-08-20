@@ -5919,6 +5919,7 @@ void reporterr( const char *str, ... )
 
 
 #ifndef mingw
+//set stack size to kStackSize
 void setstacksize(rlim_t kStackSize )
 {
 //	const rlim_t kStackSize = 100 * 1024 * 1024;   // min stack size = 10MB
@@ -5926,16 +5927,16 @@ void setstacksize(rlim_t kStackSize )
 	int result;
 	rlim_t originalsize;
 
-	result = getrlimit(RLIMIT_STACK, &rl);
+	result = getrlimit(RLIMIT_STACK, &rl); //set max size of stack in rl
 	if (result == 0)
 	{
 		originalsize = rl.rlim_cur;
-		if (rl.rlim_cur < kStackSize)
+		if (rl.rlim_cur < kStackSize) //if current stack size is less than required size
 		{
 			rl.rlim_cur = kStackSize;
 			reporterr( "stacksize: %d kb->%d kb\n", originalsize/1024, rl.rlim_cur/1024 );
-			result = setrlimit(RLIMIT_STACK, &rl);
-			if (result != 0)
+			result = setrlimit(RLIMIT_STACK, &rl); //set current stack size to required value
+			if (result != 0) //and if failed to set it
 			{
 				reporterr( "Warning: Failed to extend stack size. It's ok in most cases but there may be problems in --pileup and --chainedtree.\n" );
 			}

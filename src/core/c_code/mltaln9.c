@@ -1840,7 +1840,7 @@ void loadtop( int nseq, double **mtx, int ***topol, double **len, char **name, i
 
 }
 
-
+//shuffle ary items
 void stringshuffle( int *ary, int size )
 {
 	int i;
@@ -1853,6 +1853,7 @@ void stringshuffle( int *ary, int size )
     }
 }
 
+//recursion method. update order and posinorder values based on other arguments
 void topolorder( int nseq, int *order, int *posinorder, int ***topol, Treedep *dep, int pos, int nchild )
 {
 	int *str;
@@ -1920,6 +1921,9 @@ void topolorder( int nseq, int *order, int *posinorder, int ***topol, Treedep *d
 }
 
 #if CANONICALTREEFORMAT
+//update topol values based on shuffled integers of nseq and write them to _guidetree
+//update len values based on calculations on nseq and write them to _guidetree
+//update dep. treeout and shuffle determines some decisions like writing in 'infile.tree' and shuffling order array
 void createchain( int nseq, int ***topol, double **len, char **name, int *nlen, Treedep *dep, int treeout, int shuffle, int seed )
 {
 	FILE *fp;
@@ -1991,7 +1995,7 @@ void createchain( int nseq, int ***topol, double **len, char **name, int *nlen, 
 	for( i=0; i<nseq; i++ ) order[i] = i;
 
 	srand( seed );
-	if( shuffle ) stringshuffle( order, nseq );
+	if( shuffle ) stringshuffle( order, nseq ); //defined here. shuffle order items.
 
 	ll = l = 2.0 / nseq;
 
@@ -2138,7 +2142,7 @@ void createchain( int nseq, int ***topol, double **len, char **name, int *nlen, 
 	if( treeout ) 
 	{
 		posinit += sprintf( instanttree+posinit, "%s:%7.5f)", tree[jm], ll-l );
-		fp = fopen( "infile.tree", "w" );
+		fp = fopen( "infile.tree", "w" ); //open 'infile.tree' file for writing
 //		fprintf( fp, "%s;\n", treetmp );
 //		fprintf( fp, "#by createchain\n" );
 		fprintf( fp, "%s;\n", instanttree );
@@ -2148,7 +2152,7 @@ void createchain( int nseq, int ***topol, double **len, char **name, int *nlen, 
 		free( instanttree );
 	}
 
-	fp = fopen( "_guidetree", "w" );
+	fp = fopen( "_guidetree", "w" ); //open '_guidetree' file for writing
 	if( !fp )
 	{
 		reporterr(       "cannot open _guidetree\n" );
@@ -2697,6 +2701,7 @@ void loadtree( int nseq, int ***topol, double **len, char **name, int *nlen, Tre
 }
 
 //read first line from '_guidetree' file and determine the type used and memory size required, then returns char to represent type found
+//fill seed, npick and limitram based on values read from '_guidetree' file
 int check_guidetreefile( int *seed, int *npick, double *limitram )
 {
 	char string[100];
@@ -4620,6 +4625,7 @@ void compacttree_memsaveselectable( int nseq, double **partmtx, int *nearest, do
 	if( result ) free( result );
 }
 
+//update topol, len, dep values based on tree construction - needs to be studied in details later -
 void fixed_musclesupg_double_realloc_nobk_halfmtx_treeout_memsave( int nseq, double **eff, int ***topol, double **len, char **name, int *nlen, Treedep *dep, int efffree )
 {
 
@@ -6263,6 +6269,7 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 	free( warned );
 }
 
+//update topol, len, dep values based on tree construction - needs to be studied in details later -
 void fixed_musclesupg_double_realloc_nobk_halfmtx_memsave( int nseq, double **eff, int ***topol, double **len, Treedep *dep, int progressout, int efffree )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -8252,6 +8259,7 @@ void counteff_simple_double( int nseq, int ***topol, double **len, double *node 
 #endif
 }
 
+//update node values based on len and eff values and other values calculations
 void counteff_simple_double_nostatic_memsave( int nseq, int ***topol, double **len, Treedep *dep, double *node )
 {
     int i, j, s1, s2;
@@ -8303,10 +8311,12 @@ void counteff_simple_double_nostatic_memsave( int nseq, int ***topol, double **l
    	{
 		localmem[0][0] = -1;
 		posinmem = 0;
-		topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 );
+		topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 ); //defined here.
+		//recursion method. update localmem[0] and posinmem values based on other arguments
 		localmem[1][0] = -1;
 		posinmem = 0;
 		topolorder( njob, localmem[1], &posinmem, topol, dep, i, 1 );
+		//recursion method. update localmem[1] and posinmem values based on other arguments
 
        	for( j=0; (s1=localmem[0][j]) > -1; j++ )
 		{
@@ -13329,6 +13339,7 @@ double distcompact_msa( char *seq1, char *seq2, int *skiptable1, int *skiptable2
 	}
 }
 
+//return value based on 'commonsextet_p' call for table1 and point2 and calculations on this value and other args
 double distcompact( int len1, int len2, int *table1, int *point2, int ss1, int ss2 )
 {
 	double longer, shorter, lenfac, value;
@@ -13352,7 +13363,8 @@ double distcompact( int len1, int len2, int *table1, int *point2, int ss1, int s
 	if( ss1 == 0 || ss2 == 0 )
 		return( 2.0 );
 
-	value = ( 1.0 - (double)commonsextet_p( table1, point2 ) / MIN(ss1,ss2) ) * lenfac * 2.0;
+	value = ( 1.0 - (double)commonsextet_p( table1, point2 ) / MIN(ss1,ss2) ) * lenfac * 2.0; //defined in mltaln9.c.
+	//return value based on table1 and point2 values comparison
 
 	return( value ); // 2013/Oct/17 -> 2bai
 }

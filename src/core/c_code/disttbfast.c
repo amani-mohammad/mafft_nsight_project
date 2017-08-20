@@ -143,73 +143,73 @@ void dist_tb_fast_arguments( int argc, char *argv[] )
 {
     int c;
 
-	nthread = 1;
-	outnumber = 0;
-	topin = 0;
-	treein = 0;
-	treeout = 0;
-	distout = 0;
-	noalign = 0;
-	nevermemsave = 0;
-	inputfile = NULL;
-	nadd = 0;
-	addprofile = 1;
-	fftkeika = 0;
-	constraint = 0;
-	nblosum = 62;
-	fmodel = 0;
-	calledByXced = 0;
-	devide = 0;
-	use_fft = 0;
-	force_fft = 0;
-	fftscore = 1;
-	fftRepeatStop = 0;
-	fftNoAnchStop = 0;
-    weight = 3;
-    utree = 1;
-	tbutree = 1;
-    refine = 0;
-    check = 1;
-    cut = 0.0;
-    disp = 0;
-    outgap = 1;
-    alg = 'A';
-    mix = 0;
-	tbitr = 0;
-	scmtd = 5;
-	tbweight = 0;
-	tbrweight = 3;
-	checkC = 0;
-	treemethod = 'X';
-	sueff_global = 0.1;
-	contin = 0;
-	scoremtx = 1;
-	kobetsubunkatsu = 0;
-	dorp = NOTSPECIFIED;
-	ppenalty_dist = NOTSPECIFIED;
-	ppenalty = -1530;
-	ppenalty_ex = NOTSPECIFIED;
-	penalty_shift_factor = 1000.0;
-	poffset = -123;
-	kimuraR = NOTSPECIFIED;
-	pamN = NOTSPECIFIED;
-	geta2 = GETA2;
-	fftWinSize = NOTSPECIFIED;
-	fftThreshold = NOTSPECIFIED;
-	TMorJTT = JTT;
-	scoreout = 0;
-	spscoreout = 0;
-	tuplesize = 6;
-	subalignment = 0;
-	subalignmentoffset = 0;
-	legacygapcost = 0;
-	specificityconsideration = 0.0;
-	nguidetree = 1;
-	sparsepickup = 0;
-	keeplength = 0;
-	mapout = 0;
-	smoothing = 0;
-	nwildcard = 0;
+	nthread = 1; //defined in defs.c.
+	outnumber = 0; //defined in defs.h.
+	topin = 0; //defined here.
+	treein = 0; //defined here.
+	treeout = 0; //defined here.
+	distout = 0; //defined here.
+	noalign = 0; //defined here.
+	nevermemsave = 0; //defined in defs.h.
+	inputfile = NULL; //defined in defs.h.
+	nadd = 0; //defined here.
+	addprofile = 1; //defined in defs.c.
+	fftkeika = 0; //defined in defs.h.
+	constraint = 0; //defined in defs.h.
+	nblosum = 62; //defined in defs.h.
+	fmodel = 0; //defined in defs.h.
+	calledByXced = 0; //defined in defs.h.
+	devide = 0; //defined in defs.h.
+	use_fft = 0; //defined in defs.h.
+	force_fft = 0; //defined in defs.h.
+	fftscore = 1; //defined in defs.h.
+	fftRepeatStop = 0; //defined in defs.h.
+	fftNoAnchStop = 0; //defined in defs.h.
+    weight = 3; //defined in defs.h.
+    utree = 1; //defined in defs.h.
+	tbutree = 1; //defined in defs.h.
+    refine = 0; //defined in defs.h.
+    check = 1; //defined in defs.h.
+    cut = 0.0; //defined in defs.h.
+    disp = 0; //defined in defs.h.
+    outgap = 1; //defined in defs.c.
+    alg = 'A'; //defined in defs.h.
+    mix = 0; //defined in defs.h.
+	tbitr = 0; //defined in defs.h.
+	scmtd = 5; //defined in defs.h.
+	tbweight = 0; //defined in defs.h.
+	tbrweight = 3; //defined in defs.h.
+	checkC = 0; //defined in defs.h.
+	treemethod = 'X'; //defined in defs.h.
+	sueff_global = 0.1; //defined in defs.c.
+	contin = 0; //defined in defs.h.
+	scoremtx = 1; //defined in defs.h.
+	kobetsubunkatsu = 0; //defined in defs.h.
+	dorp = NOTSPECIFIED; //defined in defs.c.
+	ppenalty_dist = NOTSPECIFIED; //defined in defs.h.
+	ppenalty = -1530; //defined in defs.h.
+	ppenalty_ex = NOTSPECIFIED; //defined in defs.h.
+	penalty_shift_factor = 1000.0; //defined in defs.c.
+	poffset = -123; //defined in defs.h.
+	kimuraR = NOTSPECIFIED; //defined in defs.h.
+	pamN = NOTSPECIFIED; //defined in defs.h.
+	geta2 = GETA2; //geta2 defined in defs.h and GETA2 defined in mltaln.h.
+	fftWinSize = NOTSPECIFIED; //defined in defs.h.
+	fftThreshold = NOTSPECIFIED; //defined in defs.h.
+	TMorJTT = JTT; //TMorJTT defined in defs.h and JTT defined in mltaln.h.
+	scoreout = 0; //defined in defs.c.
+	spscoreout = 0; //defined in defs.h.
+	tuplesize = 6; //defined here.
+	subalignment = 0; //defined here.
+	subalignmentoffset = 0; //defined here.
+	legacygapcost = 0; //defined in defs.c.
+	specificityconsideration = 0.0; //defined in defs.c.
+	nguidetree = 1; //defined here.
+	sparsepickup = 0; //defined here.
+	keeplength = 0; //defined here.
+	mapout = 0; //defined here.
+	smoothing = 0; //defined here.
+	nwildcard = 0; //defined in defs.c.
 
     while( --argc > 0 && (*++argv)[0] == '-' )
 	{
@@ -488,6 +488,7 @@ void dist_tb_fast_arguments( int argc, char *argv[] )
 	}
 }
 
+//align sequences from seq using G__align11_noalign based on npick and other args
 static int varpairscore( int nseq, int npick, int nlenmax, char **seq, int seed )
 {
 	int i, j, npair;
@@ -507,8 +508,8 @@ static int varpairscore( int nseq, int npick, int nlenmax, char **seq, int seed 
 	for( i=0; i<nseq; i++ ) slist[i] = i;
 //	for( i=0; i<nseq; i++ ) reporterr( "slist[%d] = %d\n", i, slist[i] );
 
-	stringshuffle( slist, nseq );
-	for( i=0; i<npick; i++ ) gappick0( pickseq[i], seq[slist[i]] );
+	stringshuffle( slist, nseq ); //defined in mltaln9.c. shuffle slist items
+	for( i=0; i<npick; i++ ) gappick0( pickseq[i], seq[slist[i]] ); //defined in mltaln9.c. copy 'seq[slist[i]]' chars to 'pickseq[i]' without gaps chars
 
 	scoreav = 0.0;
 	scoreav2 = 0.0;
@@ -518,7 +519,8 @@ static int varpairscore( int nseq, int npick, int nlenmax, char **seq, int seed 
 		reporterr( "%d / %d\r", i, npick );
 		for( j=0; j<i; j++ ) 
 		{
-			score = G__align11_noalign( n_dis_consweight_multi, -1200, -60, pickseq+i, pickseq+j, nlenmax );
+			//it is like G__align11 but without warp and some other details
+			score = G__align11_noalign( n_dis_consweight_multi, -1200, -60, pickseq+i, pickseq+j, nlenmax ); //defined in Galign11.c.
 			scoreav += score;
 			scoreav2 += score * score;
 			printf( "score = %d\n", (int)score );
@@ -539,6 +541,7 @@ static int varpairscore( int nseq, int npick, int nlenmax, char **seq, int seed 
 	else return( 't' );
 }
 
+//pickup part of sequences based on sparsepickup value, and write selected sequences and their names to stdout, and write not used ones to notused file
 static void pickup( int n, int *seqlen, int ***topol, char **name, char **seq ) // memsave ni mitaiou
 {
 	int i, j, k, m;
@@ -620,10 +623,10 @@ static void pickup( int n, int *seqlen, int ***topol, char **name, char **seq ) 
 			j++;
 		}
 	}
-	writeData_pointer( stdout, m, nameout, nlenout, seqout );
+	writeData_pointer( stdout, m, nameout, nlenout, seqout ); //defined in io.c. write selected sequences and their names to stdout.
 
-	notusedfp = fopen( "notused", "w" );
-	writeData_pointer( notusedfp, n-m, namenotused, nlennotused, seqnotused );
+	notusedfp = fopen( "notused", "w" ); //open 'notused' file for writing
+	writeData_pointer( notusedfp, n-m, namenotused, nlennotused, seqnotused ); //write not used sequences and their names to 'notused' file.
 	fclose( notusedfp );
 
 
@@ -641,6 +644,7 @@ static void pickup( int n, int *seqlen, int ***topol, char **name, char **seq ) 
 
 static int nunknown = 0;
 
+//fill grp with values from 'amino_grp' based on seq chars
 void disttbfast_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
@@ -662,6 +666,7 @@ void disttbfast_seq_grp_nuc( int *grp, char *seq )
 	}
 }
 
+//fill grp with values from 'amino_grp' based on seq chars
 void disttbfast_seq_grp( int *grp, char *seq )
 {
 	int tmp;
@@ -683,6 +688,7 @@ void disttbfast_seq_grp( int *grp, char *seq )
 	}
 }
 
+//update table values based on pointt values
 void disttbfast_makecompositiontable_p( int *table, int *pointt )
 {
 	int point;
@@ -691,7 +697,7 @@ void disttbfast_makecompositiontable_p( int *table, int *pointt )
 		table[point]++;
 }
 
-
+//fill pointt with values based on n and some calculations on it
 void disttbfast_makepointtable_nuc_dectet( int *pointt, int *n )
 {
 	int point;
@@ -759,6 +765,7 @@ void disttbfast_makepointtable_nuc_octet( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
+//fill pointt with values based on n and some calculations on it
 void disttbfast_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
@@ -789,6 +796,7 @@ void disttbfast_makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
+//fill pointt with values based on n and some calculations on it
 void disttbfast_makepointtable( int *pointt, int *n )
 {
 	int point;
@@ -819,6 +827,7 @@ void disttbfast_makepointtable( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
+//return value based on pos and ori subtraction
 static double preferenceval( int ori, int pos, int max ) // for debug
 {
 	pos -= ori;
@@ -826,6 +835,7 @@ static double preferenceval( int ori, int pos, int max ) // for debug
 	return( 0.00000000000001 * pos );
 }
 
+//update arg->partmtx, arg->jobpospt, arg->mindist, arg->mindistfrom values based on calculations on other args.
 static void *compactdisthalfmtxthread( void *arg ) // enablemultithread == 0 demo tsukau
 {
 	compactdistmtxthread_arg_t *targ = (compactdistmtxthread_arg_t *)arg;
@@ -864,7 +874,7 @@ static void *compactdisthalfmtxthread( void *arg ) // enablemultithread == 0 dem
 			i = *jobpospt;
 			if( i == njob-1 )
 			{
-				commonsextet_p( NULL, NULL );
+				commonsextet_p( NULL, NULL ); //defined in mltaln9.c. free allocated memory from previous call.
 				return( NULL );
 			}
 			*jobpospt = i+1;
@@ -879,13 +889,14 @@ static void *compactdisthalfmtxthread( void *arg ) // enablemultithread == 0 dem
 			else
 				reporterr(       "\r% 5d / %d", i+1, njob );
 		}
-		disttbfast_makecompositiontable_p( table1, pointt[i] );
+		disttbfast_makecompositiontable_p( table1, pointt[i] ); //defined here. update table1 values based on pointt[i] values
 
 		for( j=i+1; j<njob; j++ ) 
 		{
 
-			tmpdist = distcompact( nogaplen[i], nogaplen[j], table1, pointt[j], selfscore[i], selfscore[j] );
-			preference = preferenceval( i, j, njob );
+			tmpdist = distcompact( nogaplen[i], nogaplen[j], table1, pointt[j], selfscore[i], selfscore[j] ); //defined in mltaln9.c.
+			//return value based on 'commonsextet_p' call for table1 and pointt[j] and calculations on this value and other args
+			preference = preferenceval( i, j, njob ); //defined here. return value based on i and j subtraction
 			tmpdistx = tmpdist + preference;
 			if( tmpdistx < mindist[i] )
 			{
@@ -893,7 +904,7 @@ static void *compactdisthalfmtxthread( void *arg ) // enablemultithread == 0 dem
 				mindistfrom[i] = j;
 			}
 
-			preference = preferenceval( j, i, njob );
+			preference = preferenceval( j, i, njob ); //defined here. return value based on j and i subtraction
 			tmpdisty = tmpdist + preference;
 			if( tmpdisty < mindist[j] )
 			{
@@ -1596,6 +1607,8 @@ static void *treebasethread( void *arg )
 }
 #endif
 
+
+//I think it is for progressive alignment step
 static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeoralign, char **mseq1, char **mseq2, int ***topol, Treedep *dep, double *effarr, double **newdistmtx, int *selfscore, int *alloclen, int (*callback)(int, int, char*) )
 {
 	int l, len1, len2, i, m, immin, immax;
@@ -1682,9 +1695,11 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 		{
 			localmem[0][0] = -1;
 			posinmem = 0;
-			topolorder( njob, localmem[0], &posinmem, topol, dep, l, 0 );
+			//recursion method. update localmem[0] and posinmem values based on other arguments
+			topolorder( njob, localmem[0], &posinmem, topol, dep, l, 0 ); //defined in mltaln9.c.
 			localmem[1][0] = -1;
 			posinmem = 0;
+			//recursion method. update localmem[1] and posinmem values based on other arguments
 			topolorder( njob, localmem[1], &posinmem, topol, dep, l, 1 );
 		}
 
@@ -1698,7 +1713,8 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 		}
 
 //		reporterr(       "\ndistfromtip = %f\n", dep[l].distfromtip );
-		makedynamicmtx( dynamicmtx, n_dis_consweight_multi, dep[l].distfromtip );
+		//fill out matrix based on n_dis_consweight_multi matrix values and dep[l].distfromtip value
+		makedynamicmtx( dynamicmtx, n_dis_consweight_multi, dep[l].distfromtip ); //defined in mltaln9.c.
 //		makedynamicmtx( dynamicmtx, n_dis_consweight_multi, ( dep[l].distfromtip - 0.2 ) * 3 );
 
 
@@ -1727,7 +1743,9 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 		}
 
 #if 1 // CHUUI@@@@
-		clus1 = fastconjuction_noname( localmem[0], aseq, mseq1, effarr1, effarr, indication1, 0.0 );
+		//update mseq1, effarr1, indication1 values based on other arguments values and calculations on them
+		clus1 = fastconjuction_noname( localmem[0], aseq, mseq1, effarr1, effarr, indication1, 0.0 ); //defined in tddis.c.
+		//update mseq2, effarr2, indication2 values based on other arguments values and calculations on them
 		clus2 = fastconjuction_noname( localmem[1], aseq, mseq2, effarr2, effarr, indication2, 0.0 );
 #else
 		clus1 = fastconjuction_noname( topol[l][0], aseq, mseq1, effarr1, effarr, indication1, 0.0 );
@@ -1735,15 +1753,6 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 //		clus1 = fastconjuction_noweight( topol[l][0], aseq, mseq1, effarr1,  indication1 );
 //		clus2 = fastconjuction_noweight( topol[l][1], aseq, mseq2, effarr2,  indication2 );
 #endif
-
-
-
-
-
-
-
-
-
 
 
 		if( mergeoralign[l] == '1' || mergeoralign[l] == '2' )
@@ -1757,14 +1766,14 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 		len2nocommongap = len2;
 		if( mergeoralign[l] == '1' ) // nai
 		{
-			findcommongaps( clus2, mseq2, gapmap );
-			commongappick( clus2, mseq2 );
+			findcommongaps( clus2, mseq2, gapmap ); //defined in addfunctions.c. fill gapmap with values based on gaps positions in mseq2 and value of clus2
+			commongappick( clus2, mseq2 ); //defined in mltaln9.c. update mseq2 values based on gaps positions in it and clus2 value
 			len2nocommongap = strlen( mseq2[0] );
 		}
 		else if( mergeoralign[l] == '2' )
 		{
-			findcommongaps( clus1, mseq1, gapmap );
-			commongappick( clus1, mseq1 );
+			findcommongaps( clus1, mseq1, gapmap ); //fill gapmap with values based on gaps positions in mseq1 and value of clus1
+			commongappick( clus1, mseq1 ); //update mseq1 values based on gaps positions in it and clus1 value
 			len1nocommongap = strlen( mseq1[0] );
 		}
 
@@ -1865,10 +1874,15 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 			if( alg == 'M' )
 			{
 				reporterr(       "m" );
+				//defined in Falign.c.
+				//this method aligns mseq1 and mseq2 based on FFT and algorithm selected
+				//it is nearly identical to Falign except some small details about the algorithm calculations, and also it supports only M algorithm
+				//unlike Falign which supports  a, M, d and A
 				pscore = Falign_udpari_long( NULL, NULL, dynamicmtx, mseq1, mseq2, effarr1, effarr2, NULL, NULL, clus1, clus2, *alloclen, fftlog+m1 );
 			}
 			else
 			{
+				//defined in Falign.c. this method aligns mseq1 and mseq2 based on FFT and algorithm selected
 				pscore = Falign( NULL, NULL, dynamicmtx, mseq1, mseq2, effarr1, effarr2, NULL, NULL, clus1, clus2, *alloclen, fftlog+m1, NULL, 0, NULL );
 //				reporterr(       "######### mseq1[0] = %s\n", mseq1[0] );
 			}
@@ -1880,22 +1894,26 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 			switch( alg )
 			{
 				case( 'a' ):
-					pscore = Aalign( mseq1, mseq2, effarr1, effarr2, clus1, clus2, *alloclen );
+					//apply specific algorithm to align mseq1 and mseq2
+					pscore = Aalign( mseq1, mseq2, effarr1, effarr2, clus1, clus2, *alloclen ); //defined in SAalignmm.c.
 					break;
 				case( 'M' ):
 					reporterr(       "m" );
 //					reporterr(       "%d-%d", clus1, clus2 );
+				//defined in MSalignmm.c. apply specific algorithm to align mseq1 and mseq2
 					pscore = MSalignmm( dynamicmtx, mseq1, mseq2, effarr1, effarr2, clus1, clus2, *alloclen, NULL, NULL, NULL, NULL, NULL, 0, NULL, outgap, outgap );
 					break;
 				case( 'd' ):
 					if( 1 && clus1 == 1 && clus2 == 1 )
 					{
 //						reporterr(       "%d-%d", clus1, clus2 );
-						pscore = G__align11( dynamicmtx, mseq1, mseq2, *alloclen, outgap, outgap );
+						//apply specific algorithm to align mseq1 and mseq2
+						pscore = G__align11( dynamicmtx, mseq1, mseq2, *alloclen, outgap, outgap ); //defined in Galign11.c.
 					}
 					else
 					{
 //						reporterr(       "%d-%d", clus1, clus2 );
+						//defined in Dalignmm.c. apply specific algorithm to align mseq1 and mseq2
 						pscore = D__align_ls( dynamicmtx, mseq1, mseq2, effarr1, effarr2, clus1, clus2, *alloclen, NULL, &dumdb, NULL, NULL, NULL, NULL, NULL, 0, NULL, outgap, outgap );
 					}
 					break;
@@ -1903,11 +1921,13 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 					if( clus1 == 1 && clus2 == 1 )
 					{
 //						reporterr(       "%d-%d", clus1, clus2 );
-						pscore = G__align11( dynamicmtx, mseq1, mseq2, *alloclen, outgap, outgap );
+						//apply specific algorithm to align mseq1 and mseq2
+						pscore = G__align11( dynamicmtx, mseq1, mseq2, *alloclen, outgap, outgap ); //defined in Galign11.c.
 					}
 					else
 					{
 //						reporterr(       "\n\n %d - %d (%d-%d) : ", topol[l][0][0], topol[l][1][0], clus1, clus2 );
+						//defined in Salignmm.c. apply specific algorithm to align mseq1 and mseq2
 						pscore = A__align( dynamicmtx, mseq1, mseq2, effarr1, effarr2, clus1, clus2, *alloclen, NULL, &dumdb, NULL, NULL, NULL, NULL, NULL, 0, NULL, outgap, outgap, localmem[0][0], 1 );
 					}
 					break;
@@ -1923,7 +1943,7 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 
 //		writePre( njob, name, nlen, aseq, 0 );
 
-		if( disp ) display( aseq, njob );
+		if( disp ) display( aseq, njob ); //defined in mltaln9.c. displays aseq chars to canvas
 //		reporterr(       "\n" );
 
 		if( mergeoralign[l] == '1' ) // jissainiha nai. atarashii hairetsu ha saigo dakara.
@@ -1937,7 +1957,7 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 //			for( i=0; i<clus1; i++ ) reporterr(       ">STEP0 mseq1[%d] = \n%s\n", i, mseq1[i] );
 //			for( i=0; i<clus2; i++ ) reporterr(       ">STEP0 mseq2[%d] = \n%s\n", i, mseq2[i] );
 			gapmaplen = strlen( mseq1[0] )-len1nocommongap+len1;
-			adjustgapmap( gapmaplen, gapmap, mseq1[0] );
+			adjustgapmap( gapmaplen, gapmap, mseq1[0] ); //defined in addfunctions.c. update gapmap values based on mseq1[0] chars
 #if 0
 			reporterr( "\n" );
 			for( i=0; i<clus1; i++ ) reporterr(       ">STEP1 mseq1[%d] = \n%s\n", i, mseq1[i] );
@@ -1946,14 +1966,15 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 //			if( clus1 + clus2 < njob ) restorecommongaps( njob, aseq, topol[l][0], topol[l][1], gapmap, *alloclen, '-' );
 			if( smoothing )
 			{
-				restorecommongapssmoothly( njob, njob-(clus1+clus2), aseq, localmem[0], localmem[1], gapmap, *alloclen, '-' );
-				findnewgaps( clus1, 0, mseq1, gaplen );
+				restorecommongapssmoothly( njob, njob-(clus1+clus2), aseq, localmem[0], localmem[1], gapmap, *alloclen, '-' ); //defined in addfunctions.c
+				findnewgaps( clus1, 0, mseq1, gaplen ); //defined in addfunctions.c. update gaplen based on mseq1 and 0 values
 				insertnewgaps_bothorders( njob, alreadyaligned, aseq, localmem[0], localmem[1], gaplen, gapmap, gapmaplen, *alloclen, alg, '-' );
 			}
 			else
 			{
-				restorecommongaps( njob, njob-(clus1+clus2), aseq, localmem[0], localmem[1], gapmap, *alloclen, '-' );
-				findnewgaps( clus1, 0, mseq1, gaplen );
+				//update aseq chars - gaps - based on gapmap values
+				restorecommongaps( njob, njob-(clus1+clus2), aseq, localmem[0], localmem[1], gapmap, *alloclen, '-' ); //defined in addfunctions.c
+				findnewgaps( clus1, 0, mseq1, gaplen ); //defined in addfunctions.c. update gaplen based on mseq1 and 0 values
 				insertnewgaps( njob, alreadyaligned, aseq, localmem[0], localmem[1], gaplen, gapmap, *alloclen, alg, '-' );
 			}
 
@@ -1982,7 +2003,7 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 #endif
 
 
-			eq2dashmatometehayaku( mseq1, clus1 );
+			eq2dashmatometehayaku( mseq1, clus1 ); //defined in addfunctions.c.
 			eq2dashmatometehayaku( mseq2, clus2 );
 
 			for( i=0; (m=localmem[1][i])>-1; i++ ) alreadyaligned[m] = 1;
@@ -2001,8 +2022,8 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 #if SKIP
 			skiptable1 = AllocateIntMtx( clus1, 0 );
 			skiptable2 = AllocateIntMtx( clus2, 0 );
-			makeskiptable( clus1, skiptable1, mseq1 ); // allocate suru.
-			makeskiptable( clus2, skiptable2, mseq2 ); // allocate suru.
+			makeskiptable( clus1, skiptable1, mseq1 ); // allocate suru. //defined in mltaln9.c. fill skiptable1 with values based on gaps in mseq1
+			makeskiptable( clus2, skiptable2, mseq2 ); // allocate suru. //fill skiptable2 with values based on gaps in mseq2
 #endif
 			for( i=0; i<clus1; i++ ) 
 			{
@@ -2095,6 +2116,7 @@ static int disttbfast_treebase( int *nlen, char **aseq, int nadd, char *mergeora
 	return( 1 );
 }
 
+//write all options to fp: dorp, penalty, FFT, tree method, algorithm and related values
 static void WriteOptions( FILE *fp )
 {
 
@@ -2203,6 +2225,25 @@ static double **preparepartmtx( int nseq )
 	return( val );
 }
 
+
+// 1. Parse arguments.
+// 2. open inputfile for reading and find sequences count, max length and dna or protein from infp file.
+// 3. Check sequences number max and min and also max length of sequence.
+// 4. set stack size to 200 * njob
+// 5. Read sub alignment file and fill matrix with it.
+// 6. Read sequences and their names from infp file into seq, name and nlen arrays.
+// 7. Fill arrays from constants call.
+// 8. Init prep_g and trap_g files which are used for tracing.
+// 9. Check seq characters and report error if unusual character is found.
+// 10. read first line from '_guidetree' file and determine the type used and memory size required, then returns char to represent type found
+// 11. if treein -> fill randomseed, npickx and maxdistmtxsize based on values read from '_guidetree’ file
+// 12. If treein == t -> align sequences from seq using G__align11_noalign based on npickx and other args
+// 13. if !treein -> Make distance matrix.
+// 14. For each guide tree -> load tree / create chain -> write result to hat2 / construct UPGMA tree - with different parameters -> write order to order file -> check original and additional sequences lengths and make sure they are equal -> if subalignment: check sub alignments sequences -> then progressive alignment -> Making a distance matrix from msa / Making a compact tree from msa
+// 15. if keep length -> write deletelist and its indices in '_deletelist’ file -> print deleted letters from sequences to '_deletemap’ file
+// 16. Print score
+// 17. Write sequences and their names to stdout
+// 18. Free allocated memory
 int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, char **argv, int (*callback)(int, int, char*))
 {
 	int  *nlen = NULL;	
@@ -2214,7 +2255,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	int i, j;
 	int ***topol = NULL;
 	int *addmem = NULL;
-	Treedep *dep = NULL;
+	Treedep *dep = NULL; //Treedep is a structure defined in mltaln.h.
 	double **len = NULL;
 	FILE *infp = NULL;
 //	FILE *adfp;
@@ -2262,7 +2303,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	double **partmtx = NULL;
 // for compacttree
 
-
+	//in this call, ngui = 0
 	if( ngui )
 	{
 		initglobalvariables();
@@ -2280,15 +2321,15 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		gmsg = 1;
 	}
 	else
-		gmsg = 0; // iranai
+		gmsg = 0; // iranai  //defined in defs.c.
 
-	dist_tb_fast_arguments( argc, argv );
+	dist_tb_fast_arguments( argc, argv ); //parse arguments
 	algbackup = alg; // tbfast wo disttbfast ni ketsugou shitatame.
 #ifndef enablemultithread
 	nthread = 0;
 #endif
 
-
+	//in this call, ngui = 0
 	if( ngui )
 	{
 		for( i=0; i<argc; i++ ) 
@@ -2302,7 +2343,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	{
 		if( inputfile )
 		{
-			infp = fopen( inputfile, "r" );
+			infp = fopen( inputfile, "r" ); //open inputfile for reading
 			if( !infp )
 			{
 				reporterr(       "Cannot open %s\n", inputfile );
@@ -2312,11 +2353,11 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		else
 			infp = stdin;
 	
-		getnumlen( infp );
+		getnumlen( infp ); //defined in io.c. Finds sequences count, max length and dna or protein from infp file.
 		rewind( infp );
 	}
 	
-	if( njob > 1000000 )
+	if( njob > 1000000 ) //if number of sequences > 1,000,000
 	{
 		reporterr(       "The number of sequences must be < %d\n", 1000000 );
 		reporterr(       "Please try the --parttree option for such large data.\n" );
@@ -2332,7 +2373,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 
 	if( specificityconsideration != 0.0 && nlenmax)
 	{
-		if( nlenmax > 100000 )
+		if( nlenmax > 100000 ) //if max length of sequences > 100,000
 		{
 			reporterr( "\n" );
 			reporterr( "Too long to apply --allowshift or --unalignlevel>0\n" );
@@ -2344,12 +2385,16 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	}
 
 #ifndef mingw
-	setstacksize( 200 * njob ); // topolorder() de ookime no stack wo shiyou.
+	setstacksize( 200 * njob ); // topolorder() de ookime no stack wo shiyou. //defined in io.c.
+	//set stack size to 200 * njob
 #endif
 
 	if( subalignment )
 	{
-		readsubalignmentstable( njob, NULL, NULL, &nsubalignments, &maxmem );
+		//First call of this method with table = NULL reads number of subalignments in subalignments file and assign to nsubpt
+		//also reads max number of spaces in all sequences into maxmem
+		//Second call reads data from the file and fills table with it
+		readsubalignmentstable( njob, NULL, NULL, &nsubalignments, &maxmem ); //defined in io.c.
 		reporterr(       "nsubalignments = %d\n", nsubalignments );
 		reporterr(       "maxmem = %d\n", maxmem );
 		subtable = AllocateIntMtx( nsubalignments, maxmem+1 );
@@ -2382,33 +2427,36 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
     name = AllocateCharMtx( njob, B+1 );
     nlen = AllocateIntVec( njob ); 
     nogaplen = AllocateIntVec( njob ); 
-	if( ngui )
+	if( ngui ) //in this call, ngui = 0
 	{
 		if( copydatafromgui( namegui, seqgui, name, nlen, seq ) )
 			exit( 1 );
 	}
 	else
 	{
-		readData_pointer( infp, name, nlen, seq );
+		readData_pointer( infp, name, nlen, seq ); //defined in io.c. reads sequences and their names from infp file into seq, name and nlen arrays.
 		fclose( infp );
 	}
 #endif
 
 
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
 
 #if 0
 	reporterr(       "params = %d, %d, %d\n", penalty, penalty_ex, offset );
 #endif
 
-	initSignalSM();
+	initSignalSM(); //defined in io.c. inits signalSM value which is defined in defs.h.
 
-	initFiles();
+	initFiles(); //defined in io.c. init prep_g and trap_g files. I think these files are for tracing
 
-	WriteOptions( trap_g );
+	WriteOptions( trap_g ); //defined here.  //trap_g defined in defs.h.
+	//write all options to trap_g: dorp, penalty, FFT, tree method, algorithm and related values
 
-	c = seqcheck( seq );
+	c = seqcheck( seq ); //defined in mltaln9.c. check seq characters and report error if unusual character is found
 	if( c )
 	{
 		reporterr(       "Illegal character %c\n", c );
@@ -2432,10 +2480,13 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	if( treein )
 	{
 		int npickx;
-		treein = check_guidetreefile( &randomseed, &npickx, &maxdistmtxsize );
+		//read first line from '_guidetree' file and determine the type used and memory size required, then returns char to represent type found
+		//fill randomseed, npickx and maxdistmtxsize based on values read from '_guidetree' file
+		treein = check_guidetreefile( &randomseed, &npickx, &maxdistmtxsize ); //defined in mltaln9.c.
 		if( treein == 't' )
 		{
-			varpairscore( njob, npickx, nlenmax, seq, randomseed );
+			varpairscore( njob, npickx, nlenmax, seq, randomseed ); //defined here.
+			//align sequences from seq using G__align11_noalign based on npickx and other args
 			exit( 1 );
 		}
 		else if( treein == 'c' )
@@ -2461,7 +2512,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				treein = 's';
 				nguidetree = 1;
 			}
-			else if( njob < 100 || 't' == varpairscore( njob, npickx, nlenmax, seq, randomseed ) )
+			else if( njob < 100 || 't' == varpairscore( njob, npickx, nlenmax, seq, randomseed ) ) //defined here. align sequences from seq using G__align11_noalign based on npickx and other args
 			{
 				if( treein == 'c' ) exit( 1 );
 				reporterr( "Tree!\n" );
@@ -2509,14 +2560,14 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		}
 		else if( dorp == 'd' && tuplesize == 10 )
 		{
-			lenfaca = D10LENFACA;
+			lenfaca = D10LENFACA; //these constants are defined here
 			lenfacb = D10LENFACB;
 			lenfacc = D10LENFACC;
 			lenfacd = D10LENFACD;
 		}
 		else    
 		{
-			lenfaca = PLENFACA;
+			lenfaca = PLENFACA; //these constants are defined here
 			lenfacb = PLENFACB;
 			lenfacc = PLENFACC;
 			lenfacd = PLENFACD;
@@ -2525,7 +2576,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		maxl = 0;
 		for( i=0; i<njob; i++ ) 
 		{
-			gappick0( tmpseq, seq[i] );
+			gappick0( tmpseq, seq[i] ); //defined in mltaln9.c. copy 'seq[i]' chars to 'tmpseq' without gaps chars
 			nogaplen[i] = strlen( tmpseq );
 			if( nogaplen[i] < 6 )
 			{
@@ -2536,13 +2587,15 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			if( nogaplen[i] > maxl ) maxl = nogaplen[i];
 			if( dorp == 'd' ) /* nuc */
 			{
-				disttbfast_seq_grp_nuc( grpseq, tmpseq );
+				disttbfast_seq_grp_nuc( grpseq, tmpseq ); //defined here. fill grpseq with values from 'amino_grp' based on tmpseq chars
 //				makepointtable_nuc( pointt[i], grpseq );
 //				makepointtable_nuc_octet( pointt[i], grpseq );
 				if( tuplesize == 10 )
-					disttbfast_makepointtable_nuc_dectet( pointt[i], grpseq );
+					//fill pointt[i] with values based on grpseq and some calculations on it
+					disttbfast_makepointtable_nuc_dectet( pointt[i], grpseq ); //defined here.
 				else if( tuplesize == 6 )
-					disttbfast_makepointtable_nuc( pointt[i], grpseq );
+					//fill pointt[i] with values based on grpseq and some calculations on it
+					disttbfast_makepointtable_nuc( pointt[i], grpseq ); //defined here.
 				else
 				{
 					reporterr(       "tuplesize=%d: not supported\n", tuplesize );
@@ -2551,8 +2604,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			}
 			else                 /* amino */
 			{
-				disttbfast_seq_grp( grpseq, tmpseq );
-				disttbfast_makepointtable( pointt[i], grpseq );
+				disttbfast_seq_grp( grpseq, tmpseq ); //defined here. fill grpseq with values from 'amino_grp' based on tmpseq chars
+				disttbfast_makepointtable( pointt[i], grpseq ); //defined here. fill pointt[i] with values based on grpseq and some calculations on it
 			}
 		}
 		if( nunknown ) reporterr(       "\nThere are %d ambiguous characters.\n", nunknown );
@@ -2572,12 +2625,12 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				table1 = (int *)calloc( tsize, sizeof( int ) );
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-				disttbfast_makecompositiontable_p( table1, pointt[i] );
-				selfscore[i] = commonsextet_p( table1, pointt[i] );
+				disttbfast_makecompositiontable_p( table1, pointt[i] ); //defined here. update table1 values based on pointt[i] values
+				selfscore[i] = commonsextet_p( table1, pointt[i] ); //defined in mltaln9.c. return value based on table1 and pointt[i] values comparison
 				free( table1 );
 				table1 = NULL;
 			}
-			commonsextet_p( NULL, NULL );
+			commonsextet_p( NULL, NULL ); //defined in mltaln9.c. free allocated memory from previous call.
 
 #ifdef enablemultithread
 			if( nthread > 0 )
@@ -2645,7 +2698,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			else
 #endif
 			{
-				compactdistmtxthread_arg_t *targ;
+				compactdistmtxthread_arg_t *targ; //compact dist mtx thread arg t
 				int jobpos;
 		
 				jobpos = 0;
@@ -2667,12 +2720,14 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 					targ[0].mindistfrom = mindistfrom;
 					targ[0].jobpospt = &jobpos;
 	
-					compactdisthalfmtxthread( targ );
+					compactdisthalfmtxthread( targ ); //defined here.
+					//update targ->partmtx, targ->jobpospt, targ->mindist, targ->mindistfrom values based on calculations on other args.
 				}
 
 				free( targ );
 
 				for( i=0; i<njob; i++ ) mindist[i] -= preferenceval( i, mindistfrom[i], njob ); // for debug
+				//defined here. return value based on i and mindistfrom[i] subtraction
 			}
 
 //			for( i=0; i<njob; i++ ) printf( "mindist[%d] = %f, mindistfrom[%d] = %d\n", i, mindist[i], i, mindistfrom[i] );
@@ -2736,11 +2791,12 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 						reporterr(       "\r% 5d / %d", i+1, njob );
 						if( callback && callback( 0, i*25/njob, "Distance matrix" ) ) goto chudan;
 					}
-					disttbfast_makecompositiontable_p( table1, pointt[i] );
+					disttbfast_makecompositiontable_p( table1, pointt[i] ); //defined here.
+					//update table1 values based on pointt[i] values
 			
 					for( j=i; j<njob; j++ ) 
 					{
-						mtx[i][j-i] = (double)commonsextet_p( table1, pointt[j] );
+						mtx[i][j-i] = (double)commonsextet_p( table1, pointt[j] ); //defined in mltaln9.c. return value based on table1 and pointt[j] values comparison
 					} 
 					free( table1 ); table1 = NULL;
 				}
@@ -2784,7 +2840,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				}
 			}
 			FreeIntMtx( pointt ); pointt = NULL;
-			commonsextet_p( NULL, NULL );
+			commonsextet_p( NULL, NULL ); //defined in mltaln9.c. free memory allocated in previous call.
 		}
 		free( grpseq ); grpseq = NULL;
 		free( tmpseq ); tmpseq = NULL;
@@ -2817,7 +2873,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	if( nadd && keeplength )
 	{
 		originalgaps = (char *)calloc( nlenmax+1, sizeof( char) );
-		recordoriginalgaps( originalgaps, njob-nadd, seq );
+		recordoriginalgaps( originalgaps, njob-nadd, seq ); //defined in addfunctions.c. fill originalgaps array with indicators based on gaps found in seq
 
 		if( mapout )
 		{
@@ -2826,7 +2882,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				ien = strlen( seq[njob-nadd+i] );
 				addbk[i] = (char *)calloc( ien + 1, sizeof( char ) );
-				gappick0( addbk[i], seq[njob-nadd+i] );
+				gappick0( addbk[i], seq[njob-nadd+i] ); //defined in mltaln9.c. copy 'seq[njob-nadd+i]' chars to 'addbk[i]' without gaps chars
 			}
 			addbk[nadd] = NULL;
 		}
@@ -2861,18 +2917,25 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			calcpairdists = 0; // iranai
 			if( treein == (int)'l' )
 			{
-				loadtree( njob, topol, len, name, nogaplen, dep, treeout );
+				loadtree( njob, topol, len, name, nogaplen, dep, treeout ); //defined in mltaln9.c.
+				//read tree from '_guidetree' file and fill nogaplen and dep with values from it. i think if treeout != 0, it writes the tree read to infile.tree
 			}
 			else if( treein == (int)'s' )
 			{
-				createchain( njob, topol, len, name, nogaplen, dep, treeout, 1, randomseed );
+				createchain( njob, topol, len, name, nogaplen, dep, treeout, 1, randomseed ); //defined in mltaln9.c.
+				//update topol values based on shuffled integers of njob and write them to _guidetree
+				//update len values based on calculations on njob and write them to _guidetree
+				//update dep. treeout and shuffle (1) determines some decisions like writing in 'infile.tree' and shuffling order array
 				nthread = 0;
 				weight = 0; // mafft.tmpl kara idou
 				tbrweight = 0; // mafft.tmpl kara idou
 			}
 			else if( treein == (int)'p' )
 			{
-				createchain( njob, topol, len, name, nogaplen, dep, treeout, 0, randomseed );
+				createchain( njob, topol, len, name, nogaplen, dep, treeout, 0, randomseed ); //defined in mltaln9.c.
+				//update topol values based on shuffled integers of njob and write them to _guidetree
+				//update len values based on calculations on njob and write them to _guidetree
+				//update dep. treeout and shuffle (1) determines some decisions like writing in 'infile.tree' and shuffling order array
 				nthread = 0;
 				weight = 0; // mafft.tmpl kara idou
 				tbrweight = 0; // mafft.tmpl kara idou
@@ -2895,17 +2958,18 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		{
 			if( distout )
 			{
-				hat2p = fopen( "hat2", "w" );
-				WriteFloatHat2_pointer_halfmtx( hat2p, njob, name, mtx );
+				hat2p = fopen( "hat2", "w" ); //open 'hat2' file for writing
+				WriteFloatHat2_pointer_halfmtx( hat2p, njob, name, mtx ); //defined in io.c.
+				//write name and mtx content to hat2p file in specific format
 				// writehat2 wo kakinaosu
 				fclose( hat2p );
 
 				if( !treeout && noalign )  // 2016Jul31
 				{
-					writeData_pointer( stdout, njob, name, nlen, seq );
+					writeData_pointer( stdout, njob, name, nlen, seq ); //defined in io.c. write sequences and their names to stdout
 					reporterr(       "\n" );
 					SHOWVERSION;
-					goto chudan;
+					goto chudan; //label defined later to free all allocated memory and return to the caller
 //					return( 0 );
 				}
 			}
@@ -2914,6 +2978,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				reporterr(       "Constructing a UPGMA tree ... " );
 				fixed_supg_double_realloc_nobk_halfmtx_treeout_constrained( njob, mtx, topol, len, name, nlen, dep, nsubalignments, subtable, !calcpairdists );
+				//defined in mltaln9.c.
+				//update mtx, topol, len, dep, subtable values based on other args values and calculations to determine tree shape and values - to be studied in details later -.
 				if( !calcpairdists ) 
 				{
 					FreeFloatHalfMtx( mtx, njob ); mtx = NULL;
@@ -2923,6 +2989,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				reporterr(       "Constructing a tree ... " );
 				compacttree_memsaveselectable( njob, partmtx, mindistfrom, mindist, pointt, selfscore, bseq, skiptable, topol, len, name, nogaplen, dep, treeout, compacttree, 1 );
+				//defined in mltaln9.c.
+				//update mindistfrom, mindist, topol, len, dep values based on tree construction - needs to be studied in details later -
 				if( mindistfrom ) free( mindistfrom ); mindistfrom = NULL;
 				if( mindist ) free( mindist );; mindist = NULL;
 				if( selfscore ) free( selfscore ); selfscore = NULL;
@@ -2935,6 +3003,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				reporterr(       "Constructing a UPGMA tree (treeout, efffree=%d) ... ", !calcpairdists );
 				fixed_musclesupg_double_realloc_nobk_halfmtx_treeout_memsave( njob, mtx, topol, len, name, nogaplen, dep, !calcpairdists );
+				//defined in mltaln9.c.
+				//update topol, len, dep values based on tree construction - needs to be studied in details later -
 				if( !calcpairdists )
 				{
 					FreeFloatHalfMtx( mtx, njob ); mtx = NULL;
@@ -2944,6 +3014,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			{
 				reporterr(       "Constructing a UPGMA tree (efffree=%d) ... ", !calcpairdists );
 				fixed_musclesupg_double_realloc_nobk_halfmtx_memsave( njob, mtx, topol, len, dep, 1, !calcpairdists );
+				//defined in mltaln9.c.
+				//update topol, len, dep values based on tree construction - needs to be studied in details later -
 				if( !calcpairdists )
 				{
 					FreeFloatHalfMtx( mtx, njob ); mtx = NULL;
@@ -2959,14 +3031,15 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		if( calcpairdists ) selfscore = AllocateIntVec( njob );
 
 
-		if( callback && callback( 0, 25, "Guide tree" ) ) goto chudan;
+		if( callback && callback( 0, 25, "Guide tree" ) ) goto chudan; //label defined later to free all allocated memory and return to the caller
 		reporterr(       "\ndone.\n\n" );
 		if( callback && callback( 0, 50, "Guide tree" ) ) goto chudan;
 
 		if( sparsepickup && iguidetree == nguidetree-1 )
 		{
 			reporterr(       "Sparsepickup! \n" );
-			pickup( njob, nogaplen, topol, name, seq );
+			pickup( njob, nogaplen, topol, name, seq ); //defined here.
+			//pickup part of sequences based on sparsepickup value, and write selected sequences and their names to stdout, and write not used ones to notused file
 			reporterr(       "done. \n" );
 			SHOWVERSION;
 			goto chudan;
@@ -2985,10 +3058,11 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		{
 			localmem[0][0] = -1;
 			posinmem = 0;
-			topolorder( njob, localmem[0], &posinmem, topol, dep, njob-2, 2 );
+			topolorder( njob, localmem[0], &posinmem, topol, dep, njob-2, 2 ); //defined in mltaln9.c.
+			//recursion method. update localmem[0] and posinmem values based on other arguments
 		}
 	
-		orderfp = fopen( "order", "w" );
+		orderfp = fopen( "order", "w" ); //open 'order' file for writing
 		if( !orderfp )
 		{
 			reporterr(       "Cannot open 'order'\n" );
@@ -3005,7 +3079,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		}
 #else
 		for( i=0; i<njob; i++ )
-			fprintf( orderfp, "%d\n", localmem[0][i] );
+			fprintf( orderfp, "%d\n", localmem[0][i] ); //write localmem - which contains topol order - to 'order' file
 #endif
 		fclose( orderfp );
 
@@ -3014,7 +3088,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	
 		if( ( treeout || distout )  && noalign ) 
 		{
-			writeData_pointer( stdout, njob, name, nlen, seq );
+			writeData_pointer( stdout, njob, name, nlen, seq ); //defined in io.c. write sequences and their names to stdout
 			reporterr(       "\n" );
 			SHOWVERSION;
 			goto chudan;
@@ -3027,7 +3101,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 #if 0
 			utree = 0; counteff( njob, topol, len, eff ); utree = 1;
 #else
-			counteff_simple_double_nostatic_memsave( njob, topol, len, dep, eff );
+			counteff_simple_double_nostatic_memsave( njob, topol, len, dep, eff ); //defined in mltaln9.c.
+			//update eff values based on len and internal eff values and other values calculations
 //			counteff_simple_double_nostatic( njob, topol, len, eff );
 #endif
 		}
@@ -3053,7 +3128,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		if( nadd )
 		{
 			alignmentlength = strlen( seq[0] );
-			for( i=0; i<njob-nadd; i++ )
+			for( i=0; i<njob-nadd; i++ ) //check original sequences lengths and make sure they are equal
 			{
 				if( alignmentlength != strlen( seq[i] ) )
 				{
@@ -3069,7 +3144,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			if( addprofile )
 			{
 				alignmentlength = strlen( seq[njob-nadd] );
-				for( i=njob-nadd; i<njob; i++ )
+				for( i=njob-nadd; i<njob; i++ ) //check additional sequences lengths and make sure they are equal
 				{
 					if( alignmentlength != strlen( seq[i] ) )
 					{
@@ -3088,12 +3163,15 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				{
 					localmem[0][0] = -1;
 					posinmem = 0;
-					topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 );
+					topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 ); //defined in mltaln9.c.
+					//recursion method. update localmem[0] and posinmem values based on other arguments
 					localmem[1][0] = -1;
 					posinmem = 0;
 					topolorder( njob, localmem[1], &posinmem, topol, dep, i, 1 );
+					//recursion method. update localmem[1] and posinmem values based on other arguments
 
-					if( samemember( localmem[0], addmem ) ) // jissainiha nai
+					//I think this method returns 1 if localmem[0] and addmem contains the same values, 0 otherwise.
+					if( samemember( localmem[0], addmem ) ) // jissainiha nai   //defined in mltaln9.c.
 					{
 						mergeoralign[i] = '1';
 						foundthebranch = 1;
@@ -3118,8 +3196,9 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 					reporterr(       "############################################################################### \n" );
 					exit( 1 );
 				}
-				commongappick( nadd, seq+njob-nadd );
-				for( i=njob-nadd; i<njob; i++ ) strcpy( bseq[i], seq[i] );
+				commongappick( nadd, seq+njob-nadd ); //defined in mltaln9.c.
+				//update seq+njob-nadd values based on gaps positions in it and nadd value
+				for( i=njob-nadd; i<njob; i++ ) strcpy( bseq[i], seq[i] ); //copy seq to bseq
 			}
 			else
 			{
@@ -3159,22 +3238,26 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 //					reporterr( "Looking for samemember, %d-%d/%d\n", j, i, njob );
 					localmem[0][0] = -1;
 					posinmem = 0;
-					topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 );
+					topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 ); //defined in mltaln9.c.
+					//recursion method. update localmem[0] and posinmem values based on other arguments
 					localmem[1][0] = -1;
 					posinmem = 0;
 					topolorder( njob, localmem[1], &posinmem, topol, dep, i, 1 );
+					//recursion method. update localmem[1] and posinmem values based on other arguments
 
 					for( j=njob-nadd; j<njob; j++ )
 					{
 						addmem[0] = j;
 						addmem[1] = -1;
 
-						if( samemembern( localmem[0], addmem, 1 ) ) // arieru
+						//I think this method returns 1 if localmem[0] and addmem contains the same values, 0 otherwise.
+						if( samemembern( localmem[0], addmem, 1 ) ) // arieru   //defined in mltaln9.c.
 						{
 //							reporterr(       "HIT!\n" );
 							if( mergeoralign[i] != 'n' ) mergeoralign[i] = 'w';
 							else mergeoralign[i] = '1';
 						}
+						//I think this method returns 1 if localmem[1] and addmem contains the same values, 0 otherwise.
 						else if( samemembern( localmem[1], addmem, 1 ) )
 						{
 //							reporterr(       "HIT!\n" );
@@ -3193,13 +3276,15 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				{
 					localmem[0][0] = -1;
 					posinmem = 0;
-					topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 );
+					topolorder( njob, localmem[0], &posinmem, topol, dep, i, 0 ); //defined in mltaln9.c.
+					//recursion method. update localmem[0] and posinmem values based on other arguments
 					localmem[1][0] = -1;
 					posinmem = 0;
 					topolorder( njob, localmem[1], &posinmem, topol, dep, i, 1 );
+					//recursion method. update localmem[1] and posinmem values based on other arguments
 
-					includememberres0 = includemember( localmem[0], addmem );
-					includememberres1 = includemember( localmem[1], addmem );
+					includememberres0 = includemember( localmem[0], addmem ); //defined in mltaln9.c. return 0 if localmem[0] not included in addmem, 1 otherwise
+					includememberres1 = includemember( localmem[1], addmem ); //return 0 if localmem[1] not included in addmem, 1 otherwise
 //					if( includemember( topol[i][0], addmem ) && includemember( topol[i][1], addmem ) )
 					if( includememberres0 && includememberres1 )
 					{
@@ -3226,13 +3311,14 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 					reporterr(       "i=%d, mergeoralign[] = %c\n", i, mergeoralign[i] );
 				}
 #endif
-				for( i=njob-nadd; i<njob; i++ ) gappick0( bseq[i], seq[i] );
+				for( i=njob-nadd; i<njob; i++ ) gappick0( bseq[i], seq[i] ); //defined in mltaln9.c.
+				//copy 'seq' chars to 'bseq' without gaps chars
 			}
 	
 //			if( !keeplength ) commongappick( njob-nadd, seq );
-			commongappick( njob-nadd, seq );
+			commongappick( njob-nadd, seq ); //defined in mltaln9.c. update seq values based on gaps positions in it and njob-nadd value
 
-			for( i=0; i<njob-nadd; i++ ) strcpy( bseq[i], seq[i] );
+			for( i=0; i<njob-nadd; i++ ) strcpy( bseq[i], seq[i] ); //copy seq to bseq
 
 		}
 //--------------- kokokara ----
@@ -3245,7 +3331,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				alignmentlength = strlen( seq[subtable[i][0]] );
 //				for( j=0; subtable[i][j]!=-1; j++ )
 //					reporterr(       " %d. %-30.30s\n", subtable[i][j]+1, name[subtable[i][j]]+1 );
-				for( j=0; subtable[i][j]!=-1; j++ )
+				for( j=0; subtable[i][j]!=-1; j++ ) //check subalignments lengths and make sure they are aligned
 				{
 					if( subtable[i][j] >= njob ) // check sumi
 					{
@@ -3281,7 +3367,9 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				}
 				for( j=0; j<njob-1; j++ )
 				{
-					if( includemember( topol[j][0], subtable[i] ) && includemember( topol[j][1], subtable[i] ) )
+					//return 0 if topol[j][0] not included in subtable[i], 1 otherwise
+					//return 0 if topol[j][1] not included in subtable[i], 1 otherwise
+					if( includemember( topol[j][0], subtable[i] ) && includemember( topol[j][1], subtable[i] ) ) //defined in mltaln9.c.
 					{
 						mergeoralign[j] = 'n';
 					}
@@ -3289,7 +3377,9 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				foundthebranch = 0;
 				for( j=0; j<njob-1; j++ )
 				{
-					if( samemember( topol[j][0], subtable[i] ) || samemember( topol[j][1], subtable[i] ) )
+					//I think this method returns 1 if topol[j][0] and subtable[i] contains the same values, 0 otherwise.
+					//I think this method returns 1 if topol[j][1] and subtable[i] contains the same values, 0 otherwise.
+					if( samemember( topol[j][0], subtable[i] ) || samemember( topol[j][1], subtable[i] ) ) //defined in mltaln9.c.
 					{
 						foundthebranch = 1;
 						reporterr(       " -> OK\n" );
@@ -3298,7 +3388,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 				}
 				if( !foundthebranch )
 				{
-					system( "cp infile.tree GuideTree" ); // tekitou
+					system( "cp infile.tree GuideTree" ); // tekitou   //copy GuideTree to infile.tree
 					reporterr(       "\n" );
 					reporterr(       "###############################################################################\n" );
 					reporterr(       "# ERROR!\n" );
@@ -3340,14 +3430,14 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	
 			for( i=0; i<njob; i++ ) 
 			{
-				if( insubtable[i] ) strcpy( bseq[i], seq[i] );
-				else gappick0( bseq[i], seq[i] );
+				if( insubtable[i] ) strcpy( bseq[i], seq[i] ); //copy seq to bseq
+				else gappick0( bseq[i], seq[i] ); //defined in mltaln9.c. copy 'seq' chars to 'bseq' without gaps chars
 			}
 	
 			for( i=0; i<nsubalignments; i++ ) 
 			{
 				for( j=0; subtable[i][j]!=-1; j++ ) subalnpt[i][j] = bseq[subtable[i][j]];
-				if( !preservegaps[i] ) commongappick( j, subalnpt[i] );
+				if( !preservegaps[i] ) commongappick( j, subalnpt[i] ); //defined in mltaln9.c. update subalnpt[i] values based on gaps positions in it and j value
 			}
 	
 #if 0 // --> iguidetree loop no soto he
@@ -3361,10 +3451,12 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 //--------------- kokomade ----
 		else
 		{
-			for( i=0; i<njob; i++ ) gappick0( bseq[i], seq[i] );
+			for( i=0; i<njob; i++ ) gappick0( bseq[i], seq[i] ); //defined in mltaln9.c. copy 'seq' chars to 'bseq' without gaps chars
 			for( i=0; i<njob-1; i++ ) mergeoralign[i] = 'a';
 		}
 
+		//defined in mltaln9.c. calculates score between seq[i] and seq[i] based on penalty_dist and amino_dis values
+		//so this loop fills selfscore with naive score values between each seq char and itself
 		if( calcpairdists ) for( i=0; i<njob; i++ ) selfscore[i] = naivepairscore11( seq[i], seq[i], penalty_dist ); // (int)?
 	
 		reporterr(       "Progressive alignment %d/%d... \n", iguidetree+1, nguidetree );
@@ -3456,6 +3548,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 #endif
 			{
 //				if( disttbfast_treebase( keeplength && (iguidetree==nguidetree-1), nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, NULL, NULL, deletemap, deletelag, &alloclen, callback ) ) goto chudan;
+
+				//defined here. I think it is for progressive alignment
 				if( disttbfast_treebase( nlen, bseq, nadd, mergeoralign, mseq1, mseq2, topol, dep, eff, NULL, NULL, &alloclen, callback ) ) goto chudan;
 			}
 		}
@@ -3570,10 +3664,10 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		{
 			reporterr( "Making a compact tree from msa, step 1.. \n" );
 			skiptable = AllocateIntMtx( njob, 0 );
-			makeskiptable( njob, skiptable, bseq ); // allocate suru.
+			makeskiptable( njob, skiptable, bseq ); // allocate suru.   //defined in mltaln9.c. fill skiptable matrix with values based on gaps in bseq
 			mindistfrom = (int *)calloc( njob, sizeof( int ) );
 			mindist = (double *)calloc( njob, sizeof( double ) );
-			partmtx = preparepartmtx( njob );
+			partmtx = preparepartmtx( njob ); //defined here.
 #ifdef enablemultithread
 			if( nthread > 0 )
 			{
@@ -3663,7 +3757,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 //					msacompactdistmtxthread( targ );
 				}
 				free( targ );
-				for( i=0; i<njob; i++ ) mindist[i] -= preferenceval( i, mindistfrom[i], njob ); // for debug
+				for( i=0; i<njob; i++ ) mindist[i] -= preferenceval( i, mindistfrom[i], njob ); // for debug  //defined here. return value based on i and mindistfrom[i] subtraction
 			}
 //			free( selfscore ); selfscore = NULL; // mada tsukau
 //			FreeCharMtx( bseq ); bseq = NULL; // mada tsukau
@@ -3687,7 +3781,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	if( keeplength )
 	{
 
-		dlf = fopen( "_deletelist", "w" );
+		dlf = fopen( "_deletelist", "w" ); //open '_deletelist' file for writing
 		deletelist = (int **)calloc( nadd+1, sizeof( int * ) );
 		for( i=0; i<nadd; i++ )
 		{
@@ -3695,9 +3789,10 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 			deletelist[i][0] = -1;
 		}
 		deletelist[nadd] = NULL;
-		ndeleted = deletenewinsertions_whole( njob-nadd, nadd, bseq, bseq+njob-nadd, deletelist );
+		//update bseq, bseq+njob-nadd and deletelist based on conditions on bseq and bseq+njob-nadd values
+		ndeleted = deletenewinsertions_whole( njob-nadd, nadd, bseq, bseq+njob-nadd, deletelist ); //defined in addfunctions.c.
 
-		for( i=0; i<nadd; i++ )
+		for( i=0; i<nadd; i++ )  //write deletelist and its indices in '_deletelist' file
 		{
 			if( deletelist[i] )
 				for( j=0; deletelist[i][j]!=-1; j++ )
@@ -3705,12 +3800,13 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		}
 		fclose( dlf );
 
+		 //defined in addfunctions.c. restore gaps from originalgaps to bseq.
 		restoreoriginalgaps( njob, bseq, originalgaps );
 
-		if( mapout )
+		if( mapout ) //print deleted letters from sequences to '_deletemap' file
 		{
-			dlf = fopen( "_deletemap", "w" );
-			reconstructdeletemap( nadd, addbk, deletelist, bseq+njob-nadd, dlf, name+njob-nadd );
+			dlf = fopen( "_deletemap", "w" ); //open '_deletemap' file for writing
+			reconstructdeletemap( nadd, addbk, deletelist, bseq+njob-nadd, dlf, name+njob-nadd ); //defined in addfunctions.c. print addbk and nadd content to dlf file
 			FreeCharMtx( addbk );
 			addbk = NULL;
 			fclose( dlf );
@@ -3722,7 +3818,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 
 	if( scoreout )
 	{
-		unweightedspscore = plainscore( njob, bseq );
+		unweightedspscore = plainscore( njob, bseq ); //defined in mltaln9.c. calculates score between all sequences in bseq based on naive score method
 		reporterr(       "\nSCORE %s = %.0f, ", "(treebase)", unweightedspscore );
 		reporterr(       "SCORE / residue = %f", unweightedspscore / ( njob * strlen( bseq[0] ) ) );
 		reporterr(       "\n\n" );
@@ -3744,7 +3840,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 		}
 		else
 		{
-			for( i=0; i<njob; i++ ) 
+			for( i=0; i<njob; i++ ) //copy bseq to seqgui
 			{
 #if 1
 				strcpy( seqgui[i], bseq[i] );
@@ -3757,9 +3853,10 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	}
 	else
 	{
-		writeData_pointer( stdout, njob, name, nlen, bseq );
+		writeData_pointer( stdout, njob, name, nlen, bseq ); //defined in io.c. write sequences and their names to stdout
 	} 
 
+	 //defined in mltaln9.c. return score of all sequences in bseq based on naive pair score method
 	if( spscoreout ) reporterr( "Unweighted sum-of-pairs score = %10.5f\n", sumofpairsscore( njob, bseq ) );
 	SHOWVERSION;
 	if( ndeleted > 0 )
@@ -3803,8 +3900,8 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 	if( nadd ) free( addmem );
 	FreeIntMtx( localmem );
 	free( eff );
-	freeconstants();
-	closeFiles();
+	freeconstants(); //defined in constants.c. free all constants allocated memory.
+	closeFiles(); //in io.c. close prep_g and trap_g files.
 	FreeCommonIP();
 	if( originalgaps ) free( originalgaps ); originalgaps = NULL;
 	if( deletelist ) FreeIntMtx( deletelist ); deletelist = NULL;
@@ -3813,7 +3910,7 @@ int disttbfast( int ngui, int lgui, char **namegui, char **seqgui, int argc, cha
 
 	return( val );
 
-chudan:
+chudan: //free all allocated memory in the file
 
 	if( nlen ) free( nlen ); nlen = NULL;
 	if( seq ) FreeCharMtx( seq ); seq = NULL;
@@ -3875,7 +3972,7 @@ chudan:
 	closeFiles();
 	FreeCommonIP();
 
-	return( GUI_CANCEL );
+	return( GUI_CANCEL ); //defined in mafft.h and = 3.
 }
 
 int disttbfast_main( int argc, char **argv )
