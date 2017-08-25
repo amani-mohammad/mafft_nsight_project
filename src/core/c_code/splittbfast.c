@@ -87,7 +87,7 @@ int dcompare( const Scores *a, const Scores *b )
 	}
 }
 
-
+//run fasta command and fill tmpaminodis with its result
 static void getfastascoremtx( int **tmpaminodis )
 {
 	FILE *qfp;
@@ -119,7 +119,7 @@ static void getfastascoremtx( int **tmpaminodis )
 	resvec = calloc( 1, sizeof( double ) );
 
 //	fprintf( stderr, "xformatting .. " );
-	dfp = fopen( datafile, "w" );
+	dfp = fopen( datafile, "w" ); //open datafile for writing
 	if( !dfp ) ErrorExit( "Cannot open datafile." );
 	sprintf( tmpname, ">+===========+%d                      ", 0 );
 	strcpy( tmpseq, "AAAAAAXXXXXX" );
@@ -143,7 +143,7 @@ static void getfastascoremtx( int **tmpaminodis )
 	strcat( tmpseq, "WWWWWWXXXXXX" );
 	strcat( tmpseq, "YYYYYYXXXXXX" );
 	slen = strlen( tmpseq );
-	writeData_pointer( dfp, 1, &tmpname, &slen, &tmpseq );
+	writeData_pointer( dfp, 1, &tmpname, &slen, &tmpseq ); //defined in io.c. write sequences and their names to dfp file
 	fclose( dfp );
 	fprintf( stderr, "done.\n" );
 
@@ -155,26 +155,26 @@ static void getfastascoremtx( int **tmpaminodis )
 		sprintf( tmpname, ">+===========+%d                      ", 0 );
 		for( j=0; j<6; j++ )
 			sprintf( tmpseq+strlen( tmpseq ), "%c", aa );
-		qfp = fopen( queryfile, "w" );
+		qfp = fopen( queryfile, "w" ); //open query file for writing
 		if( !qfp ) ErrorExit( "Cannot open queryfile." );
-		writeData_pointer( qfp, 1, &tmpname, &slen, &tmpseq );
+		writeData_pointer( qfp, 1, &tmpname, &slen, &tmpseq ); //defined in io.c. write sequences and their names to qfp file
 		fclose( qfp );
 
 		if( scoremtx == -1 ) 
 			sprintf( com, "%s -z3 -m10  -n -Q -H -b%d -E%d -d%d %s %s %d > %s", fastapath,  M, M, 0, queryfile, datafile, 6, resultfile );
 		else
 			sprintf( com, "%s -z3 -m10  -p -Q -H -b%d -E%d -d%d %s %s %d > %s", fastapath,  M, M, 0, queryfile, datafile, 2, resultfile );
-		res = system( com );
+		res = system( com ); //run the query in com and write result in resultfile
 		if( res )
 		{
 			fprintf( stderr, "error in %s", fastapath );
 			exit( 1 );
 		}
 
-		rfp = fopen( resultfile, "r" );
+		rfp = fopen( resultfile, "r" ); //open resultfile for reading
 		if( rfp == NULL )  
 			ErrorExit( "file 'fasta.$$' does not exist\n" );
-		res = ReadFasta34m10_scoreonly( rfp, resvec, 1 );
+		res = ReadFasta34m10_scoreonly( rfp, resvec, 1 ); //defined in io.c. fill resvec from rfp file values and return count of specific lines from the file
 		fprintf( stderr, "%c: %f\n", 'A'+i, *resvec/6 );
 		fclose( rfp );
 		if( ( (int)*resvec % 6 ) > 0.0 )
@@ -298,6 +298,7 @@ static void getblastscoremtx( int **tmpaminodis )
 }
 #endif
 
+//run fasta on seq, query and picks data and return its result scores
 static double *callfasta( char **seq, Scores *scores, int nin, int *picks, int query, int rewritedata )
 {
 	double *val;
@@ -317,7 +318,7 @@ static double *callfasta( char **seq, Scores *scores, int nin, int *picks, int q
 	static Scores *scoresbk = NULL;
 	static int ninbk = 0;
 
-	if( pid == 0 )
+	if( pid == 0 ) //create tmp files and allocate memory
 	{
 		pid = (int)getpid();
 		sprintf( datafile, "/tmp/data-%d", pid );
@@ -336,7 +337,7 @@ static double *callfasta( char **seq, Scores *scores, int nin, int *picks, int q
 		scoresbk = scores;
 		ninbk = nin;
 //		fprintf( stderr, "\nformatting .. " );
-		dfp = fopen( datafile, "w" );
+		dfp = fopen( datafile, "w" ); //open datafile for writing
 		if( !dfp ) ErrorExit( "Cannot open datafile." );
 		if( picks == NULL ) for( i=0; i<nin; i++ )
 		{
@@ -344,37 +345,37 @@ static double *callfasta( char **seq, Scores *scores, int nin, int *picks, int q
 //			fprintf( stderr, "nlenmax = %d\n", nlenmax );
 //			fprintf( stderr, "scores[i].orilen = %d\n", scores[i].orilen );
 //			fprintf( stderr, "strlen( seq[scores[i].numinseq] = %d\n", strlen( seq[scores[i].numinseq] ) );
-			gappick0( tmpseq, seq[scores[i].numinseq] );
+			gappick0( tmpseq, seq[scores[i].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'tmpseq' without gaps chars
 			sprintf( tmpname, ">+===========+%d                      ", i );
 			slen = scores[i].orilen;
-			writeData_pointer( dfp, 1, &tmpname, &slen, &tmpseq );
+			writeData_pointer( dfp, 1, &tmpname, &slen, &tmpseq ); //defined in io.c. write sequences and their names to dfp file
 		}
 		else for( i=0; i<nin; i++ )
 		{
-			gappick0( tmpseq, seq[scores[picks[i]].numinseq] );
+			gappick0( tmpseq, seq[scores[picks[i]].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'tmpseq' without gaps chars
 			sprintf( tmpname, ">+===========+%d                      ", i );
 			slen = scores[picks[i]].orilen;
-			writeData_pointer( dfp, 1, &tmpname, &slen, &tmpseq );
+			writeData_pointer( dfp, 1, &tmpname, &slen, &tmpseq ); //defined in io.c. write sequences and their names to dfp file
 		}
 		fclose( dfp );
 	}
 
 
-	gappick0( tmpseq, seq[scores[query].numinseq] );
+	gappick0( tmpseq, seq[scores[query].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'tmpseq' without gaps chars
 	sprintf( tmpname, ">+==========+%d                      ", 0 );
 	slen = scores[query].orilen;
-	qfp = fopen( queryfile, "w" );
+	qfp = fopen( queryfile, "w" ); //open queryfile for writing
 	if( !qfp ) ErrorExit( "Cannot open queryfile." );
-	writeData_pointer( qfp, 1, &tmpname, &slen, &tmpseq );
+	writeData_pointer( qfp, 1, &tmpname, &slen, &tmpseq ); //defined in io.c. write sequences and their names to qfp file
 	fclose( qfp );
 
 //	fprintf( stderr, "calling fasta, nin=%d\n", nin );
 
-	if( scoremtx == -1 ) 
+	if( scoremtx == -1 ) //i think first condition is for dna and the second one is for protein
 		sprintf( com, "%s  -z3 -m10  -n -Q -H -b%d -E%d -d%d %s %s %d > %s",  fastapath, nin, nin, 0, queryfile, datafile, 6, resultfile );
 	else
 		sprintf( com, "%s  -z3 -m10  -p -Q -H -b%d -E%d -d%d %s %s %d > %s",  fastapath, nin, nin, 0, queryfile, datafile, 2, resultfile );
-	res = system( com );
+	res = system( com ); //run fasta command on the provided parameters
 	if( res )
 	{
 		fprintf( stderr, "error in %s", fastapath );
@@ -384,15 +385,15 @@ static double *callfasta( char **seq, Scores *scores, int nin, int *picks, int q
 
 //exit( 1 );
 
-	rfp = fopen( resultfile, "r" );
+	rfp = fopen( resultfile, "r" ); //open resultfile for reading
 	if( rfp == NULL )  
 		ErrorExit( "file 'fasta.$$' does not exist\n" );
 
 //	fprintf( stderr, "reading fasta\n" );
 	if( scoremtx == -1 ) 
-		res = ReadFasta34m10_scoreonly_nuc( rfp, val, nin );
+		res = ReadFasta34m10_scoreonly_nuc( rfp, val, nin ); //defined in io.c. fill val with scores read from rfp and returns the count of specific lines in rfp
 	else
-		res = ReadFasta34m10_scoreonly( rfp, val, nin );
+		res = ReadFasta34m10_scoreonly( rfp, val, nin ); //defined in io.c. fill val from rfp file values and return count of specific lines from the file
 //	fprintf( stderr, "done. val[0] = %f\n", val[0] );
 
 
@@ -533,60 +534,60 @@ void split_tb_fast_arguments( int argc, char *argv[] )
 {
     int c;
 
-	doalign = 0;
-	fromaln = 0;
-	treeout = 0;
-	uselongest = 1;
-	reorder = 1;
-	nevermemsave = 0;
-	inputfile = NULL;
-	fftkeika = 0;
-	constraint = 0;
-	nblosum = 62;
-	fmodel = 0;
-	calledByXced = 0;
-	devide = 0;
-	use_fft = 0;
-	force_fft = 0;
-	fftscore = 1;
-	fftRepeatStop = 0;
-	fftNoAnchStop = 0;
-    weight = 3;
-    utree = 1;
-	tbutree = 1;
-    refine = 0;
-    check = 1;
-    cut = 0.0;
-    disp = 0;
-    outgap = 1;
-    alg = 'A';
-    mix = 0;
-	tbitr = 0;
-	scmtd = 5;
-	tbweight = 0;
-	tbrweight = 3;
-	checkC = 0;
-	treemethod = 'X';
-	sueff_global = 0.1;
-	contin = 0;
-	scoremtx = 1;
-	kobetsubunkatsu = 0;
-	dorp = NOTSPECIFIED;
-	ppenalty = -1530;
-	ppenalty_ex = NOTSPECIFIED;
-	penalty_shift_factor = 1000.0;
-	poffset = -123;
-	kimuraR = NOTSPECIFIED;
-	pamN = NOTSPECIFIED;
-	geta2 = GETA2;
-	fftWinSize = NOTSPECIFIED;
-	fftThreshold = NOTSPECIFIED;
-	TMorJTT = JTT;
-	classsize = NOTSPECIFIED;
-	picksize = NOTSPECIFIED;
-	tokyoripara = NOTSPECIFIED;
-	legacygapcost = 0;
-	nwildcard = 0;
+	doalign = 0; //defined here
+	fromaln = 0; //defined here
+	treeout = 0; //defined here
+	uselongest = 1; //defined here
+	reorder = 1; //defined here
+	nevermemsave = 0; //defined in defs.h
+	inputfile = NULL; //defined in defs.h
+	fftkeika = 0; //defined in defs.h
+	constraint = 0; //defined in defs.h
+	nblosum = 62; //defined in defs.h
+	fmodel = 0; //defined in defs.h
+	calledByXced = 0; //defined in defs.h
+	devide = 0; //defined in defs.h
+	use_fft = 0; //defined in defs.h
+	force_fft = 0; //defined in defs.h
+	fftscore = 1; //defined in defs.h
+	fftRepeatStop = 0; //defined in defs.h
+	fftNoAnchStop = 0; //defined in defs.h
+    weight = 3; //defined in defs.h
+    utree = 1; //defined in defs.h
+	tbutree = 1; //defined in defs.h
+    refine = 0; //defined in defs.h
+    check = 1; //defined in defs.h
+    cut = 0.0; //defined in defs.h
+    disp = 0; //defined in defs.h
+    outgap = 1; //defined in defs.c
+    alg = 'A'; //defined in defs.h
+    mix = 0; //defined in defs.h
+	tbitr = 0; //defined in defs.h
+	scmtd = 5; //defined in defs.h
+	tbweight = 0; //defined in defs.h
+	tbrweight = 3; //defined in defs.h
+	checkC = 0; //defined in defs.h
+	treemethod = 'X'; //defined in defs.h
+	sueff_global = 0.1; //defined in defs.c
+	contin = 0; //defined in defs.h
+	scoremtx = 1; //defined in defs.h
+	kobetsubunkatsu = 0; //defined in defs.h
+	dorp = NOTSPECIFIED; //defined in defs.c
+	ppenalty = -1530; //defined in defs.h
+	ppenalty_ex = NOTSPECIFIED; //defined in defs.h
+	penalty_shift_factor = 1000.0; //defined in defs.c
+	poffset = -123; //defined in defs.h
+	kimuraR = NOTSPECIFIED; //defined in defs.h
+	pamN = NOTSPECIFIED; //defined in defs.h
+	geta2 = GETA2; //defined in defs.h
+	fftWinSize = NOTSPECIFIED; //defined in defs.h
+	fftThreshold = NOTSPECIFIED; //defined in defs.h
+	TMorJTT = JTT; //defined in defs.h, JTT defined in mltaln.h.
+	classsize = NOTSPECIFIED; //defined here.
+	picksize = NOTSPECIFIED; //defined here.
+	tokyoripara = NOTSPECIFIED; //defined here.
+	legacygapcost = 0; //defined in defs.c
+	nwildcard = 0; //defined in defs.c
 
     while( --argc > 0 && (*++argv)[0] == '-' )
 	{
@@ -802,6 +803,7 @@ void split_tb_fast_arguments( int argc, char *argv[] )
 
 static int nunknown = 0;
 
+//return number of chars in seq that has amino_grp number < 4
 int splittbfast_seq_grp_nuc( int *grp, char *seq )
 {
 	int tmp;
@@ -818,6 +820,7 @@ int splittbfast_seq_grp_nuc( int *grp, char *seq )
 	return( grp-grpbk );
 }
 
+//return number of chars in seq that has amino_grp number < 6
 int splittbfast_seq_grp( int *grp, char *seq )
 {
 	int tmp;
@@ -834,6 +837,7 @@ int splittbfast_seq_grp( int *grp, char *seq )
 	return( grp-grpbk );
 }
 
+//fill table with incremented values based on indices from pointt values
 void splittbfast_makecompositiontable_p( short *table, int *pointt )
 {
 	int point;
@@ -842,6 +846,7 @@ void splittbfast_makecompositiontable_p( short *table, int *pointt )
 		table[point]++;
 }
 
+//returns the count of indices from pointt that has value less than corresponding one in table
 static int localcommonsextet_p( short *table, int *pointt )
 {
 	int value = 0;
@@ -876,6 +881,7 @@ static int localcommonsextet_p( short *table, int *pointt )
 	return( value );
 }
 
+//fill pointt with values based on n and some calculations
 void splittbfast_makepointtable_nuc( int *pointt, int *n )
 {
 	int point;
@@ -900,6 +906,7 @@ void splittbfast_makepointtable_nuc( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
+//fill pointt with values based on n and some calculations
 void splittbfast_makepointtable( int *pointt, int *n )
 {
 	int point;
@@ -924,6 +931,7 @@ void splittbfast_makepointtable( int *pointt, int *n )
 	*pointt = END_OF_VEC;
 }
 
+//call different pairing alignment methods based on alg and fft to align seq of mem1 and mem2
 #if 1
 static void pairalign( int nseq, int *nlen, char **seq, int *mem1, int *mem2, double *weight, int *alloclen )
 {
@@ -1082,6 +1090,7 @@ static void splittbfast_treebase( int nseq, int *nlen, char **aseq, double *eff,
 }
 #endif
 
+//write all options to fp file. dorp, score matrix, gap penalty, fft, tree method and algorithm
 static void WriteOptions( FILE *fp )
 {
 
@@ -1107,7 +1116,7 @@ static void WriteOptions( FILE *fp )
 		fprintf( fp, "\n" );
 	}
 
-   	 fprintf( fp, "Gap Penalty = %+5.2f, %+5.2f, %+5.2f\n", (double)ppenalty/1000, (double)ppenalty_ex/1000, (double)poffset/1000 );
+   	fprintf( fp, "Gap Penalty = %+5.2f, %+5.2f, %+5.2f\n", (double)ppenalty/1000, (double)ppenalty_ex/1000, (double)poffset/1000 );
 
 	if( alg == 'a' )
 		fprintf( fp, "Algorithm A\n" );
@@ -1149,6 +1158,8 @@ static void WriteOptions( FILE *fp )
 	fflush( fp );
 }
 	 
+//updates scores, call fasta and other alignment methods, fill tree, whichgroup, weight and depthpt values
+//name and inputfile are not used
 #if 1
 static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **orialn, char **name, char *inputfile, int uniform, char **tree, int *alloclen, int *order, int *whichgroup, double *weight, int *depthpt, int qinoya )
 {
@@ -1213,7 +1224,7 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 		mseq2 = AllocateCharMtx( 1, palloclen );
 	}
 
-	if( nin == 0 ) 
+	if( nin == 0 ) //no of jobs = 0
 	{
 #if TREE
 		if( treeout )
@@ -1255,7 +1266,7 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 			tmptree = calloc( 100, sizeof( char ) );
 			for( j=0; j<nin; j++ )
 			{
-				treelen += sprintf( tmptree, "%d", scores[j].numinseq+1 );
+				treelen += sprintf( tmptree, "%d", scores[j].numinseq+1 ); //write numinseq value to tmptree and accumulate to treelen
 			}
 			free( tmptree );
 	
@@ -1272,7 +1283,7 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 			}
 			for( j=0; j<nin-1; j++ )
 			{
-				sprintf( *tree+strlen( *tree ), "%d,", scores[j].numinseq+1 );
+				sprintf( *tree+strlen( *tree ), "%d,", scores[j].numinseq+1 ); //fill tree with values from scores.numinseq
 			}
 			sprintf( *tree+strlen( *tree ), "%d", scores[j].numinseq+1 );
 			if( nin > 1 ) strcat( *tree, ")\n" );
@@ -1307,13 +1318,13 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 				belongto = ptr-scores;
 			}
 			ptr++;
-		} 
+		} //now, selfscore0 contains max score from scores and belongto contains its index
 #if 1 
 		if( belongto != 0 )
 		{
 //			fprintf( stderr, "swap %d %s\n<->\n%d %s\n", 0, scores->name, belongto, (scores+belongto)->name );
 			ptr = calloc( 1, sizeof( Scores ) );
-			*ptr = scores[belongto];
+			*ptr = scores[belongto]; //these three lines to set the largest value in scores at its start
 			scores[belongto] = *scores;
 			*scores = *ptr;
 			free( ptr );
@@ -1322,14 +1333,15 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 	}
 	else
 	{
-		qsort( scores, nin, sizeof( Scores ), (int (*)())lcompare );
-		belongto = (int)( 0.5 * nin );
+		//this method sorts the scores array
+		qsort( scores, nin, sizeof( Scores ), (int (*)())lcompare ); //lcompare defined here and compares orilen of two Scores
+		belongto = (int)( 0.5 * nin ); //then take the middle item
 //		fprintf( stderr, "lengths = %d, %d, %d\n", scores->orilen, scores[belongto].orilen, scores[nin-1].orilen );
 		if( belongto != 0 )
 		{
 //			fprintf( stderr, "swap %d %s\n<->\n%d %s\n", 0, scores->name, belongto, (scores+belongto)->name );
 			ptr = calloc( 1, sizeof( Scores ) );
-			*ptr = scores[belongto];
+			*ptr = scores[belongto]; //these three lines to set the largest value in scores at its start
 			scores[belongto] = *scores;
 			*scores = *ptr;
 			free( ptr );
@@ -1346,7 +1358,8 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 		{
 			if( doalign == 'f' )
 			{
-				blastresults = callfasta( seq, scores, nin, NULL, 0, 1 );
+				blastresults = callfasta( seq, scores, nin, NULL, 0, 1 ); //defined here.
+				//run fasta on seq, query(0) and picks(NULL) data and return its result scores
 				if( scores->selfscore != (int)blastresults[0] )
 				{
 					fprintf( stderr, "\n\nWARNING1: selfscore\n" );
@@ -1361,13 +1374,14 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 				}
 			}
 			else
-				gappick0( mseq1[0], seq[scores->numinseq] );
+				gappick0( mseq1[0], seq[scores->numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'mseq1' without gaps chars
 		}
 		else
 		{
 			table1 = (short *)calloc( tsize, sizeof( short ) );
 			if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-			splittbfast_makecompositiontable_p( table1, scores[0].pointt );
+			splittbfast_makecompositiontable_p( table1, scores[0].pointt ); //defined here.
+			//fill table1 with incremented values based on indices from scores[0].pointt values
 		}
 	
 		selfscore0 = scores[0].selfscore;
@@ -1404,13 +1418,15 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 					if( fromaln )
 					{
 //						scores[i].score = ( 1.0 - (double)G__align11_noalign( n_disLN, mseq1, mseq2, palloclen ) / MIN( selfscore0, scores[i].selfscore ) ) * 1;
+						//defined in mltaln9.c. calculates score between orialn[scores[i].numinseq] and orialn[scores->numinseq] based on penalty and amino_dis values
 						scores[i].score = ( 1.0 - (double)naivepairscore11( orialn[scores[i].numinseq], orialn[scores->numinseq], penalty ) / MIN( selfscore0, scores[i].selfscore ) ) * 1;
 					}
 					else
 					{
 						if( *depthpt == 0 ) fprintf( stderr, "\r%d / %d   ", i, nin );
-						gappick0( mseq2[0], seq[scores[i].numinseq] );
+						gappick0( mseq2[0], seq[scores[i].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'mseq2' without gaps chars
 //						fprintf( stdout, "### before calc scores[%d] = %f (%c)\n", i, scores[i].score, qinoya == scores->numinseq?'o':'x' );
+						//defined in Galign11.c. it is like G__align11 but without warp and some other details
 						scores[i].score = ( 1.0 - (double)G__align11_noalign( n_disLN, -1200, -60, mseq1, mseq2, palloclen ) / MIN( selfscore0, scores[i].selfscore ) ) * 1;
 //						fprintf( stderr, "scores[i] = %f\n", scores[i].score );
 //						fprintf( stderr, "m1=%s\n", seq[scores[0].numinseq] );
@@ -1432,11 +1448,12 @@ static int splitseq_mq( Scores *scores, int nin, int *nlen, char **seq, char **o
 	}
 
 //	fprintf( stderr, "sorting .. " );
-	qsort( scores, nin, sizeof( Scores ), (int (*)())dcompare );
+	//this method sorts the scores array
+	qsort( scores, nin, sizeof( Scores ), (int (*)())dcompare ); //dcompare defined here and compares score, selfscore and orilen of two Scores
 //	fprintf( stderr, "done.\n" );
 
 
-	maxdist = scores[nin-1].score;
+	maxdist = scores[nin-1].score; //last item in the array, i.e. the max one after sorting
 	if( fromaln ) // kanzen itch ga misalign sareteiru kamoshirenai.
 	{
 		if( scores[0].shimon == scores[nin-1].shimon && !strcmp( seq[scores[0].numinseq], seq[scores[nin-1].numinseq] ) ) 
@@ -1550,7 +1567,8 @@ exit( 1 );
 
 //	fprintf( stderr, "\nnkouho=%d, defaultq2 = %d (%d inori)\n", nkouho, picks[npick-1], scores[picks[npick-1]].numinseq );
 
-	qsort( picks, npick, sizeof( int ), (int (*)())intcompare );
+	//sort picks array
+	qsort( picks, npick, sizeof( int ), (int (*)())intcompare ); //intcompare defined here and returns the difference between two integers
 
 //	fprintf( stderr, "allocating..\n" );
 
@@ -1612,7 +1630,8 @@ exit( 1 );
 			if( doalign == 'f' )
 			{
 //				blastresults = callfasta( seq, scores, npick-j+1, picks+j-1, picks[j], 1 );
-				blastresults = callfasta( seq, scores, npick, picks, picks[j], (j==1) );
+				blastresults = callfasta( seq, scores, npick, picks, picks[j], (j==1) ); //defined here.
+				//run fasta on seq, picks[j] and picks data and return its result scores
 				if( scores[picks[j]].selfscore != (int)blastresults[j] )
 				{
 					fprintf( stderr, "\n\nWARNING2: selfscore j=%d/%d\n", j, npick );
@@ -1625,13 +1644,13 @@ exit( 1 );
 				}
 			}
 			else
-				gappick0( mseq1[0], seq[scores[picks[j]].numinseq] );
+				gappick0( mseq1[0], seq[scores[picks[j]].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'mseq1' without gaps chars
 		}
 		else
 		{
 			table1 = (short *)calloc( tsize, sizeof( short ) );
 			if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-			splittbfast_makecompositiontable_p( table1, scores[picks[j]].pointt );
+			splittbfast_makecompositiontable_p( table1, scores[picks[j]].pointt ); //defined here. fill table1 with incremented values based on indices from scores[picks[j]].pointt values
 		}
 	
 		selfscore0 = scores[picks[j]].selfscore;
@@ -1669,12 +1688,14 @@ exit( 1 );
 					if( fromaln )
 					{
 						fprintf( stderr, "%d-%d/%d\r", j, i, npick );
+						//defined in mltaln9.c. calculates score between orialn[scores[picks[i]].numinseq] and orialn[scores[picks[j]].numinseq] based on penalty and amino_dis values
 						pickmtx[j][i-j] = ( 1.0 - (double)naivepairscore11(  orialn[scores[picks[i]].numinseq], orialn[scores[picks[j]].numinseq], penalty ) / MIN( selfscore0, scores[picks[i]].selfscore ) ) * 1;
 					}
 					else
 					{
 //						fprintf( stderr, "\r%d / %d   ", i, nin );
 						gappick0( mseq2[0], seq[scores[picks[i]].numinseq] );
+						//defined in Galign11.c. it is like G__align11 but without warp and some other details.
 						pickmtx[j][i-j] = ( 1.0 - (double)G__align11_noalign( n_disLN, -1200, -60, mseq1, mseq2, palloclen ) / MIN( selfscore0, scores[picks[i]].selfscore ) ) * 1;
 	//					fprintf( stderr, "scores[picks[i]] = %f\n", scores[picks[i]].score );
 					}
@@ -1682,6 +1703,7 @@ exit( 1 );
 			}
 			else
 			{
+				//defined here. returns the count of indices from scores[picks[i]].pointt that has value less than corresponding one in table1
 				pickmtx[j][i-j] = ( 1.0 - (double)localcommonsextet_p( table1, scores[picks[i]].pointt ) / MIN( selfscore0, scores[picks[i]].selfscore ) ) * lenfac;
 				if( pickmtx[j][i-j] > MAX6DIST ) pickmtx[j][i-j] = MAX6DIST;
 			}
@@ -2118,16 +2140,18 @@ exit( 1 );
 			{
 				if( doalign == 'f' )
 				{
-					blastresults = callfasta( seq, scores, nin, NULL, yukos[i], (i==1) );
+					//run fasta on seq, query(yukos[i]) and picks(NULL) data and return its result scores
+					blastresults = callfasta( seq, scores, nin, NULL, yukos[i], (i==1) ); //defined here.
 				}
 				else
-					gappick0( mseq1[0], seq[scores[yukos[i]].numinseq] );
+					gappick0( mseq1[0], seq[scores[yukos[i]].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'mseq1' without gaps chars
 			}
 			else
 			{
 				table1 = (short *)calloc( tsize, sizeof( short ) );
 				if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-				splittbfast_makecompositiontable_p( table1, scores[yukos[i]].pointt );
+				splittbfast_makecompositiontable_p( table1, scores[yukos[i]].pointt ); //defined here.
+				//fill table1 with incremented values based on indices from scores[yukos[i]].pointt values
 			}
 		
 			selfscore0 = scores[yukos[i]].selfscore;
@@ -2189,17 +2213,20 @@ exit( 1 );
 						{
 							if( fromaln )
 							{
+								//defined in mltaln9.c. calculates score between orialn[scores[j].numinseq] and orialn[scores[yukos[i]].numinseq] based on penalty and amino_dis values
 								dfromc[i][j] = ( 1.0 - (double)naivepairscore11( orialn[scores[j].numinseq], orialn[scores[yukos[i]].numinseq], penalty ) / MIN( selfscore0, scores[j].selfscore ) ) * 1;
 							}
 							else
 							{
-								gappick0( mseq2[0], seq[scores[j].numinseq] );
+								gappick0( mseq2[0], seq[scores[j].numinseq] ); //defined in mltaln9.c. copy 'seq' chars to 'mseq2' without gaps chars
+								//defined in Galign11.c. it is like G__align11 but without warp and some other details
 								dfromc[i][j] = ( 1.0 - (double)G__align11_noalign( n_disLN, -1200, -60, mseq1, mseq2, palloclen ) / MIN( selfscore0, scores[j].selfscore ) ) * 1;
 							}
 						}
 					}
 					else
 					{
+						//defined here. returns the count of indices from scores[j].pointt that has value less than corresponding one in table1
 						dfromc[i][j] = ( 1.0 - (double)localcommonsextet_p( table1, scores[j].pointt ) / MIN( selfscore0, scores[j].selfscore ) ) * lenfac;
 						if( dfromc[i][j] > MAX6DIST ) dfromc[i][j] = MAX6DIST;
 					}
@@ -2291,7 +2318,10 @@ exit( 1 );
 		{
 			fprintf( stderr, "upgma       " );
 //			veryfastsupg_double_realloc_nobk_halfmtx( nyuko, yukomtx, topol, len );
-			fixed_musclesupg_double_realloc_nobk_halfmtx( nyuko, yukomtx, topol, len, NULL, 1, 1 );
+
+			//update yukomtx, topol, len, dep(NULL) values based on other args values and calculations to determine tree shape and values - to be studied in details later -.
+			//I think it uses Muscle algorithm to build the tree
+			fixed_musclesupg_double_realloc_nobk_halfmtx( nyuko, yukomtx, topol, len, NULL, 1, 1 ); //defined in mltaln9.c
 			fprintf( stderr, "\r                      \r" );
 		}
 		else
@@ -2354,6 +2384,7 @@ exit( 1 );
 		}
 #endif
 		aligned *= splitseq_mq( outs[ii], numin[ii], nlen, seq, orialn, name, inputfile, uniform, children+ii, alloclen, order, whichgroup, weight, depthpt, scores->numinseq );
+		//defined here. recursion. call this same method.
 	}
 
 
@@ -2453,8 +2484,8 @@ exit( 1 );
 			}
 			*mptr = -1;
 
-			qsort( mem1, mem1size, sizeof( int ), (int (*)())intcompare );
-			qsort( mem2, mem2size, sizeof( int ), (int (*)())intcompare );
+			qsort( mem1, mem1size, sizeof( int ), (int (*)())intcompare ); //sort mem1
+			qsort( mem2, mem2size, sizeof( int ), (int (*)())intcompare ); //sort mem2
 //			selhead( mem1, numin[0] );
 //			selhead( mem2, numin[1] );
 
@@ -2492,7 +2523,8 @@ exit( 1 );
 			{
 				fprintf( stderr, "\r  Alignment %d-%d                                 \r", mem1size, mem2size );
 				if( *mem1 < *mem2 )
-					pairalign( njob, nlen, seq, mem1, mem2, weight, alloclen );
+					pairalign( njob, nlen, seq, mem1, mem2, weight, alloclen ); //defined here.
+					//call different pairing alignment methods based on alg and fft to align seq of mem1 and mem2
 				else
 					pairalign( njob, nlen, seq, mem2, mem1, weight, alloclen );
 			}
@@ -2621,6 +2653,7 @@ exit( 1 );
 }
 #endif
 
+//call pairalign for seq
 static void alignparaphiles( int nseq, int *nlen, double *weight, char **seq, int nmem, int *members, int *alloclen )
 {
 	int i, ilim;
@@ -2634,22 +2667,16 @@ static void alignparaphiles( int nseq, int *nlen, double *weight, char **seq, in
 		mem1[i] = members[i];
 		mem1[i+1] = -1;
 		mem2[0] = members[i+1];
-		pairalign( nseq, nlen, seq, mem1, mem2, weight, alloclen );
+		pairalign( nseq, nlen, seq, mem1, mem2, weight, alloclen ); //defined here.
+		//call different pairing alignment methods based on alg and fft to align seq of mem1 and mem2
 	}
 	free( mem1 );
 	free( mem2 );
 }
 
 
-
-
-
-
-
-
-
-
-
+//this methos performs alignment using fasta on input sequences.
+//I think the main feature in this file is that it classifies the sequences into groups
 int splittbfast_main( int argc, char *argv[] )
 {
 	static char **name, **seq, **orialn;
@@ -2666,7 +2693,7 @@ int splittbfast_main( int argc, char *argv[] )
 	static int *order;
 	static int *whichgroup;
 	static double *weight;
-	static char tmpname[B+100];
+	static char tmpname[B+100]; //B is constant defined in mltaln.h and = 256.
 	int groupnum;
 	int groupid;
 	int pos;
@@ -2681,17 +2708,17 @@ int splittbfast_main( int argc, char *argv[] )
 	int depth;
 	int aan;
 
-	static Scores *scores;
+	static Scores *scores; //structure defined here.
 	static short *table1;
 	static char **tree;
 
 
 
-	split_tb_fast_arguments( argc, argv );
+	split_tb_fast_arguments( argc, argv ); //parse arguments.
 
 	if( inputfile )
 	{
-		infp = fopen( inputfile, "r" );
+		infp = fopen( inputfile, "r" ); //open inputfile for reading
 		if( !infp )
 		{
 			fprintf( stderr, "Cannot open %s\n", inputfile );
@@ -2701,7 +2728,7 @@ int splittbfast_main( int argc, char *argv[] )
 	else
 		infp = stdin;
 
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. Finds sequences count, max length and dna or protein from fp file.
 	rewind( infp );
 
 	if( njob < 2 )
@@ -2713,7 +2740,7 @@ int splittbfast_main( int argc, char *argv[] )
 
 
 	if( picksize == NOTSPECIFIED || picksize < 2 )
-		picksize = PICKSIZE;
+		picksize = PICKSIZE; //defined here & = 50
 
 	if( classsize == NOTSPECIFIED || classsize < 0 )
 	{
@@ -2757,9 +2784,9 @@ int splittbfast_main( int argc, char *argv[] )
 	for( i=0; i<njob; i++ ) order[i] = -1;
 
 	if( classsize == 1 )
-		readData_varlen( infp, name, nlen, seq );
+		readData_varlen( infp, name, nlen, seq ); //defined in io.c. It reads sequences and their names from fp file into seq, name and nlen arrays
 	else
-		readData_pointer( infp, name, nlen, seq );
+		readData_pointer( infp, name, nlen, seq ); //defined in io.c. Reads sequences and their names from infp file into seq, name and nlen arrays.
 
 	fclose( infp );
 
@@ -2768,23 +2795,25 @@ int splittbfast_main( int argc, char *argv[] )
 	if( fromaln )
 	{
 		orialn = AllocateCharMtx( njob, alloclen+1 );
-		for( i=0; i<njob; i++ )
+		for( i=0; i<njob; i++ ) //check input sequences lengths and make sure they are equal.
 		{
 			if( strlen( seq[i] ) != nlenmax )
 			{
 				fprintf( stderr, "Input sequences must be aligned\n" );
 				exit( 1 );
 			}
-			strcpy( orialn[i], seq[i] );
+			strcpy( orialn[i], seq[i] ); //copy seq to orialn
 		}
 	}
 
-	constants( njob, seq );
+	constants( njob, seq ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
-	if( dorp == 'd' ) tsize = (int)pow( 4, 6 );
+	if( dorp == 'd' ) tsize = (int)pow( 4, 6 ); //there are two tsize: one in mltaln.h and the other in defs.h.
 	else              tsize = (int)pow( 6, 6 );
 
-	if( dorp == 'd' )
+	if( dorp == 'd' ) //these constants are defined here
 	{
 		lenfaca = DLENFACA;
 		lenfacb = DLENFACB;
@@ -2800,11 +2829,11 @@ int splittbfast_main( int argc, char *argv[] )
 	}
 
 	maxl = 0;
-	for( i=0; i<njob; i++ ) 
+	for( i=0; i<njob; i++ )
 	{
-		gappick0( tmpseq, seq[i] );
+		gappick0( tmpseq, seq[i] ); //defined in mltaln9.c. copy 'seq' chars to 'tmpseq' without gaps chars
 		nlen[i] = strlen( tmpseq );
-		strcpy( seq[i], tmpseq );
+		strcpy( seq[i], tmpseq ); //copy tmpseq to seq
 		pointt[i] = AllocateIntVec( nlen[i]+1 ); // ??
 
 		if( nlen[i] < 6 )
@@ -2818,7 +2847,7 @@ int splittbfast_main( int argc, char *argv[] )
 		if( nlen[i] > maxl ) maxl = nlen[i];
 		if( dorp == 'd' ) /* nuc */
 		{
-			if( splittbfast_seq_grp_nuc( grpseq, tmpseq ) < 6 )
+			if( splittbfast_seq_grp_nuc( grpseq, tmpseq ) < 6 ) //defined here. return number of chars in tmpseq that has amino_grp number < 4
 			{
 				fprintf( stderr, "Seq %d, too short.\n", i+1 );
 				fprintf( stderr, "name = %s\n", name[i] );
@@ -2826,11 +2855,11 @@ int splittbfast_main( int argc, char *argv[] )
 				exit( 1 );
 //				continue;
 			}
-			splittbfast_makepointtable_nuc( pointt[i], grpseq );
+			splittbfast_makepointtable_nuc( pointt[i], grpseq ); //defined here. fill pointt with values based on grpseq and some calculations
 		}
 		else                 /* amino */
 		{
-			if( splittbfast_seq_grp( grpseq, tmpseq ) < 6 )
+			if( splittbfast_seq_grp( grpseq, tmpseq ) < 6 ) //defined here. return number of chars in tmpseq that has amino_grp number < 6
 			{
 				fprintf( stderr, "Seq %d, too short.\n", i+1 );
 				fprintf( stderr, "name = %s\n", name[i] );
@@ -2838,7 +2867,7 @@ int splittbfast_main( int argc, char *argv[] )
 				exit( 1 );
 //				continue;
 			}
-			splittbfast_makepointtable( pointt[i], grpseq );
+			splittbfast_makepointtable( pointt[i], grpseq ); //defined here. fill pointt with values based on grpseq and some calculations
 		}
 //		fprintf( stdout, ">%s\n", name[i] );
 //		fprintf( stdout, "%s\n", seq[i] );
@@ -2852,11 +2881,11 @@ int splittbfast_main( int argc, char *argv[] )
 
 	initSignalSM();
 
-	initFiles();
+	initFiles(); //defined in io.c. init prep_g and trap_g files. I think these files are for tracing
 
-	WriteOptions( trap_g );
+	WriteOptions( trap_g ); //defined here. write all options to trap_g file. dorp, score matrix, gap penalty, fft, tree method and algorithm
 
-	c = seqcheck( seq );
+	c = seqcheck( seq ); //defined in mltaln9.c. check sequence characters and report error if unusual character is found
 	if( c )
 	{
 		fprintf( stderr, "Illeagal character %c\n", c );
@@ -2871,7 +2900,7 @@ int splittbfast_main( int argc, char *argv[] )
 	scores = (Scores *)calloc( njob, sizeof( Scores ) );
 
 //	fprintf( stderr, "\nCalculating i-i scores ... \n" );
-	for( i=0; i<njob; i++ ) 
+	for( i=0; i<njob; i++ ) //init scores matrix
 	{
 		orilen = strlen( seq[i] );
 		scores[i].numinseq = i; // irimasu
@@ -2880,16 +2909,16 @@ int splittbfast_main( int argc, char *argv[] )
 
 	if( doalign == 'f' )
 	{
-		fastapath = getenv( "FASTA_4_MAFFT" );
+		fastapath = getenv( "FASTA_4_MAFFT" ); //search for the environment string "FASTA_4_MAFFT" and returns the associated value
 		if( !fastapath ) fastapath = "fasta34";
 		fprintf( stderr, "fastapath=%s\n", fastapath );
 		tmpaminodis = AllocateIntMtx( 0x80, 0x80 );
-		getfastascoremtx( tmpaminodis );
+		getfastascoremtx( tmpaminodis ); //defined here. run fasta command and fill tmpaminodis with its result
 	}
 	else
 		tmpaminodis = NULL;
 	
-	for( i=0; i<njob; i++ )
+	for( i=0; i<njob; i++ ) //this loop fills scores.selfscore with values based on doalign and scoremtx conditions
 	{
 		scores[i].pointt = pointt[i];
 		scores[i].shimon = (int)pointt[i][0] + (int)pointt[i][1] + (int)pointt[i][scores[i].orilen-6];
@@ -2924,13 +2953,13 @@ int splittbfast_main( int argc, char *argv[] )
 				free( blastresults );
 #else
 				pscore = 0;
-				if( scoremtx == -1 )
+				if( scoremtx == -1 ) //i think this condition is for dna
 				{
 					st = 1;
 					en = 0;
 					for( pt=seq[i]; *pt; pt++ )
 					{
-						if( *pt == 'u' ) *pt = 't';
+						if( *pt == 'u' ) *pt = 't'; //replace u with t in each sequence
 						aan = amino_n[(int)*pt];
 						if( aan<0 || aan >= 4 ) *pt = 'n';
 
@@ -2949,7 +2978,7 @@ int splittbfast_main( int argc, char *argv[] )
 					}
 					scores[i].selfscore = pscore - en * tmpaminodis['n']['n']; 
 				}
-				else
+				else //and this is for protein
 				{
 					st = 1;
 					en = 0;
@@ -2990,8 +3019,9 @@ int splittbfast_main( int argc, char *argv[] )
 		{
 			table1 = (short *)calloc( tsize, sizeof( short ) );
 			if( !table1 ) ErrorExit( "Cannot allocate table1\n" );
-			splittbfast_makecompositiontable_p( table1, pointt[i] );
-			scores[i].selfscore = localcommonsextet_p( table1, pointt[i] );
+			splittbfast_makecompositiontable_p( table1, pointt[i] ); //defined here. fill table1 with incremented values based on indices from pointt values
+			scores[i].selfscore = localcommonsextet_p( table1, pointt[i] ); //defined here.
+			//returns the count of indices from pointt that has value less than corresponding one in table1
 			free( table1 );
 		}
 	}
@@ -3004,18 +3034,25 @@ int splittbfast_main( int argc, char *argv[] )
 		tree = (char **)calloc( 1, sizeof( char *) );
 		*tree = NULL;
 //		splitseq_bin( scores, njob, nlen, seq, name, inputfile, 0, tree, &alloclen, order, whichgroup, weight );
+
+		//defined here.
+		//updates scores, call fasta and other alignment methods, fill tree, whichgroup, weight and depth values
+		//name and inputfile are not used
 		completed = splitseq_mq( scores, njob, nlen, seq, orialn, name, inputfile, 0, tree, &alloclen, order, whichgroup, weight, &depth, -1 );
 		treefile = (char *)calloc( strlen( inputfile ) + 10, sizeof( char ) );
 		if( inputfile )
 			sprintf( treefile, "%s.tree", inputfile );
 		else
 			sprintf( treefile, "splittbfast.tree" );
-		treefp = fopen( treefile, "w" );
-		fprintf( treefp, "%s\n", *tree );
+		treefp = fopen( treefile, "w" ); //open tree file for writing
+		fprintf( treefp, "%s\n", *tree ); //write tree content to treefp
 		fclose( treefp );
 	}
 	else
 		completed = splitseq_mq( scores, njob, nlen, seq, orialn, name, inputfile, 0, tree, &alloclen, order, whichgroup, weight, &depth, -1 );
+	//defined here.
+	//updates scores, call fasta and other alignment methods, fill tree, whichgroup, weight and depth values
+	//name and inputfile are not used
 #else
 	completed = splitseq_mq( scores, njob, nlen, seq, orialn, name, inputfile, 0, tree, &alloclen, order, whichgroup, weight, &depth, -1 );
 #endif
@@ -3042,9 +3079,10 @@ int splittbfast_main( int argc, char *argv[] )
 				paramem[npara] = -1;
 				if( npara > 1 && classsize > 2 ) 
 				{
+					//sort paramem
 					qsort( paramem, npara, sizeof( int ), (int (*)(const void *, const void*))intcompare );
 //					selhead( paramem, npara );
-					alignparaphiles( njob, nlen, weight, seq, npara, paramem, &alloclen );
+					alignparaphiles( njob, nlen, weight, seq, npara, paramem, &alloclen ); //defined here. call pairalign for seq
 				}
 				free( paramem ); paramem = NULL; npara = 0;
 			}
@@ -3065,9 +3103,9 @@ int splittbfast_main( int argc, char *argv[] )
 		paramem[npara] = -1;
 		if( npara > 1 && classsize > 2 ) 
 		{
-			qsort( paramem, npara, sizeof( int ), (int (*)(const void *, const void*))intcompare );
+			qsort( paramem, npara, sizeof( int ), (int (*)(const void *, const void*))intcompare ); //sort paramem
 //			selhead( paramem, npara );
-			alignparaphiles( njob, nlen, weight, seq, npara, paramem, &alloclen );
+			alignparaphiles( njob, nlen, weight, seq, npara, paramem, &alloclen ); //defined here. call pairalign for seq
 		}
 		free( paramem ); paramem = NULL; npara = 0;
 	}
@@ -3088,9 +3126,9 @@ int splittbfast_main( int argc, char *argv[] )
 	fprintf( stderr, "writing alignment to stdout\n" );
 #endif
 	if( reorder )
-		writeData_reorder_pointer( stdout, njob, name, nlen, seq, order );
+		writeData_reorder_pointer( stdout, njob, name, nlen, seq, order ); //defined in io.c. write sequences and their names to stdout based on order items
 	else
-		writeData_pointer( stdout, njob, name, nlen, seq );
+		writeData_pointer( stdout, njob, name, nlen, seq ); //defined in io.c. write sequences and their names to stdout
 #if IODEBUG
 	fprintf( stderr, "OSHIMAI\n" );
 #endif
@@ -3202,7 +3240,7 @@ int splittbfast_main( int argc, char *argv[] )
 		fprintf( stdout, "%d: %f\n", i+1, weight[i] );
 #endif
 
-	if( doalign == 'f' )
+	if( doalign == 'f' ) //remove tmp files
 	{
 		strcpy( com, "rm -f" );
 		strcat( com, " " );

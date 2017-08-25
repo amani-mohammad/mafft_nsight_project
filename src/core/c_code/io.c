@@ -1487,13 +1487,14 @@ void readDataforgaln( FILE *fp, char **name, int *nlen, char **seq )
 #endif
 }
 
+//It reads sequences and their names from fp file into seq, name and nlen arrays
 void readData_varlen( FILE *fp, char **name, int *nlen, char **seq )
 {
 	int i; 
 	static char *tmpseq = NULL;
 
-	rewind( fp );
-	searchKUorWA( fp );
+	rewind( fp ); //point to first character in the fp stream
+	searchKUorWA( fp ); //locates the stream pointer to start of first sequence
 
 	for( i=0; i<njob; i++ )
 	{
@@ -1505,19 +1506,19 @@ void readData_varlen( FILE *fp, char **name, int *nlen, char **seq )
 			ErrorExit( "Too long name\n" );
 		name[i][j-1] = 0;
 #else
-		myfgets( name[i]+1, B-2, fp ); 
+		myfgets( name[i]+1, B-2, fp ); //read sequence name into 'name[i]' with max length B-2
 #endif
 #if 0
 		fprintf( stderr, "name[%d] = %s\n", i, name[i] );
 #endif
-		tmpseq = load1SeqWithoutName_realloc( fp );
-		nlen[i] = strlen( tmpseq );
+		tmpseq = load1SeqWithoutName_realloc( fp ); //load sequence characters in tmpseq
+		nlen[i] = strlen( tmpseq ); //save length of tmpseq in nlen[i]
 //		fprintf( stderr, "nlen[%d] = %d\n", i+1, nlen[i] );
 		seq[i] = calloc( nlen[i]+1, sizeof( char ) );
-		strcpy( seq[i], tmpseq );
+		strcpy( seq[i], tmpseq ); //copy tmpseq to seq[i]
 		free( tmpseq );
 	}
-	if( dorp == 'd' && upperCase != -1 ) seqLower( njob, seq );
+	if( dorp == 'd' && upperCase != -1 ) seqLower( njob, seq ); //set all chars to lower case
 #if 0
 	free( tmpseq );
 #endif
@@ -3800,6 +3801,7 @@ int ReadFasta34m10_scoreonly_nucbk( FILE *fp, double *dis, int nin )
     return count;
 }
 
+//fill dis with scores read from fp and returns the count of specific lines in fp
 int ReadFasta34m10_scoreonly_nuc( FILE *fp, double *dis, int nin )
 {
     int count=0;
@@ -3819,7 +3821,7 @@ int ReadFasta34m10_scoreonly_nuc( FILE *fp, double *dis, int nin )
     count = 0;
     while( !feof( fp ) )
     {
-        fgets( b, B-1, fp );
+        fgets( b, B-1, fp ); //read line from fp into b
         if( !strncmp( "+===========+", b, 13 ) )
         {
             pos = atoi( b+13 );
@@ -3861,6 +3863,7 @@ int ReadFasta34m10_scoreonly_nuc( FILE *fp, double *dis, int nin )
     return count;
 }
 
+//fill dis from fp file values and return count of specific lines from the file
 int ReadFasta34m10_scoreonly( FILE *fp, double *dis, int nin )
 {
     int count=0;
@@ -3880,13 +3883,13 @@ int ReadFasta34m10_scoreonly( FILE *fp, double *dis, int nin )
     count = 0;
     while( !feof( fp ) )
     {
-        fgets( b, B-1, fp );
+        fgets( b, B-1, fp ); //read line from fp into b
         if( !strncmp( "+===========+", b, 13 ) )
         {
             pos = atoi( b+13 );
 
 			pt = strchr( b, ')' ) + 1;
-			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); 
+			sscanf( pt, "%d %lf %lf",  &opt, &bits, &z ); //read these values from pt
 			if( yonda[pos] == 0 )
 			{
 	            dis[pos] += (double)opt;
@@ -5300,7 +5303,7 @@ void clustalout_pointer( FILE *fp, int nseq, int maxlen, char **seq, char **name
 	}
 }
 
-
+//write sequences and their names to fp based on order items
 void writeData_reorder_pointer( FILE *fp, int locnjob, char **name, int *nlen, char **aseq, int *order )
 {
 	int i, j, k;
