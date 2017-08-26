@@ -2809,6 +2809,8 @@ void readhat2_pointer( FILE *fp, int nseq, char **name, double **mtx )
         mtx[i][j] = (double)input_new( fp, D);
     }
 }
+
+//fill mtx with values read from fp
 void readhat2( FILE *fp, int nseq, char name[M][B], double **mtx )
 {
     int i, j, nseq0;
@@ -2836,7 +2838,7 @@ void readhat2( FILE *fp, int nseq, char name[M][B], double **mtx )
     }
     for( i=0; i<nseq-1; i++ ) for( j=i+1; j<nseq; j++ )
     {
-        mtx[i][j] = (double)input_new( fp, D);
+        mtx[i][j] = (double)input_new( fp, D); //defined here. read float value from fp and return it.
     }
 }
 
@@ -4097,7 +4099,7 @@ int ReadOpt2( FILE *fp, int opt[M], int nseq, char name[M][B] )
 }
 
 
-
+//write sequences and their names to prep_g file
 int writePre( int nseq, char **name, int nlen[M], char **aseq, int force )
 {
 #if USE_XCED
@@ -4167,7 +4169,7 @@ int writePre( int nseq, char **name, int nlen[M], char **aseq, int force )
 	if( force ) 
 	{
 		rewind( prep_g );
-		writeData_pointer( prep_g, nseq, name, nlen, aseq );
+		writeData_pointer( prep_g, nseq, name, nlen, aseq ); //defined here. write sequences and their names to prep_g file
 	}
 #endif
 	return( 0 );

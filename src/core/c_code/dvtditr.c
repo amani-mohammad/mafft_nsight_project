@@ -15,12 +15,12 @@ static int intop;
 static int intree;
 static double autosubalignment;
 
-
+//calculate maxdistclass based on some calcs on ndistclass
 static void calcmaxdistclass( void )
 {
 	int c;
 	double rep;
-	for( c=0; c<ndistclass; c++ )
+	for( c=0; c<ndistclass; c++ ) //ndistclass defined in defs.c. and = 10
 	{
 		rep = (double) 2 * c / ndistclass; // dist:0-2 for dist2offset 
 //		fprintf( stderr, "c=%d, rep=%f, offset=%f\n", c, rep, dist2offset( rep )  );
@@ -28,7 +28,7 @@ static void calcmaxdistclass( void )
 			break;
 	}
 	fprintf( stderr, "ndistclass = %d, maxdistclass = %d\n", ndistclass, c+1 );
-	maxdistclass = c + 1;
+	maxdistclass = c + 1; //maxdistclass defined in defs.c.
 //	maxdistclass = ndistclass; // CHUUI!!!!
 	return;
 }
@@ -38,74 +38,74 @@ void dvtditrArguments( int argc, char *argv[] )
 	int c;
 	char *argkey;
 
-	outnumber = 0;
-	nthread = 1;
-	randomseed = 0;
-	scoreout = 0;
-	spscoreout = 0;
-	parallelizationstrategy = BAATARI1;
-	intop = 0;
-	intree = 0;
-	inputfile = NULL;
-	rnakozo = 0;
-	rnaprediction = 'm';
-	nevermemsave = 0;
-	score_check = 1;
-	fftkeika = 1;
-	constraint = 0;
-	fmodel = 0;
-	kobetsubunkatsu = 1;
-	bunkatsu = 1;
-	nblosum = 62;
-	niter = 100;
-	calledByXced = 0;
-	devide = 1;
-	divWinSize = 20; /* 70 */
-	divThreshold = 65;
-	fftscore = 1;
-	fftRepeatStop = 0;
-	fftNoAnchStop = 0;
-    scmtd = 5;
-	cooling = 1;
-    weight = 4;
-    utree = 1;
-    refine = 1;
-    check = 1;
-    cut = 0.0;
-	disp = 0;
-	outgap = 1;
-	use_fft = 0; // CHUUI dochira demo mafft.tmpl deha F
-	force_fft = 0;
-	alg = 'A';  /* chuui */
-	mix = 0;
-	checkC = 0;
-	tbitr = 0;
-	treemethod = 'X';
-	sueff_global = 0.1;
-	scoremtx = 1;
-	dorp = NOTSPECIFIED;
-	ppenalty = NOTSPECIFIED;
-	penalty_shift_factor = 1000.0;
-	ppenalty_ex = NOTSPECIFIED;
-	poffset = NOTSPECIFIED;
-	kimuraR = NOTSPECIFIED;
-	pamN = NOTSPECIFIED;
-	geta2 = GETA2;
-	fftWinSize = NOTSPECIFIED;
-	fftThreshold = NOTSPECIFIED;
-	RNAppenalty = NOTSPECIFIED;
-	RNAppenalty_ex = NOTSPECIFIED;
-	RNApthr = NOTSPECIFIED;
-	TMorJTT = JTT;
-	consweight_multi = 1.0;
-	consweight_rna = 0.0;
-	subalignment = 0;
-	subalignmentoffset = 0;
-	legacygapcost = 0;
-	specificityconsideration = 0.0;
-	autosubalignment = 0.0;
-	specifictarget = 0;
-	nwildcard = 0;
+	outnumber = 0; //defined in defs.c.
+	nthread = 1; //defined in defs.c.
+	randomseed = 0; //defined in defs.c.
+	scoreout = 0; //defined in defs.c.
+	spscoreout = 0; //defined in defs.c.
+	parallelizationstrategy = BAATARI1;  //defined in defs.c. BAATARI1 defined in mltaln.h.
+	intop = 0; //defined here.
+	intree = 0; //defined here.
+	inputfile = NULL; //defined in defs.h.
+	rnakozo = 0; //defined in defs.h.
+	rnaprediction = 'm'; //defined in defs.h.
+	nevermemsave = 0; //defined in defs.h.
+	score_check = 1; //defined in defs.h.
+	fftkeika = 1; //defined in defs.h.
+	constraint = 0; //defined in defs.h.
+	fmodel = 0; //defined in defs.h.
+	kobetsubunkatsu = 1; //defined in defs.h.
+	bunkatsu = 1; //defined in defs.h.
+	nblosum = 62; //defined in defs.h.
+	niter = 100; //defined in defs.h.
+	calledByXced = 0; //defined in defs.h.
+	devide = 1; //defined in defs.h.
+	divWinSize = 20; /* 70 */    //defined in defs.h.
+	divThreshold = 65; //defined in defs.h.
+	fftscore = 1; //defined in defs.h.
+	fftRepeatStop = 0; //defined in defs.h.
+	fftNoAnchStop = 0; //defined in defs.h.
+    scmtd = 5; //defined in defs.h.
+	cooling = 1; //defined in defs.h.
+    weight = 4; //defined in defs.h.
+    utree = 1; //defined in defs.h.
+    refine = 1; //defined in defs.h.
+    check = 1; //defined in defs.h.
+    cut = 0.0; //defined in defs.h.
+	disp = 0; //defined in defs.h.
+	outgap = 1; //defined in defs.c.
+	use_fft = 0; // CHUUI dochira demo mafft.tmpl deha F    //defined in defs.h.
+	force_fft = 0; //defined in defs.h.
+	alg = 'A';  /* chuui */    //defined in defs.h.
+	mix = 0; //defined in defs.h.
+	checkC = 0; //defined in defs.h.
+	tbitr = 0; //defined in defs.h.
+	treemethod = 'X'; //defined in defs.h.
+	sueff_global = 0.1; //defined in defs.c.
+	scoremtx = 1; //defined in defs.h.
+	dorp = NOTSPECIFIED; //defined in defs.c.
+	ppenalty = NOTSPECIFIED; //defined in defs.h.
+	penalty_shift_factor = 1000.0; //defined in defs.c.
+	ppenalty_ex = NOTSPECIFIED; //defined in defs.h.
+	poffset = NOTSPECIFIED; //defined in defs.h.
+	kimuraR = NOTSPECIFIED; //defined in defs.h.
+	pamN = NOTSPECIFIED; //defined in defs.h.
+	geta2 = GETA2; //defined in defs.h. GETA2 defined in mltaln.h.
+	fftWinSize = NOTSPECIFIED; //defined in defs.h.
+	fftThreshold = NOTSPECIFIED; //defined in defs.h.
+	RNAppenalty = NOTSPECIFIED; //defined in defs.h.
+	RNAppenalty_ex = NOTSPECIFIED; //defined in defs.h.
+	RNApthr = NOTSPECIFIED; //defined in defs.h.
+	TMorJTT = JTT; //defined in defs.h. JTT defined in mltaln.h.
+	consweight_multi = 1.0; //defined in defs.c.
+	consweight_rna = 0.0; //defined in defs.c.
+	subalignment = 0; //defined here.
+	subalignmentoffset = 0; //defined here.
+	legacygapcost = 0; //defined in defs.c.
+	specificityconsideration = 0.0; //defined in defs.c.
+	autosubalignment = 0.0; //defined here.
+	specifictarget = 0; //defined here.
+	nwildcard = 0; //defined in defs.c.
 
 	while( --argc > 0 && (*++argv)[0] == '-' )
 	{
@@ -418,7 +418,7 @@ int dvtditr_main( int argc, char *argv[] )
     int identity;
 	static int nlen[M];
 	static char **name, **seq, **aseq, **bseq;
-	static Segment *segment = NULL;
+	static Segment *segment = NULL; //structure defined in mltaln.h.
 	static int anchors[MAXSEG];
 	int i, j;
 	int iseg, nseg;
@@ -433,8 +433,8 @@ int dvtditr_main( int argc, char *argv[] )
 	char c;
 	int ocut;
 	char **seq_g_bk;
-	LocalHom **localhomtable = NULL; // by D.Mathog
-	RNApair ***singlerna;
+	LocalHom **localhomtable = NULL; // by D.Mathog   //structure defined in mltaln.h.
+	RNApair ***singlerna; //structure defined in mltaln.h.
 	int nogaplen;
 	static char **nogap1seq;
 	static char *kozoarivec;
@@ -450,7 +450,7 @@ int dvtditr_main( int argc, char *argv[] )
 	int ntarget, *targetmap, *targetmapr;
 	int ilim;
 
-	dvtditrArguments( argc, argv );
+	dvtditrArguments( argc, argv ); //parse arguments
 #ifndef enablemultithread
 	nthread = 0;
 #endif
@@ -458,7 +458,7 @@ int dvtditr_main( int argc, char *argv[] )
 
 	if( inputfile )
 	{
-		infp = fopen( inputfile, "r" );
+		infp = fopen( inputfile, "r" ); //open inputfile for reading
 		if( !infp ) 
 		{
 			fprintf( stderr, "Cannot open %s\n", inputfile );
@@ -471,7 +471,7 @@ int dvtditr_main( int argc, char *argv[] )
 #if 0
 	PreRead( stdin, &njob, &nlenmax );
 #else
-	getnumlen( infp );
+	getnumlen( infp ); //defined in io.c. finds sequences count, max length and dna or protein from infp file
 #endif
 	rewind( infp );
 
@@ -487,7 +487,10 @@ int dvtditr_main( int argc, char *argv[] )
 
 	if( subalignment )
 	{
-		readsubalignmentstable( njob, NULL, NULL, &nsubalignments, &maxmem );
+		//First call of this method with table = NULL reads number of subalignments in subalignments file and assign to nsubpt
+		//also reads max number of spaces in all sequences into maxmem
+		//Second call reads data from the file and fills table with it
+		readsubalignmentstable( njob, NULL, NULL, &nsubalignments, &maxmem ); //defined in io.c.
 		fprintf( stderr, "nsubalignments = %d\n", nsubalignments );
 		fprintf( stderr, "maxmem = %d\n", maxmem );
 		subtable = AllocateIntMtx( nsubalignments, maxmem+1 );
@@ -509,14 +512,14 @@ int dvtditr_main( int argc, char *argv[] )
 
 	ocut = cut;
 
-	segment = (Segment *)calloc( MAXSEG, sizeof( Segment ) );
+	segment = (Segment *)calloc( MAXSEG, sizeof( Segment ) ); //MAXSEG defined in mltaln.h.
 //	if( treemethod == 'X' || treemethod == 'E' || treemethod == 'q' )
 	topol = AllocateIntCub( njob, 2, njob );
 	len = AllocateDoubleMtx( njob, 2 );
 	eff = AllocateDoubleMtx( njob, njob );
 	seq = AllocateCharMtx( njob, nlenmax*9+1 );
 	name = AllocateCharMtx( njob, B+1 );
-	seq_g = AllocateCharMtx( njob, nlenmax*9+1 );
+	seq_g = AllocateCharMtx( njob, nlenmax*9+1 ); //seq_g defined in defs.h.
 	res_g = AllocateCharMtx( njob, nlenmax*9+1 );
 	aseq = AllocateCharMtx( njob, nlenmax*9+1 );
 	bseq = AllocateCharMtx( njob, nlenmax*9+1 );
@@ -532,11 +535,11 @@ int dvtditr_main( int argc, char *argv[] )
 #if 0
 	Read( name, nlen, seq_g );
 #else
-	readData_pointer( infp, name, nlen, seq_g );
+	readData_pointer( infp, name, nlen, seq_g ); //defined in io.c. reads sequences and their names from infp file into seq_g, name and nlen arrays.
 #endif
 	fclose( infp );
 
-	if( specifictarget )
+	if( specifictarget ) //fill targetmap and targetmapr with values based on 'focus' parameters in sequences names
 	{
 		targetmap = calloc( njob, sizeof( int ) );
 		ntarget = 0;
@@ -550,7 +553,7 @@ int dvtditr_main( int argc, char *argv[] )
 		for( i=0; i<njob; i++ )
 			if( targetmap[i] != -1 ) targetmapr[targetmap[i]] = i;
 	}
-	else
+	else //target all sequences
 	{
 		ntarget = njob;
 		targetmap = calloc( njob, sizeof( int ) );
@@ -563,7 +566,7 @@ int dvtditr_main( int argc, char *argv[] )
 	{
 		ilim = njob;
 		localhomtable = (LocalHom **)calloc( ntarget, sizeof( LocalHom *) );
-		for( i=0; i<ntarget; i++)
+		for( i=0; i<ntarget; i++) //initialize localhomtable
 		{
 			localhomtable[i] = (LocalHom *)calloc( ilim, sizeof( LocalHom ) );
 			for( j=0; j<ilim; j++)
@@ -585,11 +588,13 @@ int dvtditr_main( int argc, char *argv[] )
 		}
 		fprintf( stderr, "Loading 'hat3' ... " );
 		fflush( stderr );
-		prep = fopen( "hat3", "r" );
+		prep = fopen( "hat3", "r" ); //open hat3 file for reading
 		if( prep == NULL ) ErrorExit( "Make hat3." );
-		if( specifictarget ) readlocalhomtable2_target( prep, njob, localhomtable, kozoarivec, targetmap );
-		else readlocalhomtable2_half( prep, njob, localhomtable, kozoarivec );
+		if( specifictarget ) readlocalhomtable2_target( prep, njob, localhomtable, kozoarivec, targetmap ); //defined in io.c. updates localhomtable values based on prep content. also set kozoarivec value based on it.
+		else readlocalhomtable2_half( prep, njob, localhomtable, kozoarivec ); //defined in io.c. updates localhomtable values based on prep content. also set kozoarivec value based on it.
+		//the difference between this and the previous one is the absence of targetmap here
 		fclose( prep ); 
+
 //		for( i=0; i<njob-1; i++ ) for( j=i+1; j<njob; j++ )
 //			fprintf( stdout, "%d %d %d %d %d %d %d\n", i, j, localhomtable[i][j].opt, localhomtable[i][j].start1, localhomtable[i][j].end1, localhomtable[i][j].start2, localhomtable[i][j].end2 );
 		fprintf( stderr, "done.\n" );
@@ -627,7 +632,7 @@ int dvtditr_main( int argc, char *argv[] )
 		}
 
 
-	if( specificityconsideration ) calcmaxdistclass();
+	if( specificityconsideration ) calcmaxdistclass(); //defined here. calculate maxdistclass based on some calcs on ndistclass
 
 	for( i=0; i<njob; i++ )
 	{
@@ -639,12 +644,14 @@ int dvtditr_main( int argc, char *argv[] )
 	{
 		identity *= ( nlen[i] == nlen[0] );
 	}
-	if( !identity ) 
+	if( !identity ) //check equal length of all sequences
 	{
 		fprintf( stderr, "Input pre-aligned data\n" );
 		exit( 1 );
 	}
-	constants( njob, seq_g );
+	constants( njob, seq_g ); //defined in constants.c.
+	//after all this method, n_dis, ribosumdis, amino_dis, amino_dis_consweight_multi, n_dis_consweight_multi,
+	//n_disLN, n_disFFT, polarity, volume arrays are initialized and some constants are set.
 
 #if 0
 	fprintf( stderr, "penalty = %d\n", penalty ); 
@@ -652,9 +659,9 @@ int dvtditr_main( int argc, char *argv[] )
 	fprintf( stderr, "offset = %d\n", offset ); 
 #endif
 
-	initSignalSM();
+	initSignalSM(); //defined in io.c. inits signalSM value which is defined in defs.h.
 
-	initFiles();
+	initFiles(); //defined in io.c. init prep_g and trap_g files. I think these files are for tracing
 
 #if 0
 	if( njob == 2 )
@@ -671,34 +678,34 @@ int dvtditr_main( int argc, char *argv[] )
 	}
 #endif
 
-	c = seqcheck( seq_g );
+	c = seqcheck( seq_g ); //defined in mltaln9.c. check sequence characters and report error if unusual character is found
 	if( c )
 	{
 		fprintf( stderr, "Illegal character %c\n", c );
 		exit( 1 );
 	}
-	commongappick( njob, seq_g );
+	commongappick( njob, seq_g ); //defined in mltaln9.c. update seq_g values based on gaps positions in it and njob value
 
 	if( rnakozo && rnaprediction == 'm' )
 	{
 		singlerna = (RNApair ***)calloc( njob, sizeof( RNApair ** ) );
-		prep = fopen( "hat4", "r" ); //what is hat4 ?
+		prep = fopen( "hat4", "r" ); //what is hat4 ?  //open hat4 file for reading
 		if( prep == NULL ) ErrorExit( "Make hat4 using mccaskill." );
 		fprintf( stderr, "Loading 'hat4' ... " );
 		fflush( stderr );
 		for( i=0; i<njob; i++ )
 		{
-			gappick0( nogap1seq[0], seq_g[i] );
+			gappick0( nogap1seq[0], seq_g[i] ); //defined in mltaln9.c. copy 'seq_g' chars to 'nogap1seq' without gaps chars.
 			nogaplen = strlen( nogap1seq[0] );
 			singlerna[i] = (RNApair **)calloc( nogaplen+1, sizeof( RNApair * ) );
-			for( j=0; j<nogaplen; j++ )
+			for( j=0; j<nogaplen; j++ ) //initialize singlerna[i]
 			{
 				singlerna[i][j] = (RNApair *)calloc( 1, sizeof( RNApair ) );
 				singlerna[i][j][0].bestpos = -1;
 				singlerna[i][j][0].bestscore = -1.0;
 			}
 			singlerna[i][nogaplen] = NULL;
-			readmccaskill( prep, singlerna[i], nogaplen );
+			readmccaskill( prep, singlerna[i], nogaplen ); //defined in io.c. fill singlerna[i] with values from prep file
 		}
 		fclose( prep );
 		fprintf( stderr, "\ndone.\n" );
@@ -711,9 +718,9 @@ int dvtditr_main( int argc, char *argv[] )
 
 	if( utree )
 	{
-		prep = fopen( "hat2", "r" ); //what is hat2 ?
+		prep = fopen( "hat2", "r" ); //what is hat2 ?  //open hat2 file for reading
 		if( !prep ) ErrorExit( "Make hat2." );
-		readhat2_pointer( prep, njob, name, eff );
+		readhat2_pointer( prep, njob, name, eff ); //defined in io.c. fill eff with values read from prep
 		fclose( prep );
 #if 0
 		fprintf( stderr, "eff = \n" );
@@ -728,7 +735,8 @@ int dvtditr_main( int argc, char *argv[] )
 #endif
 		if( intree )
 		{
-			veryfastsupg_double_loadtree( njob, eff, topol, len, name );
+			veryfastsupg_double_loadtree( njob, eff, topol, len, name ); //defined in mltaln9.c.
+			//update eff and len values based on values and computations on data from guidetree file and write results to infile.tree file
 #if 0
 			fprintf( stderr, "eff = \n" );
 			for( i=0; i<njob-1; i++ ) 
@@ -749,16 +757,18 @@ exit( 1 );
 //			veryfastsupg_double_loadtop( njob, eff, topol, len );
 		}
 		else if( subalignment )
-			fixed_supg_double_treeout_constrained( njob, eff, topol, len, name, nsubalignments, subtable );
+			fixed_supg_double_treeout_constrained( njob, eff, topol, len, name, nsubalignments, subtable ); //defined in mltaln9.c.
+			//update eff and write tree to infile.tree. I think this method is related to tree construction/update and groups
 		else if( treemethod == 'X' || treemethod == 'E' || treemethod == 'q' ) 
 //			veryfastsupg_double_outtree( njob, eff, topol, len, name );
-			fixed_musclesupg_double_treeout( njob, eff, topol, len, name );
+			fixed_musclesupg_double_treeout( njob, eff, topol, len, name ); //defined in mltaln9.c.
+			//update eff and write tree to infile.tree. I think this method is related to tree construction/update and groups
 		else if( treemethod == 'n' ) 
-			nj( njob, eff, topol, len );
+			nj( njob, eff, topol, len ); //defined in nj.c. may be meaning neighbor joining ?!!
 		else if( treemethod == 's' )
-			spg( njob, eff, topol, len );
+			spg( njob, eff, topol, len ); //defined in mltaln9.c.
 		else if( treemethod == 'p' )
-			upg2( njob, eff, topol, len );
+			upg2( njob, eff, topol, len ); //defined in mltaln9.c.
 		else ErrorExit( "Incorrect treemethod.\n" );
 	}
 #if DEBUG
@@ -822,17 +832,17 @@ exit( 1 );
 	}
 
 
-	orderfp = fopen( "order", "w" );
+	orderfp = fopen( "order", "w" ); //open order file for writing
 	if( !orderfp )
 	{
 		fprintf( stderr, "Cannot open 'order'\n" );
 		exit( 1 );
 	}
-	for( i=0; (j=topol[njob-2][0][i])!=-1; i++ )
+	for( i=0; (j=topol[njob-2][0][i])!=-1; i++ ) //write values from topol to order file
 	{
 		fprintf( orderfp, "%d\n", j );
 	}
-	for( i=0; (j=topol[njob-2][1][i])!=-1; i++ )
+	for( i=0; (j=topol[njob-2][1][i])!=-1; i++ ) //write values from topol to order file
 	{
 		fprintf( orderfp, "%d\n", j );
 	}
@@ -850,7 +860,7 @@ exit( 1 );
 	}
 	else
 	{
-		nseg = searchAnchors( njob, seq_g, segment );
+		nseg = searchAnchors( njob, seq_g, segment ); //defined in mltaln9.c.
 #if 0
 		fprintf( stderr, "### nseg = %d\n", nseg );
 		fprintf( stderr, "### seq_g[0] = %s\n", seq_g[0] );
@@ -1031,6 +1041,7 @@ exit( 1 );
 	
 		cut = ocut;
 		returnvalue = TreeDependentIteration( njob, name, nlen, seq, bseq, topol, len, eff, skipthisbranch, alloclen, localhomtable, singlerna, nkozo, kozoarivec, ntarget, targetmap, targetmapr );
+		//defined in tditeration.c.
 
 		for( i=0; i<njob; i++ )
 			strcat( res_g[i], bseq[i] );
@@ -1076,7 +1087,7 @@ exit( 1 );
 
 
 	devide = 0; 
-	writePre( njob, name, nlen, res_g, 1 );
+	writePre( njob, name, nlen, res_g, 1 ); //defined in io.c. write sequences and their names to prep_g file
 #if 0
 	writeData( stdout, njob, name, nlen, res_g, 1 );
 #endif

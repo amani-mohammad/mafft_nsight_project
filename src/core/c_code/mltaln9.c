@@ -1460,6 +1460,7 @@ static void setnearest( int nseq, Bchain *acpt, double **eff, double *mindisfrom
 //	printf( "%f, %d \n", pos, *mindisfrompt, *nearestpt );
 }
 
+//fill mindisfrompt and nearestpt with values based on other args values
 static void setnearest_double_fullmtx( int nseq, Bchain *acpt, double **eff, double *mindisfrompt, int *nearestpt, int pos )
 {
 	int j;
@@ -2884,6 +2885,7 @@ static void increaseintergroupdistanceshalfmtx( double **eff, int ngroup, int **
 	free( others );
 }
 
+//set max dist in eff based on calcs on groups and eff content
 static void increaseintergroupdistancesfullmtx( double **eff, int ngroup, int **groups, int nseq )
 {
 	int nwarned = 0;
@@ -5350,6 +5352,7 @@ void fixed_musclesupg_double_realloc_nobk_halfmtx_treeout( int nseq, double **ef
 	free( nearest );
 }
 
+//update eff and write tree to infile.tree. I think this method is related to tree construction/update and groups
 void fixed_musclesupg_double_treeout( int nseq, double **eff, int ***topol, double **len, char **name )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -5390,10 +5393,6 @@ void fixed_musclesupg_double_treeout( int nseq, double **eff, int ***topol, doub
 		reporterr(       "Unknown treemethod, %c\n", treemethod );
 		exit( 1 );
 	}
-
-
-
-
 
 #if 0
 	if( !hist )
@@ -5450,7 +5449,7 @@ void fixed_musclesupg_double_treeout( int nseq, double **eff, int ***topol, doub
 	}
 
 	
-    for( i=0; i<nseq; i++ )
+    for( i=0; i<nseq; i++ ) //save modified name values to tree
 	{
 		for( j=0; j<999; j++ ) nametmp[j] = 0;
 		for( j=0; j<999; j++ ) 
@@ -5482,12 +5481,6 @@ void fixed_musclesupg_double_treeout( int nseq, double **eff, int ***topol, doub
 	}
 
 #endif
-
-
-
-
-
-
 
 
 	for( i=0; i<nseq; i++ )
@@ -5716,7 +5709,7 @@ void fixed_musclesupg_double_treeout( int nseq, double **eff, int ***topol, doub
         fprintf( stdout, "\n" );
 #endif
     }
-	fp = fopen( "infile.tree", "w" );
+	fp = fopen( "infile.tree", "w" ); //write treetmp to infile.tree.
 		fprintf( fp, "%s\n", treetmp );
 	fclose( fp );
 #if 0
@@ -5735,6 +5728,7 @@ void fixed_musclesupg_double_treeout( int nseq, double **eff, int ***topol, doub
 	free( nearest );
 }
 
+//update eff and write tree to infile.tree. I think this method is related to tree construction/update and groups
 void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol, double **len, char **name, int ngroup, int **groups )
 {
 	int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -5767,7 +5761,8 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 	int allinconsistent;
 	int firsttime;
 
-	increaseintergroupdistancesfullmtx( eff, ngroup, groups, nseq );
+	increaseintergroupdistancesfullmtx( eff, ngroup, groups, nseq ); //increase inter group distances full matrix
+	//set max dist in eff based on calcs on groups and eff content
 
 	sueff1 = 1 - sueff_global;
 	sueff05 = sueff_global * 0.5;
@@ -5846,7 +5841,7 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 	}
 
 	
-	for( i=0; i<nseq; i++ )
+	for( i=0; i<nseq; i++ ) //fill tree with values from name after some modifications
 	{
 		for( j=0; j<999; j++ ) nametmp[j] = 0;
 		for( j=0; j<999; j++ ) 
@@ -5880,12 +5875,6 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 #endif
 
 
-
-
-
-
-
-
 	for( i=0; i<nseq; i++ )
 	{
 		ac[i].next = ac+i+1;
@@ -5894,7 +5883,8 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 	}
 	ac[nseq-1].next = NULL;
 
-	for( i=0; i<nseq; i++ ) setnearest_double_fullmtx( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle
+	for( i=0; i<nseq; i++ ) setnearest_double_fullmtx( nseq, ac, eff, mindisfrom+i, nearest+i, i ); // muscle  //defined here
+	//fill mindisfrom+i and nearest+i with values based on other args values
 
 	for( i=0; i<nseq; i++ ) tmptmplen[i] = 0.0;
 	for( i=0; i<nseq; i++ ) 
@@ -5908,8 +5898,6 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 	for( k=0; k<nseq-1; k++ )
 	{
 		if( k % 10 == 0 ) reporterr(       "\r% 5d / %d", k, nseq );
-
-
 
 //		for( acpti=ac; acpti->next!=NULL; acpti=acpti->next ) for( acptj=acpti->next; acptj!=NULL; acptj=acptj->next ) inconsistent[acpti->pos][acptj->pos] = 0;
 		for( i=0; i<ninconsistentpairs; i++ ) inconsistent[inconsistentpairlist[i][0]][inconsistentpairlist[i][1]] = 0;
@@ -6046,11 +6034,6 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 				break;
 			}
 		}
-
-
-
-
-
 
 		prevnode = hist[im];
 		nmemim = nmemar[im];
@@ -6230,7 +6213,8 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
 					 maxiim = i;
 				}
 				if( eff[miniim][maxiim] > mindisfrom[i] )
-					setnearest_double_fullmtx( nseq, ac, eff, mindisfrom+i, nearest+i, i );
+					setnearest_double_fullmtx( nseq, ac, eff, mindisfrom+i, nearest+i, i ); //defined here.
+					//fill mindisfrom+i and nearest+i with values based on other args values
 			}
 		}
 #endif
@@ -6246,7 +6230,7 @@ void fixed_supg_double_treeout_constrained( int nseq, double **eff, int ***topol
         fprintf( stdout, "\n" );
 #endif
     }
-	fp = fopen( "infile.tree", "w" );
+	fp = fopen( "infile.tree", "w" ); //open infile.tree for writing
 		fprintf( fp, "%s\n", treetmp );
 	fclose( fp );
 #if 0
@@ -6828,7 +6812,7 @@ void fixed_musclesupg_double_realloc_nobk_halfmtx( int nseq, double **eff, int *
 
 
 
-
+//update eff, len values based on values and computations on data from guidetree file and write results to infile.tree file
 void veryfastsupg_double_loadtree( int nseq, double **eff, int ***topol, double **len, char **name )
 {
     int i, j, k, miniim, maxiim, minijm, maxijm;
@@ -6848,7 +6832,7 @@ void veryfastsupg_double_loadtree( int nseq, double **eff, int ***topol, double 
 	char *nametmp, *nameptr, *tmpptr; //static?
 	char namec;
 
-	fp = fopen( "_guidetree", "r" );
+	fp = fopen( "_guidetree", "r" ); //open guidetree file for reading
 	if( !fp )
 	{
 		reporterr(       "cannot open _guidetree\n" );
@@ -6867,7 +6851,7 @@ void veryfastsupg_double_loadtree( int nseq, double **eff, int ***topol, double 
 		ac = (Achain *)malloc( njob * sizeof( Achain ) );
 	}
 
-	for( i=0; i<nseq; i++ )
+	for( i=0; i<nseq; i++ ) //fill tree with names from name
 	{
 		for( j=0; j<999; j++ ) nametmp[j] = 0;
 		for( j=0; j<999; j++ ) 
@@ -6929,7 +6913,7 @@ void veryfastsupg_double_loadtree( int nseq, double **eff, int ***topol, double 
 		}
 #else
 		lenfl[0] = lenfl[1] = -1.0;
-		loadtreeoneline( node, lenfl, fp );
+		loadtreeoneline( node, lenfl, fp ); //defined here. read line from fp - which is a guide tree -, and fill node and lenfl with it
 		im = node[0];
 		jm = node[1];
 		minscore = eff[im][jm];
@@ -7100,8 +7084,8 @@ void veryfastsupg_double_loadtree( int nseq, double **eff, int ***topol, double 
 	fclose( fp );
 
 
-	fp = fopen( "infile.tree", "w" );
-	fprintf( fp, "%s\n", treetmp );
+	fp = fopen( "infile.tree", "w" ); //open 'infile.tree' for writing
+	fprintf( fp, "%s\n", treetmp ); //write treetmp to it
 //	fprintf( fp, "by veryfastsupg_double_loadtree\n" );
 	fclose( fp );
 
